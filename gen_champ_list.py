@@ -12,7 +12,7 @@ champions = requests.get(url).json()["data"]
 idents = list(champions.keys())
 idents.sort()
 
-champ_list = [[-1, "None", "None (Unknown)"]]
+champ_list = [[-1, "None", "None [unknown]"]]
 
 for ident in idents:
     ch = champions[ident]

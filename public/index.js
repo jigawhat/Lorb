@@ -22,8 +22,8 @@ $( function() {
 
         var ddrag_ver = "8.20.1";
         var ddrag_url = "https://ddragon.leagueoflegends.com/cdn/" + ddrag_ver + "/img/champion/";
-        var none_champ_img = "imgs/searchicon.png";
-        var roles_ord = ['Top', 'Jungle', 'Middle', 'Support', 'Bottom'];
+        var none_champ_img = "imgs/none_champ.fw.png";
+        var roles_ord = ['top', 'jungle', 'middle', 'support', 'bottom'];
 
         // Champion grid element
         var grid_content = '';
@@ -50,11 +50,12 @@ $( function() {
             [ 1, 3, -1, -1 ],
             [ 1, 4, -1, -1 ],
         ];
+        region = 0;
 
         var team_li = 0; // Indexes of each feature in req_data
         var role_li = 1;
         var cid_li = 2;
-        var opgg_li = 3;
+        var name_li = 3;
 
         var app_height = $( "#app_area" ).height();
         var app_width = $( "#app_area" ).width();
@@ -66,8 +67,8 @@ $( function() {
         //     'Comment: <textarea name="comment"></textarea> ' + 
         //     '<input type="submit" value="Submit Comment" /></form>'
         var pl_inner = '<div class="champion_buttons">' + 
-            '<button class="search_button">s</button>' +
-            '<button class="grid_button">g</button></div>' + 
+            '<div class="search_button"></div>' +
+            '<button class="grid_button"></button></div>' + 
             '<div class="champion_box"></div>' + 
             '<div class="role_cont"><select class="role_select">';
         var l_roles = {};
@@ -78,8 +79,9 @@ $( function() {
             r_roles[i] = i + 5;
         }
         pl_inner += '</select></div>' +
-            '<div class="name_cont"><input type="text" placeholder="[unknown]" class="name_input"></input></div>' +
-            '';
+            '<div class="name_cont"><input type="text" placeholder=" [unknown]" class="name_input" value=""></input>' +
+            '<button class="name_clear">&times;</button>' +
+            '<button class="name_submit"></button></div>';
 
         // Create left side player objects, and all player placeholders
         for (i = 0; i < 5; i++) {
@@ -137,17 +139,12 @@ $( function() {
 
         // Define champion search dropdown box
         var search_dropdown_inner = '<div class="search_dropdown">' +
-            '<select data-placeholder="None (Unknown)" class="chosen-select search_select" tabindex="1">';
+            '<select data-placeholder="None [unknown]" class="chosen-select search_select" tabindex="1">';
         for (i = 0; i < champ_list.length; i++) {
             ch = champ_list[i];
             search_dropdown_inner += '<option value="' + ch[ch_cid_li] + '">' + ch[ch_name_li] + '</option>';
         }
         search_dropdown_inner += '</select></div>';
-            // '<option value="-1">None (Unknown)</option>' +
-            // '<option value="0">United States</option>' +
-            // '<option value="1">United Kingdom</option>' +
-            // '</select>' + 
-            // '</div>';
         $( "#pl_area" ).append(search_dropdown_inner);
 
         var ch_pl_i = 0; // Current pl index for which we are selecting a champion
@@ -221,10 +218,14 @@ $( function() {
         });
 
         // Define team colour switching
-        var left_col = "Blue";
-        var left_text_col = "blue";
-        var right_col = "Red";
-        var right_text_col = "red";
+        var left_col = "blue";
+        var left_text_col = "#77F";
+        var right_col = "red";
+        var right_text_col = "#F44";
+        $( "#l_team_col" ).html(left_col);
+        $( "#l_team_col" ).css("color", left_text_col);
+        $( "#r_team_col" ).html(right_col);
+        $( "#r_team_col" ).css("color", right_text_col);
         $( "#switch_cols_button" ).click(function() {
             left_col = [right_col, right_col = left_col][0]; // Swap variable values (pre-ES6 compatible)
             left_text_col = [right_text_col, right_text_col = left_text_col][0];
@@ -304,6 +305,95 @@ $( function() {
             }
         });
 
+        // Define player name input text box enter key action
+        $( '.name_input' ).on('keypress', function (e) {
+            if (e.which === 13) { // 13 = the enter key
+                var pl_id = $( this ).parent().parent().attr("id");
+                var pl_i = parseInt(pl_id[pl_id.length - 1]);
+                name = $( this ).val();
+                if (name != req_data[pl_i][name_li]) {
+                    req_data[pl_i][name_li] = name;
+                    if (name == '') {
+                        req_data[pl_i][name_li] = -1;
+                    } else {
+                        req_data[pl_i][name_li] = name;
+                    }
+                }
+            }
+        });
+        // Define player name submit button action
+        $( ".name_submit" ).click(function() {
+            var pl_id = $( this ).parent().parent().attr("id");
+            var pl_i = parseInt(pl_id[pl_id.length - 1]);
+            name = $( this ).parent().find( '.name_input' ).val();
+            if (name != req_data[pl_i][name_li]) {
+                req_data[pl_i][name_li] = name;
+                if (name == '') {
+                    req_data[pl_i][name_li] = -1;
+                } else {
+                    req_data[pl_i][name_li] = name;
+                }
+            }
+        });
+        // Define player name clear button action
+        $( ".name_clear" ).click(function() {
+            var pl_id = $( this ).parent().parent().attr("id");
+            var pl_i = parseInt(pl_id[pl_id.length - 1]);
+            input_box = $( this ).parent().find( '.name_input' )
+            name = input_box.val();
+            if (name != '') {
+                input_box.val('');
+                req_data[pl_i][name_li] = -1;
+            }
+        });
+
+        // Define procedure for changing region, update prediction
+        $( "#region_select" ).change(function() {
+            region = $( this )[0].selectedIndex;
+            
+        });
+
+        // Chat log import methods
+        var jtr = " joined the lobby";
+        var import_chat_log = function() {
+            box = $( '#chat_import_input' );
+            var inp = box.val();
+            box.val('');
+            $( "#chat_import_text" ).html("!");
+            if (inp === '' || inp === '\n') {
+                console.log("empty box");
+                return
+            }
+            if (inp.indexOf(jtr) === -1) {
+                console.log("no jtr found");
+                return
+            }
+            var success = false;
+            lines = inp.split('\n');
+            for (i = 0; i < Math.min(5, lines.length); i++) {
+                line = lines[i];
+                if (line.slice(line.length - jtr.length, line.length) === jtr) {
+                    name = line.slice(0, line.length - jtr.length);
+                    pl_i = plph_occupancy["plph_l_" + i];
+                    req_data[pl_i][name_li] = name;
+                    $( "#pl_" + pl_i ).find(".name_input").val(name);
+                    success = true;
+                }
+            }
+            if (success) {
+                $( "#chat_import_text" ).html("&#10004;");
+            }
+        };
+        $( '#chat_import_input' ).on('keypress', function (e) {
+            if (e.which === 13) { // 13 = the enter key
+                setTimeout(import_chat_log, 0);
+            }
+        });
+        $( "#chat_import_input" ).bind({ paste : function() {
+                setTimeout(import_chat_log, 0);
+            }
+        });
+
         // Player draggable definition
         $( ".pl" ).draggable({ snap: ".plph", snapMode: "inner", snapTolerance: 15,
             start: function( event, ui ) {
@@ -317,9 +407,9 @@ $( function() {
                 // If we're on the y grid and x is less than pl_width / 3 distance from
                 // the nearest placeholder, snap to that placeholder position
                 if (ui.position.top % pl_height == 0) {
-                    if (Math.abs(ui.position.left) < (pl_width / 3)) {
+                    if (Math.abs(ui.position.left) < (pl_width / 10)) {
                         ui.position.left = 0;
-                    } else if (Math.abs(ui.position.left - r_pl_x) < (pl_width / 3)) {
+                    } else if (Math.abs(ui.position.left - r_pl_x) < (pl_width / 10)) {
                         ui.position.left = r_pl_x;
                     }
                 }
@@ -430,8 +520,6 @@ $( function() {
                         $( "#pl_" + old_pl_i ).css("zIndex", 0);
                     }
                 }
-
-                // console.log(req_data);
             }
         });
     });

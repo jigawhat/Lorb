@@ -1,7 +1,11 @@
 body {
     background: black;
+    background-image: url('imgs/bg.fw.png');
+    background-position: center 0%;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
     color: white;
-    font-family: helvetica;
+    font-family: Arial, Helvetica, sans-serif;
 }
 #top_banner {
     height: 30px;
@@ -10,7 +14,7 @@ body {
     /*text-align: center;*/
     margin-left: auto;
     margin-right: auto;
-    width: 800px;
+    width: 740px;
     height: 450px;
     /*border-width: 1px;*/
     /*border-style: solid;*/
@@ -45,7 +49,7 @@ body {
     /*border-width: 1px;*/
     /*border-style: solid;*/
     line-height: 50px;
-    bottom: 0px;
+    bottom: 10px;
 }
 #result_perc {
     float: left;
@@ -53,15 +57,40 @@ body {
     /*vertical-align: bottom;*/
     margin-left: auto;
     margin-right: auto;
-    width: 175px;
+    width: 185px;
     height: 50px;
-    /*border-width: 1px;*/
-    /*border-style: solid;*/
-    font-size: 25px;
+    font-size: 27px;
+    font-weight: bold;
     line-height: 47px;
     /*border-width: 1px;*/
     /*border-style: solid;*/
 }
+span.win_text {
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 25px;
+    font-size: 14px;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-variant: small-caps;
+    /*text-shadow: 0px 0px 5px #000, 0px 0px 10px #000, 0px 0px 20px #000, 0px 0px 20px #000;*/
+    text-shadow: 0px 0px 5px #000, 0px 0px 5px #000,0px 0px 5px #000;
+}
+span.perc_text {
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 17px;
+    text-shadow: 0px 0px 5px #000, 0px 0px 5px #000, 0px 0px 10px #000,
+        0px 0px 10px #000, 0px 0px 20px #000, 0px 0px 20px #000, 0px 0px 50px #000;
+}
+span.perc_symb {
+    font-size: 17px;
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 25px;
+    text-shadow: 0px 0px 5px #000, 0px 0px 5px #000, 0px 0px 10px #000,
+        0px 0px 10px #000;
+}
+
 
 #pl_area {
     height: 350px;
@@ -87,36 +116,6 @@ body {
     /*border-width: 1px;*/
     /*border-style: solid;*/
 }
-#below_pl_area {
-    height: 100px;
-    display: block;
-    position: relative;
-}
-#l_team_col {
-    float: left;
-    color: blue;
-}
-#r_team_col {
-    float: right;
-    color: red;
-}
-.team_col {
-    display: block;
-    position: relative;
-    top: 3px;
-    text-align: center;
-    height: 35px;
-}
-#switch_cols_button {
-    display: block;
-    position: relative;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: #222;
-    border: none;
-    cursor: pointer;
-    color: #fff;
-}
 
 
 .pl_obj {
@@ -125,7 +124,7 @@ body {
 .plph { /* plph = player placeholder */
     /*border-width: 1px;*/
     /*border-style: solid;*/
-    background-color: #222222;
+    /*background-color: #222222;*/
 }
 .pl {
     float: left;
@@ -133,7 +132,12 @@ body {
     position: absolute;
     /*border-width: 1px;*/
     /*border-style: solid;*/
-    background-color: #333333;
+    /*background-color: #333333;*/
+    background-image: url('imgs/pl.fw.png');
+    cursor: grab;
+}
+.pl:active {
+    cursor: grabbing;
 }
 
 .champion_buttons {
@@ -141,7 +145,7 @@ body {
     width: 30px;
     left: 30px;
     top: 5px;
-    position: relative;
+    position: absolute;
     display: block;
     float: left;
     background-color: #444444;
@@ -151,22 +155,39 @@ body {
     /*display: block;*/
     height: 50%;
     width: 100%;
+    /*top: 0px;*/
+    /*left: 0px;*/
+    /*right: 0px;*/
     border: none;
     cursor: pointer;
     background-color: #555555;
     /*border-width: 1px;*/
     /*border-style: solid;*/
+    background-image: url('imgs/sb.fw.png');
+}
+.search_button:hover {
+    background-image: url('imgs/sb_hover.fw.png');
+}
+.search_button:active {
+    background-image: url('imgs/sb_active.fw.png');
 }
 .grid_button {
     /*position: relative;*/
     /*display: block;*/
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
     height: 50%;
     width: 100%;
     border: none;
     cursor: pointer;
     background-color: #555555;
-    /*border-width: 1px;*/
-    /*border-style: solid;*/
+    background-image: url('imgs/gb.fw.png');
+}
+.grid_button:hover {
+    background-image: url('imgs/gb_hover.fw.png');
+}
+.grid_button:active {
+    background-image: url('imgs/gb_active.fw.png');
 }
 /* Dropdown Content (Hidden by Default) */
 .search_dropdown {
@@ -182,14 +203,16 @@ body {
     /*top: 0px;*/
     /*margin-left: auto;*/
     /*margin-right: auto;*/
+    background-color: #222;
+    color: #fff;
 }
 /* Links inside the dropdown */
-.search_dropdown a {
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
+/*.search_dropdown a {*/
+    /*color: black;*/
+    /*padding: 12px 16px;*/
+    /*text-decoration: none;*/
+    /*display: block;*/
+/*}*/
 /* Change color of dropdown links on hover */
 .search_dropdown a:hover {background-color: #f1f1f1}
 .search_select {
@@ -207,6 +230,7 @@ body {
 #champion_grid {
     /*float: left;*/
     top: 50px;
+    left: 3px;
     margin-left: auto;
     margin-right: auto;
     width: 800px;
@@ -228,25 +252,186 @@ body {
 }
 
 .role_cont {
-    position: relative;
+    position: absolute;
     display: block;
-    left: 33px;
+    left: 123px;
     top: 5px;
 }
 .role_select {
-    
+    background-color: #222;
+    color: #fff;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-variant: small-caps;
+    font-size: 14px;
 }
 
 .name_cont {
-    position: relative;
+    position: absolute;
     display: block;
-    /*width: 70%;*/
-    left: 33px;
-    top: 10px;
+    /*width: 145px;*/
+    left: 123px;
+    top: 30px;
+    width: 154px;
 
 }
 .name_input {
-    width: 120px;
+    width: 129px;
+    height: 15px;
+    background-color: #222;
+    color: #fff;
+    font-size: 12px;
+}
+.name_clear {
+    position: absolute;
+    display: block;
+    float: right;
+    height: 21px;
+    width: 21px;
+    top: 0px;
+    right: 21px;
+    border: none;
+    cursor: pointer;
+    background-color: rgba(170, 170, 170, 0.7);
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+    /*border-color: #000;*/
+    /*box-sizing: border-box;*/
+    /*border-width: 1px;*/
+    font-weight: bold;
+    font-size: 15px;
+}
+.name_clear:hover {
+    /*border-style: solid;*/
+    background-color: rgba(180, 180, 180, 0.9);
+}
+.name_clear:active {
+    /*border-style: solid;*/
+    background-color: rgba(100, 100, 100, 0.7);
+}
+.name_submit {
+    position: absolute;
+    display: block;
+    float: right;
+    height: 21px;
+    width: 21px;
+    top: 0px;
+    right: 0px;
+    border: none;
+    cursor: pointer;
+    background-color: #555555;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+    /*border-color: #fff;*/
+    /*box-sizing: border-box;*/
+    /*border-width: 1px;*/
+    background-image: url("imgs/submit.fw.png");
+}
+.name_submit:hover {
+    background-image: url("imgs/submit_hover.fw.png");
+}
+.name_submit:active {
+    background-image: url("imgs/submit_active.fw.png");
+}
+
+#below_pl_area {
+    height: 100px;
+    display: block;
+    position: relative;
+}
+
+#l_team_col {
+    float: left;
+}
+#r_team_col {
+    float: right;
+}
+.team_col {
+    display: block;
+    position: relative;
+    top: 0px;
+    text-align: center;
+    height: 35px;
+    /*font-weight: bold;*/
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-variant: small-caps;
+    font-size: 17px;
+    /*background-color: #222;*/
+    text-shadow: 0px 0px 2px #000, 0px 0px 5px #000, 0px 0px 15px #000;
+}
+#switch_cols_button {
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #333;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-variant: small-caps;
+}
+#region_cont {
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 350px;
+    height: 20px;
+    top: 30px;
+    background-color: rgba(50, 50, 50, 0.5);
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+}
+#region_text {
+    font-size: 13px;
+    display: block;
+    position: absolute;
+    width: 250px;
+    top: 2px;
+    float: left;
+    text-shadow: 0px 0px 2px #000, 0px 0px 4px #000;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+}
+#region_select {
+    display: block;
+    position: absolute;
+    /*width: 210px;*/
+    /*height: 50px;*/
+    left: 180px;
+    background-color: #222;
+    color: #fff;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    /*font-variant: small-caps;*/
+    font-size: 12px;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+}
+#chat_import_cont {
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 13px;
+    width: 185px;
+    height: 20px;
+    top: 50px;
+    left:  8px;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+}
+#chat_import_input {
+    display: inline-block;
+    height: 16px;
+    width: 160px;
+    background-color: #222;
+    color: #fff;
+    font-family: helvetica;
+}
+#chat_import_text {
+    display: inline-block;
+    position: relative;
+    top: -5px;
 }
 
 /* Show/hide classes*/
@@ -257,20 +442,14 @@ body {
 .champion_box { /* Champion icon for each player */
     height: 60px;
     width: 60px;
-    left: 30px;
+    left: 60px;
     top: 5px;
     float: left;
-    position: relative;
+    position: absolute;
     display: block;
     background-color: #444444;
-    background-image: url('imgs/searchicon.png');
+    background-image: url('imgs/none_champ.fw.png');
     background-size: cover;
     /*border-width: 1px;*/
     /*border-style: solid;*/
-}
-
-span {
-  display: inline-block;
-  vertical-align: bottom;
-  line-height: 17px;
 }
