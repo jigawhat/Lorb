@@ -4,6 +4,20 @@ $( function() {
 
     var i = 0;
 
+    $( "#elo_info" ).tooltip({ // Setup tooltip(s)
+        position: { my: "right top", at: "left bottom", collision: "none", },
+        relative: true,
+        // of: $( "#elo_text" ),
+        // using: function(position, feedback) { $( this ).css(position); } }
+    });
+
+    $( "#home_button" ).click(function() { // Home button
+        window.location.href = ""
+    });
+    $( "#blog_button" ).click(function() { // Blog button
+        window.location.href = "blog"
+    });
+
     // Import champion data
     $.getJSON( "champ_list.json", function( data ) {
 
@@ -50,7 +64,8 @@ $( function() {
             [ 1, 3, -1, -1 ],
             [ 1, 4, -1, -1 ],
         ];
-        region = 0;
+        var region = 0;
+        var avg_elo = 0;
 
         var team_li = 0; // Indexes of each feature in req_data
         var role_li = 1;
@@ -353,6 +368,12 @@ $( function() {
             
         });
 
+        // Define procedure for average elo change, update prediction
+        $( "#elo_select" ).change(function() {
+            avg_elo = $( this )[0].selectedIndex;
+            
+        });
+
         // Chat log import methods
         var jtr = " joined the lobby";
         var import_chat_log = function() {
@@ -404,7 +425,7 @@ $( function() {
             },
             drag: function( event, ui ) {
 
-                // If we're on the y grid and x is less than pl_width / 3 distance from
+                // If we're on the y grid and x is close enough to
                 // the nearest placeholder, snap to that placeholder position
                 if (ui.position.top % pl_height == 0) {
                     if (Math.abs(ui.position.left) < (pl_width / 10)) {
@@ -418,10 +439,10 @@ $( function() {
 
                 // Get i of dragged player
                 var pl_id = ui.helper.attr("id");
-                pl_i = parseInt(pl_id[pl_id.length - 1]);
+                var pl_i = parseInt(pl_id[pl_id.length - 1]);
 
                 // Figure out which side & placeholder we've snapped to, if any
-                new_side = -1;
+                var new_side = -1;
                 if (ui.position.top % pl_height == 0) {
                     if (ui.position.left == 0) {
                         new_side = 'l';
