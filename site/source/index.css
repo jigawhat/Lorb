@@ -261,7 +261,7 @@ label {
     /*border-width: 1px;*/
     /*border-style: solid;*/
 }
-span.win_text {
+#win_text {
     display: inline-block;
     vertical-align: bottom;
     line-height: 25px;
@@ -271,14 +271,14 @@ span.win_text {
     /*text-shadow: 0px 0px 5px #000, 0px 0px 10px #000, 0px 0px 20px #000, 0px 0px 20px #000;*/
     text-shadow: 0px 0px 5px #000, 0px 0px 5px #000,0px 0px 5px #000;
 }
-span.perc_text {
+#perc_text {
     display: inline-block;
     vertical-align: bottom;
     line-height: 17px;
     text-shadow: 0px 0px 5px #000, 0px 0px 5px #000, 0px 0px 10px #000,
         0px 0px 10px #000, 0px 0px 20px #000, 0px 0px 20px #000, 0px 0px 50px #000;
 }
-span.perc_symb {
+#perc_symb {
     font-size: 17px;
     display: inline-block;
     vertical-align: bottom;

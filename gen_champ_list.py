@@ -18,7 +18,7 @@ for ident in idents:
     ch = champions[ident]
     champ_list.append([int(ch['key']), ch["id"], ch["name"]])
 
-with open("public/champ_list.json", 'w') as f:
+with open("site/source/champ_list.json", 'w') as f:
     json.dump(champ_list, f)
 
 

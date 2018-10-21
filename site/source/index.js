@@ -4,12 +4,12 @@ $( function() {
 
     var i = 0;
 
-    $( "#elo_info" ).tooltip({ // Setup tooltip(s)
-        position: { my: "right top", at: "left bottom", collision: "none", },
-        relative: true,
-        // of: $( "#elo_text" ),
-        // using: function(position, feedback) { $( this ).css(position); } }
-    });
+    // $( "#elo_info" ).tooltip({ // Setup tooltip(s)
+    //     position: { my: "right top", at: "left bottom", collision: "none", },
+    //     relative: true,
+    //     // of: $( "#elo_text" ),
+    //     // using: function(position, feedback) { $( this ).css(position); } }
+    // });
 
     $( "#home_button" ).click(function() { // Home button
         window.location.href = ""
@@ -17,6 +17,9 @@ $( function() {
     $( "#blog_button" ).click(function() { // Blog button
         window.location.href = "blog"
     });
+    // $( "#clog_button" ).click(function() { // Changelog button
+        // window.location.href = "changelog"
+    // });
 
     // Import champion data
     $.getJSON( "champ_list.json", function( data ) {
@@ -71,6 +74,23 @@ $( function() {
         var role_li = 1;
         var cid_li = 2;
         var name_li = 3;
+
+        // Request the prediction for the current data & update the displayed result
+        var curr_perc = 50;
+        var req_curr_pred = function() {
+            res = req_pred(req_data, region, avg_elo);
+            perc = res[0];
+
+            if (left_col == "red") {
+                perc = 100 - perc;
+            }
+            curr_perc = perc;
+            $( "#perc_text" ).html(perc);
+        };
+        // Method to request a prediction for any given data
+        var req_pred = function(d, reg, elo) {
+            return [70, -1, -1];
+        };
 
         var app_height = $( "#app_area" ).height();
         var app_width = $( "#app_area" ).width();
@@ -148,7 +168,8 @@ $( function() {
                 }
                 req_data[pl_i][role_li] = sel_ind;
                 req_data[prev_pl_i][role_li] = prev_role;
-                $( "#pl_" + prev_pl_i ).find(".role_cont").find(".role_select")[0].selectedIndex = prev_role
+                $( "#pl_" + prev_pl_i ).find(".role_cont").find(".role_select")[0].selectedIndex = prev_role;
+                setTimeout(req_curr_pred, 0);
             }
         });
 
@@ -241,6 +262,7 @@ $( function() {
         $( "#l_team_col" ).css("color", left_text_col);
         $( "#r_team_col" ).html(right_col);
         $( "#r_team_col" ).css("color", right_text_col);
+        $( "#res_team_col" ).html(left_col);
         $( "#switch_cols_button" ).click(function() {
             left_col = [right_col, right_col = left_col][0]; // Swap variable values (pre-ES6 compatible)
             left_text_col = [right_text_col, right_text_col = left_text_col][0];
@@ -248,9 +270,15 @@ $( function() {
             $( "#l_team_col" ).css("color", left_text_col);
             $( "#r_team_col" ).html(right_col);
             $( "#r_team_col" ).css("color", right_text_col);
+            $( "#res_team_col" ).html(left_col);
+
+            // Change request data values
             for (i = 0; i < 10; i++) {
                 req_data[i][0] = 1 - req_data[i][0];
             }
+            // Change result percentage for opposite team
+            curr_perc = 100 - curr_perc;
+            $( "#perc_text" ).html(curr_perc);
         });
 
         // Define champion search show/hide trigger & positioning
