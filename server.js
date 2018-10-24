@@ -2,6 +2,7 @@
 //  Node.js Lorb prediction web server
 //
 
+
 const fs = require('fs');
 const cluster = require('cluster');
 // const http = require('http');
@@ -13,10 +14,9 @@ const amqp = require('amqplib/callback_api');
 
 // Script options
 const port = 32077;
-
-
-
 const n_workers = os.cpus().length;
+
+
 var request_counter = 0;
 if(cluster.isMaster) {  // Cluster master
     console.log('Master cluster setting up ' + n_workers + ' workers...');
@@ -119,7 +119,7 @@ if(cluster.isMaster) {  // Cluster master
                                         // console.log(msg.content);
                                         resolve(msg.content);
                                     }
-                                }, {noAck: false});
+                                }, {noAck: true});
 
                                 ch.sendToQueue('match_pred_rpc_queue', Buffer.from(body),
                                     { correlationId: corr, replyTo: q.queue });
@@ -133,7 +133,8 @@ if(cluster.isMaster) {  // Cluster master
                 res_prom.then(function(result) {
                     send_result(res, result);
                 }, function(err) {
-                    send_result(res, err);
+                    console.log(err);
+                    // send_result(res, err);
                 });
                 // });
             }
