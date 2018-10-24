@@ -21,6 +21,21 @@ $( function() {
         // window.location.href = "changelog"
     // });
 
+    // Set region from cookie
+    var region = 0;
+    var reg_ind_ck = Cookies.get('region_index');
+    if (typeof reg_ind_ck != 'undefined') {
+        // console.log(reg_ind_ck);
+        // console.log(typeof reg_ind_ck);
+        try {
+            reg_ind_ck = parseInt(reg_ind_ck);
+            region = reg_ind_ck;
+            $( "#region_select" )[0].selectedIndex = region;
+        } catch (err) {
+            // console.log(err);
+        }
+    }
+
     // Import champion data
     $.getJSON( "champ_list.json", function( data ) {
 
@@ -67,7 +82,6 @@ $( function() {
             [ 1, 3, -1, -1 ],
             [ 1, 4, -1, -1 ],
         ];
-        var region = 0;
         var avg_elo = 0;
 
         var team_li = 0; // Indexes of each feature in req_data
@@ -77,20 +91,76 @@ $( function() {
 
         // Request the prediction for the current data & update the displayed result
         var curr_perc = 50;
-        var req_curr_pred = function() {
-            res = req_pred(req_data, region, avg_elo);
-            perc = res[0];
+        var curr_req_i = 0;
+        var curr_req_disp = 0;
+        var request_curr_pred = function() {
+            $( "#perc_text" ).css("color", "#999");
+            $( "#orb_load_ring" ).css("visibility", "visible");
+            var d = [req_data, region, avg_elo, curr_req_i];
+            var server_url = "http://" + document.location.hostname + ":32077";
+            curr_req_i++;
+            $.post(server_url, JSON.stringify(d), receive_curr_pred, "json");
+            // $.ajax({
+            //         url: server_url,
+            //         data: JSON.stringify(d),
+            //         type: 'POST',
+            //         dataType: 'json', 
+            //         // contentType: "application/json", 
+            //         success: receive_curr_pred,
+
+            //         // "crossDomain": true,
+            //         // "headers": {
+            //             // "accept": "application/json",
+            //             // "Access-Control-Allow-Origin": "*",
+            //             // "Accept-Encoding": "gzip"
+            //         // }
+
+            //         // beforeSend: function (xhr) {
+            //         //     xhr.setRequestHeader("Content-Encoding", "gzip");
+            //         // },
+            //     }
+            // );
+            // setTimeout(function() {receive_curr_pred(res, "success");}, 200); // Simulate processing time
+        };
+        var receive_curr_pred = function(res, status) {
+            // res = JSON.parse(res); // Already parsed because content type = application/json
+            var perc = curr_perc;
+            if (status === "success") {
+                var req_i = res[3];
+                if (req_i >= curr_req_disp) {
+                    perc = res[0];
+                    curr_req_disp = req_i;
+                }
+            } else {
+                console.log("Prediction request failed with status: " + status);
+                console.log(res)
+            }
 
             if (left_col == "red") {
                 perc = 100 - perc;
             }
+            var prev_perc = curr_perc;
             curr_perc = perc;
-            $( "#perc_text" ).html(perc);
+            var perc_delta = Math.abs(curr_perc - prev_perc);
+            $( "#perc_text" ).css("color", "#fff");
+            // $( "#perc_text" ).html(perc);
+            if (perc_delta > 0) {
+                $( "#perc_text" ).prop('number', prev_perc).animateNumber({
+                        number: perc
+                    },
+                    ((Math.min(perc_delta, 50) / 50) * 1500) + 700,
+                    'swing',
+                );
+            };
+            $( "#orb_load_ring" ).css("visibility", "hidden")
         };
-        // Method to request a prediction for any given data
-        var req_pred = function(d, reg, elo) {
-            return [70, -1, -1];
-        };
+        // Methods to request/receive a prediction for any given data
+        // var request_pred = function(d, reg, elo, callback) {
+        //     return [70, -1, -1];
+        // };
+        // var receive_pred = function(data, status) {
+
+        // };
 
         var app_height = $( "#app_area" ).height();
         var app_width = $( "#app_area" ).width();
@@ -169,7 +239,7 @@ $( function() {
                 req_data[pl_i][role_li] = sel_ind;
                 req_data[prev_pl_i][role_li] = prev_role;
                 $( "#pl_" + prev_pl_i ).find(".role_cont").find(".role_select")[0].selectedIndex = prev_role;
-                setTimeout(req_curr_pred, 0);
+                setTimeout(request_curr_pred, 0);
             }
         });
 
@@ -393,7 +463,7 @@ $( function() {
         // Define procedure for changing region, update prediction
         $( "#region_select" ).change(function() {
             region = $( this )[0].selectedIndex;
-            
+            Cookies.set("region_index", region);
         });
 
         // Define procedure for average elo change, update prediction
@@ -410,11 +480,11 @@ $( function() {
             box.val('');
             $( "#chat_import_text" ).html("!");
             if (inp === '' || inp === '\n') {
-                console.log("empty box");
+                // console.log("empty box");
                 return
             }
             if (inp.indexOf(jtr) === -1) {
-                console.log("no jtr found");
+                // console.log("no jtr found");
                 return
             }
             var success = false;

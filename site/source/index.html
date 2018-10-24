@@ -15,14 +15,16 @@
 
 <link rel="stylesheet" type="text/css" href="chosen_v1.8.7/chosen.min.css">
 <link rel="stylesheet" type="text/css" href="chosen-dark/chosen-dark.css">
-<script src="chosen_v1.8.7/chosen.jquery.min.js" type="text/javascript"></script>
+<script src="chosen_v1.8.7/chosen.jquery.min.js"></script>
+<script src="jquery-animateNumber-0.0.14/jquery.animateNumber.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 
 <script src="index.js"></script>
 
 </head>
 <body>
 <div id="top_banner"><div id="nav_cont">
-    <button id="home_button" class="nav_button">The League Orb</button>
+    <button id="home_button" class="nav_button">The Lorb</button>
     <div class="nav_sep">|</div>
     <button id="blog_button" class="nav_button">Blog</button>
     <!-- <div class="nav_sep">|</div> -->
@@ -87,8 +89,9 @@
 <div id="app_area">
     <div id="result_area">
         <div id="perc_area">
-            <div id="result_perc"><span id="perc_text">77</span><span id="perc_symb">%</span></div>
+            <div id="result_perc"><span id="perc_text">50</span><span id="perc_symb">%</span></div>
             <span id="win_text">&nbsp;<span id="res_team_col">blue</span> team wins</span>
+            <div id="orb_load_ring"></div>
         </div>
     </div>
     <div id="pl_area">
