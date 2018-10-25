@@ -379,8 +379,8 @@ label {
     background-color: #444444;
 }
 .search_button {
-    /*position: relative;*/
-    /*display: block;*/
+    position: relative;
+    display: block;
     height: 50%;
     width: 100%;
     /*top: 0px;*/
@@ -400,8 +400,8 @@ label {
     background-image: url('imgs/sb_active.fw.png');
 }
 .grid_button {
-    /*position: relative;*/
-    /*display: block;*/
+    position: relative;
+    display: block;
     /*border-width: 1px;*/
     /*border-style: solid;*/
     height: 50%;
@@ -433,6 +433,7 @@ label {
     /*margin-right: auto;*/
     background-color: #222;
     color: #fff;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
 }
 /* Links inside the dropdown */
 /*.search_dropdown a {*/
@@ -454,6 +455,8 @@ label {
     top: 0px;
     /*display: block;*/
     position: absolute;
+    background-color: rgba(0,0,0,0.25);
+    visibility: hidden;
 }
 #champion_grid {
     /*float: left;*/
@@ -469,14 +472,21 @@ label {
 .grid_img {
     box-sizing: border-box;
     border-width: 1px;
+    border-color: rgba(0, 0, 0, 0);
     cursor: pointer;
+    height: 60px;
+    width: 60px;
+    background-size: 60px;
 }
 .grid_img:hover {
     border-style: solid;
+    border-color: white;
+    border-width: 1px;
 }
 .grid_img_selected {
     border-style: solid;
     border-color: green;
+    border-width: 2px;
 }
 
 .role_cont {
@@ -586,12 +596,34 @@ label {
     /*background-color: #222;*/
     text-shadow: 0px 0px 2px #000, 0px 0px 5px #000, 0px 0px 15px #000;
 }
+/*#l_team_col_text {*/
+    /*width: 45px;*/
+/*}*/
+/*#r_team_col_text {*/
+    /*width: 40px;*/
+/*}*/
+.team_col_text {
+    margin-left: auto;
+    margin-right: auto;
+    height: 20px;
+    width: 45px;
+    display: block;
+    position: relative;
+    top: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+    /*vertical-align: top;*/
+    line-height: 18px;
+    border-radius: 3px;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-variant: small-caps;
+    font-size: 16px;
+}
 #switch_cols_button {
     display: block;
     position: relative;
     margin-left: auto;
     margin-right: auto;
-    background-color: #333;
+    background-color: #303030;
     border: none;
     cursor: pointer;
     color: #fff;
@@ -600,9 +632,10 @@ label {
     padding: unset;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
+    border-radius: 6px;
 }
 #switch_cols_button:hover {
-    background-color: #444;
+    background-color: #353535;
 }
 #switch_cols_button:active {
     background-color: #222;

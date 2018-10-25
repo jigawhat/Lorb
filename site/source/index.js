@@ -64,9 +64,10 @@ $( function() {
             if (i > 0) {
                 img_url = ddrag_url + champ_list[i][ch_id_li] + '.png';
             }
-            grid_content += '<img src="' + img_url + '" height="60" width="60" class="grid_img" id="grid_img_' + i + '">';
+            grid_content += '<button style="background-image: url(\'' + img_url +
+                '\');" height="60" width="60" class="grid_img" id="grid_img_' + i + '"></button>';
         }
-        $("body").append($('<div id="champion_grid_cont" class="hide"><div id="champion_grid">' +
+        $("body").append($('<div id="champion_grid_cont"><div id="champion_grid">' +
             grid_content + '</div></div>'));
 
         // Data
@@ -173,8 +174,8 @@ $( function() {
         //     'Comment: <textarea name="comment"></textarea> ' + 
         //     '<input type="submit" value="Submit Comment" /></form>'
         var pl_inner = '<div class="champion_buttons">' + 
-            '<div class="search_button"></div>' +
-            '<button class="grid_button"></button></div>' + 
+            '<button class="grid_button"></button>' +
+            '<button class="search_button"></button></div>' + 
             '<div class="champion_box"></div>' + 
             '<div class="role_cont"><select class="role_select">';
         var l_roles = {};
@@ -259,8 +260,9 @@ $( function() {
 
         // Define champion grid triggers
         $( ".grid_button" ).click(function() { // Make grid appear
-            $("#champion_grid_cont").toggleClass("hide");
-            $("#champion_grid_cont").toggleClass("show");
+            // $("#champion_grid_cont").toggleClass("hide");
+            // $("#champion_grid_cont").toggleClass("show");
+            $( "#champion_grid_cont" ).css("visibility", "visible");
 
             var pl_id = $( this ).parent().parent().attr("id");
 
@@ -273,8 +275,9 @@ $( function() {
             $( "#" + curr_img_id ).addClass("grid_img_selected");
         });
         $( "#champion_grid_cont" ).click(function() { // Make grid disappear
-            $(this).toggleClass("show");
-            $(this).toggleClass("hide");
+            // $(this).toggleClass("show");
+            // $(this).toggleClass("hide");
+            $(this).css("visibility", "hidden");
 
             var current_i = selected_ch_indices[ch_pl_i];
             var curr_img_id = 'grid_img_' + current_i;
@@ -282,8 +285,9 @@ $( function() {
         });
         $( ".grid_img" ).click(function(event) { // Make grid disappear after setting new champion
             event.stopPropagation(); // Stop click event from propagating to the container
-            $("#champion_grid_cont").toggleClass("show");
-            $("#champion_grid_cont").toggleClass("hide");
+            // $("#champion_grid_cont").toggleClass("show");
+            // $("#champion_grid_cont").toggleClass("hide");
+            $("#champion_grid_cont").css("visibility", "hidden");
 
             var current_i = selected_ch_indices[ch_pl_i];
 
@@ -331,21 +335,21 @@ $( function() {
 
         // Define team colour switching
         var left_col = "blue";
-        var left_text_col = "#77F";
+        var left_text_col = "#636bff";
         var right_col = "red";
-        var right_text_col = "#F44";
-        $( "#l_team_col" ).html(left_col);
-        $( "#l_team_col" ).css("color", left_text_col);
-        $( "#r_team_col" ).html(right_col);
-        $( "#r_team_col" ).css("color", right_text_col);
+        var right_text_col = "#ff5959";
+        $( "#l_team_col_text" ).html(left_col);
+        $( "#l_team_col_text" ).css("color", left_text_col);
+        $( "#r_team_col_text" ).html(right_col);
+        $( "#r_team_col_text" ).css("color", right_text_col);
         $( "#res_team_col" ).html(left_col);
         $( "#switch_cols_button" ).click(function() {
             left_col = [right_col, right_col = left_col][0]; // Swap variable values (pre-ES6 compatible)
             left_text_col = [right_text_col, right_text_col = left_text_col][0];
-            $( "#l_team_col" ).html(left_col);
-            $( "#l_team_col" ).css("color", left_text_col);
-            $( "#r_team_col" ).html(right_col);
-            $( "#r_team_col" ).css("color", right_text_col);
+            $( "#l_team_col_text" ).html(left_col);
+            $( "#l_team_col_text" ).css("color", left_text_col);
+            $( "#r_team_col_text" ).html(right_col);
+            $( "#r_team_col_text" ).css("color", right_text_col);
             $( "#res_team_col" ).html(left_col);
 
             // Change request data values
