@@ -93,6 +93,7 @@ $( function() {
         var curr_perc = 50;
         var curr_req_i = 0;
         var curr_req_disp = 0;
+        var inv_perc = false;
         var request_curr_pred = function() {
             $( "#perc_text" ).css("color", "#999");
             $( "#orb_load_ring" ).css("visibility", "visible");
@@ -129,6 +130,9 @@ $( function() {
                 var req_i = res[3];
                 if (req_i >= curr_req_disp) {
                     perc = res[0];
+                    if (inv_perc) {
+                        perc = 100 - perc;
+                    }
                     curr_req_disp = req_i;
                 }
             } else {
@@ -136,9 +140,6 @@ $( function() {
                 console.log(res)
             }
 
-            if (left_col == "red") {
-                perc = 100 - perc;
-            }
             var prev_perc = curr_perc;
             curr_perc = perc;
             var perc_delta = Math.abs(curr_perc - prev_perc);
@@ -291,36 +292,41 @@ $( function() {
             selected_ch_indices[ch_pl_i] = sel_ind;
             var new_cid = champ_list[sel_ind][ch_cid_li];
             var old_cid = req_data[ch_pl_i][cid_li];
-            req_data[ch_pl_i][cid_li] = new_cid;
-            if (sel_ind > 0) {
-                // If there is another entry with the same champion, switch champions with that player
-                for (i = 0; i < 10; i++) {
-                    if (i == ch_pl_i) {
-                        continue;
-                    }
-                    if (req_data[i][cid_li] == new_cid) {
-                        req_data[i][cid_li] = old_cid;
-                        old_sel_ind = champ_ind_dict[old_cid];
-                        selected_ch_indices[i] = old_sel_ind;
-                        if (old_cid != -1) {
-                            $( '#pl_' + i ).find( '.champion_box' ).css(
-                                "background-image", 'url(' + ddrag_url + champ_list[old_sel_ind][ch_id_li] + '.png)');
-                        } else {
-                            $( '#pl_' + i ).find( '.champion_box' ).css(
-                                "background-image", 'url(' + none_champ_img + ')');
-                        }
-                        break;
-                    }
-                }
-                $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
-                    "background-image", 'url(' + ddrag_url + champ_list[sel_ind][ch_id_li] + '.png)');
-            } else {
-                $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
-                    "background-image", 'url(' + none_champ_img + ')');
-            }
 
-            var curr_img_id = 'grid_img_' + current_i;
-            $( "#" + curr_img_id ).removeClass("grid_img_selected");
+            if (new_cid != old_cid) {
+                req_data[ch_pl_i][cid_li] = new_cid;
+                if (sel_ind > 0) {
+                    // If there is another entry with the same champion, switch champions with that player
+                    for (i = 0; i < 10; i++) {
+                        if (i == ch_pl_i) {
+                            continue;
+                        }
+                        if (req_data[i][cid_li] == new_cid) {
+                            req_data[i][cid_li] = old_cid;
+                            old_sel_ind = champ_ind_dict[old_cid];
+                            selected_ch_indices[i] = old_sel_ind;
+                            if (old_cid != -1) {
+                                $( '#pl_' + i ).find( '.champion_box' ).css(
+                                    "background-image", 'url(' + ddrag_url + champ_list[old_sel_ind][ch_id_li] + '.png)');
+                            } else {
+                                $( '#pl_' + i ).find( '.champion_box' ).css(
+                                    "background-image", 'url(' + none_champ_img + ')');
+                            }
+                            break;
+                        }
+                    }
+                    $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
+                        "background-image", 'url(' + ddrag_url + champ_list[sel_ind][ch_id_li] + '.png)');
+                } else {
+                    $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
+                        "background-image", 'url(' + none_champ_img + ')');
+                }
+
+                var curr_img_id = 'grid_img_' + current_i;
+                $( "#" + curr_img_id ).removeClass("grid_img_selected");
+
+                setTimeout(request_curr_pred, 0);
+            }
         });
 
         // Define team colour switching
@@ -347,8 +353,8 @@ $( function() {
                 req_data[i][0] = 1 - req_data[i][0];
             }
             // Change result percentage for opposite team
-            curr_perc = 100 - curr_perc;
-            $( "#perc_text" ).html(curr_perc);
+            inv_perc = !inv_perc;
+            setTimeout(request_curr_pred, 0);
         });
 
         // Define champion search show/hide trigger & positioning
@@ -389,34 +395,45 @@ $( function() {
             selected_ch_indices[ch_pl_i] = sel_ind;
             var new_cid = champ_list[sel_ind][ch_cid_li];
             var old_cid = req_data[ch_pl_i][cid_li];
-            req_data[ch_pl_i][cid_li] = new_cid;
-            if (sel_ind > 0) {
-                // If there is another entry with the same champion, switch champions with that player
-                for (i = 0; i < 10; i++) {
-                    if (i == ch_pl_i) {
-                        continue;
-                    }
-                    if (req_data[i][cid_li] == new_cid) {
-                        req_data[i][cid_li] = old_cid;
-                        old_sel_ind = champ_ind_dict[old_cid];
-                        selected_ch_indices[i] = old_sel_ind;
-                        if (old_cid != -1) {
-                            $( '#pl_' + i ).find( '.champion_box' ).css(
-                                "background-image", 'url(' + ddrag_url + champ_list[old_sel_ind][ch_id_li] + '.png)');
-                        } else {
-                            $( '#pl_' + i ).find( '.champion_box' ).css(
-                                "background-image", 'url(' + none_champ_img + ')');
+
+            if (new_cid != old_cid) {
+                req_data[ch_pl_i][cid_li] = new_cid;
+                if (sel_ind > 0) {
+                    // If there is another entry with the same champion, switch champions with that player
+                    for (i = 0; i < 10; i++) {
+                        if (i == ch_pl_i) {
+                            continue;
                         }
-                        break;
+                        if (req_data[i][cid_li] == new_cid) {
+                            req_data[i][cid_li] = old_cid;
+                            old_sel_ind = champ_ind_dict[old_cid];
+                            selected_ch_indices[i] = old_sel_ind;
+                            if (old_cid != -1) {
+                                $( '#pl_' + i ).find( '.champion_box' ).css(
+                                    "background-image", 'url(' + ddrag_url + champ_list[old_sel_ind][ch_id_li] + '.png)');
+                            } else {
+                                $( '#pl_' + i ).find( '.champion_box' ).css(
+                                    "background-image", 'url(' + none_champ_img + ')');
+                            }
+                            break;
+                        }
                     }
+                    $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
+                        "background-image", 'url(' + ddrag_url + champ_list[sel_ind][ch_id_li] + '.png)');
+                } else {
+                    $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
+                        "background-image", 'url(' + none_champ_img + ')');
                 }
-                $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
-                    "background-image", 'url(' + ddrag_url + champ_list[sel_ind][ch_id_li] + '.png)');
-            } else {
-                $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
-                    "background-image", 'url(' + none_champ_img + ')');
+                setTimeout(request_curr_pred, 0);
             }
         });
+
+        const conv_name = function (name) {
+            if (name === -1) {
+                return '';
+            }
+            return name;
+        }
 
         // Define player name input text box enter key action
         $( '.name_input' ).on('keypress', function (e) {
@@ -424,13 +441,14 @@ $( function() {
                 var pl_id = $( this ).parent().parent().attr("id");
                 var pl_i = parseInt(pl_id[pl_id.length - 1]);
                 name = $( this ).val();
-                if (name != req_data[pl_i][name_li]) {
+                if (name != conv_name(req_data[pl_i][name_li])) {
                     req_data[pl_i][name_li] = name;
                     if (name == '') {
                         req_data[pl_i][name_li] = -1;
                     } else {
                         req_data[pl_i][name_li] = name;
                     }
+                    setTimeout(request_curr_pred, 0);
                 }
             }
         });
@@ -439,13 +457,14 @@ $( function() {
             var pl_id = $( this ).parent().parent().attr("id");
             var pl_i = parseInt(pl_id[pl_id.length - 1]);
             name = $( this ).parent().find( '.name_input' ).val();
-            if (name != req_data[pl_i][name_li]) {
+            if (name != conv_name(req_data[pl_i][name_li])) {
                 req_data[pl_i][name_li] = name;
                 if (name == '') {
                     req_data[pl_i][name_li] = -1;
                 } else {
                     req_data[pl_i][name_li] = name;
                 }
+                setTimeout(request_curr_pred, 0);
             }
         });
         // Define player name clear button action
@@ -457,6 +476,7 @@ $( function() {
             if (name != '') {
                 input_box.val('');
                 req_data[pl_i][name_li] = -1;
+                setTimeout(request_curr_pred, 0);
             }
         });
 
@@ -464,12 +484,13 @@ $( function() {
         $( "#region_select" ).change(function() {
             region = $( this )[0].selectedIndex;
             Cookies.set("region_index", region);
+            setTimeout(request_curr_pred, 0);
         });
 
         // Define procedure for average elo change, update prediction
         $( "#elo_select" ).change(function() {
             avg_elo = $( this )[0].selectedIndex;
-            
+            setTimeout(request_curr_pred, 0);
         });
 
         // Chat log import methods
@@ -501,6 +522,7 @@ $( function() {
             }
             if (success) {
                 $( "#chat_import_text" ).html("&#10004;");
+                setTimeout(request_curr_pred, 0);
             }
         };
         $( '#chat_import_input' ).on('keypress', function (e) {
@@ -622,6 +644,8 @@ $( function() {
                                     r_roles[role] = pl_i;
                                 }
                             }
+
+                            setTimeout(request_curr_pred, 0);
                         }
 
                         // Set new placeholder occupancy
@@ -642,7 +666,6 @@ $( function() {
             }
         });
     });
-
 });
 
 
