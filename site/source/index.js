@@ -85,10 +85,10 @@ $( function() {
         ];
         var avg_elo = 0;
 
-        var team_li = 0; // Indexes of each feature in req_data
-        var role_li = 1;
-        var cid_li = 2;
-        var name_li = 3;
+        const team_li = 0; // Indexes of each feature in req_data
+        const role_li = 1;
+        const cid_li = 2;
+        const name_li = 3;
 
         // Request the prediction for the current data & update the displayed result
         var curr_perc = 50;
@@ -96,9 +96,22 @@ $( function() {
         var curr_req_disp = 0;
         var inv_perc = false;
         var request_curr_pred = function() {
+            // Slim request
+            rq_data = [];
+            rq_i = 0;
+            for (i = 0; i < 10; i++) {
+                if (req_data[i][cid_li] != -1 || req_data[i][name_li] != -1) {
+                    rq_data[rq_i] = req_data[i];
+                    rq_i++;
+                }
+            }
+            if (rq_i == 0) {  // Return if we have no input data
+                return
+            }
+            // Send request
+            var d = [rq_data, region, avg_elo, curr_req_i];
             $( "#perc_text" ).css("color", "#999");
             $( "#orb_load_ring" ).css("visibility", "visible");
-            var d = [req_data, region, avg_elo, curr_req_i];
             var server_url = "http://" + document.location.hostname + ":32077";
             curr_req_i++;
             $.post(server_url, JSON.stringify(d), receive_curr_pred, "json");
@@ -129,7 +142,9 @@ $( function() {
             var perc = curr_perc;
             if (status === "success") {
                 var req_i = res[3];
-                if (req_i >= curr_req_disp) {
+                // if (req_i >= curr_req_disp) {
+                // if (req_i >= curr_req_i - 5) {
+                if (req_i >= curr_req_i - 1) {
                     perc = res[0];
                     if (inv_perc) {
                         perc = 100 - perc;
@@ -144,7 +159,6 @@ $( function() {
             var prev_perc = curr_perc;
             curr_perc = perc;
             var perc_delta = Math.abs(curr_perc - prev_perc);
-            $( "#perc_text" ).css("color", "#fff");
             // $( "#perc_text" ).html(perc);
             if (perc_delta > 0) {
                 $( "#perc_text" ).prop('number', prev_perc).animateNumber({
@@ -154,7 +168,10 @@ $( function() {
                     'swing',
                 );
             };
-            $( "#orb_load_ring" ).css("visibility", "hidden")
+            if (req_i == curr_req_i - 1) {
+                $( "#perc_text" ).css("color", "#fff");
+                $( "#orb_load_ring" ).css("visibility", "hidden")
+            }
         };
         // Methods to request/receive a prediction for any given data
         // var request_pred = function(d, reg, elo, callback) {

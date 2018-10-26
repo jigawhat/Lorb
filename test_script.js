@@ -49,6 +49,9 @@ var a;
 // console.log((true) ? 3 : 5);
 // console.log(data);
 // console.log([...Array(10).keys()].map(i => 0));
-console.log("dfgr_57".split('_')[1]);
+a = [1, 2];
+a[2] = 3;
+console.log(a, typeof a);
+// console.log("dfgr_57".split('_')[1]);
 
 
