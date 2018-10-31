@@ -12,10 +12,10 @@ $( function() {
     // });
 
     $( "#home_button" ).click(function() { // Home button
-        window.location.href = ""
+        window.location.href = "";
     });
     $( "#blog_button" ).click(function() { // Blog button
-        window.location.href = "blog"
+        window.location.href = "blog";
     });
     // $( "#clog_button" ).click(function() { // Changelog button
         // window.location.href = "changelog"
@@ -54,7 +54,7 @@ $( function() {
 
         var ddrag_ver = "8.20.1";
         var ddrag_url = "https://ddragon.leagueoflegends.com/cdn/" + ddrag_ver + "/img/champion/";
-        var none_champ_img = "imgs/none_champ.fw.png";
+        var none_champ_img = "imgs/none_champ.png";
         var roles_ord = ['top', 'jungle', 'middle', 'support', 'bottom'];
         for (i = 0; i < 5; i++) {
             roles_ord[i] = roles_ord[i].toUpperCase();
@@ -407,15 +407,21 @@ $( function() {
 
         // Define champion search show/hide trigger & positioning
         $( ".search_button" ).click(function() {
+                
+
             var dropdown_elem = $( ".search_dropdown" );
             dropdown_elem.toggleClass("hide");
             // dropdown_elem.toggleClass("show");
+            var pl_id = $( this ).parent().parent().attr("id");
+            var pl_i = parseInt(pl_id[pl_id.length - 1]);
+
+            // if dropdown is already open for a different player
+            if (!dropdown_elem.hasClass("hide")) {
 
             if (!dropdown_elem.hasClass("hide")) {
-                var pl_id = $( this ).parent().parent().attr("id");
 
                 // Set the current pl_i for editing the selected champion
-                ch_pl_i = parseInt(pl_id[pl_id.length - 1]);
+                ch_pl_i = pl_i;
                 $( ".search_select" )[0].selectedIndex = selected_ch_indices[ch_pl_i];
                 $( ".search_select" ).trigger('chosen:updated');
                 pos_x = parseInt($( '#' + pl_id ).css('left')) + 30;
@@ -427,6 +433,9 @@ $( function() {
                 setTimeout(function() {
                     $( ".search_select" ).trigger("chosen:open");
                 }, 0);
+            } else {
+
+
             }
         });
         // Initialise chosen select box for champion search
@@ -437,6 +446,7 @@ $( function() {
             var dropdown_elem = $( ".search_dropdown" );
             // dropdown_elem.toggleClass("show");
             dropdown_elem.addClass("hide");
+            // console.log(evt)
 
             // At this point, set the new champion id & image
             var sel_ind = $(this)[0].selectedIndex;
@@ -472,8 +482,45 @@ $( function() {
                     $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
                         "background-image", 'url(' + none_champ_img + ')');
                 }
+
                 setTimeout(request_curr_pred, 0);
             }
+
+            // next_pl_i = get_next_pl_i(ch_pl_i);
+            // setTimeout(function () {
+            //     $( '#pl_' + next_pl_i ).find( ".champion_buttons" ).find( ".search_button" ).click();
+            // }, 0);
+        });
+        $( '.search_dropdown' ).click( function (e) {
+        // $( '.search_select' ).on('keypress', function (e) {
+            // console.log("EHREE " + e.which)
+            // if (e.which === 13) { // 13 = the enter key
+                // console.log("EHREE")
+                next_pl_i = get_next_pl_i(ch_pl_i);
+                setTimeout(function () {
+                    $( '#pl_' + next_pl_i ).find( ".champion_buttons" ).find( ".search_button" ).click();
+                }, 10);
+
+                // setTimeout(function () {
+                    
+                // }, 1);
+            // }
+        });
+        // $( '.search_dropdown' ).click( function (e) {
+        // $( '.search_dropdown' ).on('keypress', function (e) {
+        $( document ).on('keypress', function (e) {
+            console.log("EHREE " + e.which)
+            // if (e.which === 13) { // 13 = the enter key
+            //     // console.log("EHREE")
+            //     next_pl_i = get_next_pl_i(ch_pl_i);
+            //     setTimeout(function () {
+            //         $( '#pl_' + next_pl_i ).find( ".champion_buttons" ).find( ".search_button" ).click();
+            //     }, 10);
+
+            //     // setTimeout(function () {
+                    
+            //     // }, 1);
+            // }
         });
 
         const conv_name = function (name) {
@@ -481,6 +528,39 @@ $( function() {
                 return '';
             }
             return name;
+        }
+
+        // Get the next on-screen pl_i (top-down, left-right, looping), given the current pl_i
+        const get_next_pl_i = function (pl_i) {
+            var plph_id = null;
+            var plph_i = 0;
+            for (i = 0; i < 5; i++) {
+                var k = "plph_l_" + i;
+                if (plph_occupancy[k] == pl_i) {
+                    // plph_id = k;
+                    plph_i = i;
+                }
+            }
+            if (plph_id == null) {
+                for (i = 0; i < 5; i++) {
+                    var k = "plph_r_" + i;
+                    if (plph_occupancy[k] == pl_i) {
+                        // plph_id = k;
+                        plph_i = i + 5;
+                    }
+                }
+            }
+            next_plph_i = plph_i + 1;
+            if (next_plph_i == 10) {
+                next_plph_i = 0;
+            }
+            next_plph_col = 'l';
+            if (next_plph_i >= 5) {
+                next_plph_col = 'r';
+                next_plph_i -= 5;
+            }
+            next_plph_id = "plph_" + next_plph_col + '_' + next_plph_i;
+            return plph_occupancy[next_plph_id];
         }
 
         // Define player name input text box enter key action
@@ -498,6 +578,9 @@ $( function() {
                     }
                     setTimeout(request_curr_pred, 0);
                 }
+                // Set focus to next name input based on placeholder occupancy
+                next_pl_i = get_next_pl_i(pl_i);
+                $( '#pl_' + next_pl_i ).find( ".name_cont" ).find( ".name_input" ).focus()
             }
         });
         // Define player name unfocus

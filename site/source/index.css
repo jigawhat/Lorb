@@ -1,6 +1,6 @@
 body {
     background: black;
-    background-image: url('imgs/bg.fw.png');
+    background-image: url('imgs/bg.png');
     background-position: center 0%;
     background-repeat: no-repeat;
     /*background-attachment: scroll;*/
@@ -460,7 +460,7 @@ label {
     /*border-width: 1px;*/
     /*border-style: solid;*/
     /*background-color: #333333;*/
-    background-image: url('imgs/pl.fw.png');
+    background: url('imgs/sprite.png') -141px 0 no-repeat;
     cursor: grab;
 }
 .pl:active {
@@ -490,13 +490,13 @@ label {
     background-color: #555555;
     /*border-width: 1px;*/
     /*border-style: solid;*/
-    background-image: url('imgs/sb.fw.png');
+    background: url('imgs/sprite.png') 0 0 no-repeat;
 }
 .search_button:hover {
-    background-image: url('imgs/sb_hover.fw.png');
+    background-position: 0 -30px;
 }
 .search_button:active {
-    background-image: url('imgs/sb_active.fw.png');
+    background-position: 0 -60px;
 }
 .grid_button {
     position: relative;
@@ -508,13 +508,13 @@ label {
     border: none;
     cursor: pointer;
     background-color: #555555;
-    background-image: url('imgs/gb.fw.png');
+    background: url('imgs/sprite.png') -30px 0 no-repeat;
 }
 .grid_button:hover {
-    background-image: url('imgs/gb_hover.fw.png');
+    background-position: -30px -30px;
 }
 .grid_button:active {
-    background-image: url('imgs/gb_active.fw.png');
+    background-position: -30px -60px;
 }
 /* Dropdown Content (Hidden by Default) */
 .search_dropdown {
@@ -554,7 +554,7 @@ label {
     top: 0px;
     /*display: block;*/
     position: absolute;
-    background-color: rgba(0,0,0,0.25);
+    background-color: rgba(0,0,0,0.7);
     visibility: hidden;
 }
 #champion_grid {
@@ -567,6 +567,8 @@ label {
     height: 500px;
     display: block;
     position: relative;
+    padding: 0;
+    border: 0;
 }
 .grid_img {
     box-sizing: border-box;
@@ -575,7 +577,19 @@ label {
     cursor: pointer;
     height: 60px;
     width: 60px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    margin-left: 2px;
+    margin-right: 2px;
+    /*padding: 0;*/
+    /*margin: 0;*/
     background-size: 60px;
+    background-position: center center;
+    background-repeat: no-repeat;
 }
 .grid_img:hover {
     border-style: solid;
@@ -666,13 +680,13 @@ label {
     /*border-color: #fff;*/
     /*box-sizing: border-box;*/
     /*border-width: 1px;*/
-    background-image: url("imgs/submit.fw.png");
+    background: url('imgs/sprite.png') -60px 0 no-repeat;
 }
 .name_submit:hover {
-    background-image: url("imgs/submit_hover.fw.png");
+    background-position: -60px -21px;
 }
 .name_submit:active {
-    background-image: url("imgs/submit_active.fw.png");
+    background-position: -60px -42px;
 }
 
 #below_pl_area {
@@ -785,7 +799,7 @@ label {
     position: absolute;
     display: block;
     background-color: #444444;
-    background-image: url('imgs/none_champ.fw.png');
+    background: url('imgs/none_champ.png') center center no-repeat;
     background-size: cover;
     /*border-width: 1px;*/
     /*border-style: solid;*/
