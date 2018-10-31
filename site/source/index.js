@@ -56,6 +56,9 @@ $( function() {
         var ddrag_url = "https://ddragon.leagueoflegends.com/cdn/" + ddrag_ver + "/img/champion/";
         var none_champ_img = "imgs/none_champ.fw.png";
         var roles_ord = ['top', 'jungle', 'middle', 'support', 'bottom'];
+        for (i = 0; i < 5; i++) {
+            roles_ord[i] = roles_ord[i].toUpperCase();
+        }
 
         // Champion grid element
         var grid_content = '';
@@ -94,6 +97,7 @@ $( function() {
         var curr_perc = 50;
         var curr_req_i = 0;
         var curr_req_disp = 0;
+        var curr_deg = 270;
         var inv_perc = false;
         var request_curr_pred = function() {
             // Slim request
@@ -101,7 +105,8 @@ $( function() {
             rq_i = 0;
             for (i = 0; i < 10; i++) {
                 if (req_data[i][cid_li] != -1 || req_data[i][name_li] != -1) {
-                    rq_data[rq_i] = req_data[i];
+                    rq_data[rq_i] = req_data[i].slice(0, 3);
+                    rq_data[rq_i][name_li] = ('' + req_data[i][name_li]).slice(0, 16);
                     rq_i++;
                 }
             }
@@ -137,6 +142,23 @@ $( function() {
             // );
             // setTimeout(function() {receive_curr_pred(res, "success");}, 200); // Simulate processing time
         };
+        function animateRotate (object,fromDeg,toDeg,duration,callback){
+            var dummy = $('<span style="margin-left:'+fromDeg+'px;">')
+            $(dummy).animate({
+                "margin-left":toDeg+"px"
+            },
+            {
+                duration:duration,
+                step: function(now,fx){
+                    $(object).css('transform','rotate(' + now + 'deg)');
+                    if(now == toDeg){
+                        if(typeof callback == "function"){
+                            callback();
+                        }
+                    }
+                }
+            }
+        )};
         var receive_curr_pred = function(res, status) {
             // res = JSON.parse(res); // Already parsed because content type = application/json
             var perc = curr_perc;
@@ -158,15 +180,20 @@ $( function() {
 
             var prev_perc = curr_perc;
             curr_perc = perc;
-            var perc_delta = Math.abs(curr_perc - prev_perc);
+            var perc_delta = curr_perc - prev_perc;
+            var perc_delta_abs = Math.abs(perc_delta);
             // $( "#perc_text" ).html(perc);
-            if (perc_delta > 0) {
+            if (perc_delta_abs > 0) {
+                anim_t = ((Math.min(perc_delta_abs, 50) / 50) * 1500) + 700;
                 $( "#perc_text" ).prop('number', prev_perc).animateNumber({
                         number: perc
                     },
-                    ((Math.min(perc_delta, 50) / 50) * 1500) + 700,
+                    anim_t,
                     'swing',
                 );
+                var new_deg = 270 + ((180 * (perc / 100)) - 90);
+                animateRotate($( "#perc_meter" ), curr_deg, new_deg, anim_t, null);
+                curr_deg = new_deg;
             };
             if (req_i == curr_req_i - 1) {
                 $( "#perc_text" ).css("color", "#fff");
@@ -198,7 +225,7 @@ $( function() {
         var l_roles = {};
         var r_roles = {};
         for (i = 0; i < 5; i++) {
-            pl_inner += '<option value=' + i + '>' + roles_ord[i] + '</option>';
+            pl_inner += '<option value=' + i + ' class="role_option">' + roles_ord[i] + '</option>';
             l_roles[i] = i;
             r_roles[i] = i + 5;
         }
@@ -471,6 +498,21 @@ $( function() {
                     }
                     setTimeout(request_curr_pred, 0);
                 }
+            }
+        });
+        // Define player name unfocus
+        $( ".name_input" ).focusout(function() {
+            var pl_id = $( this ).parent().parent().attr("id");
+            var pl_i = parseInt(pl_id[pl_id.length - 1]);
+            name = $( this ).parent().find( '.name_input' ).val();
+            if (name != conv_name(req_data[pl_i][name_li])) {
+                req_data[pl_i][name_li] = name;
+                if (name == '') {
+                    req_data[pl_i][name_li] = -1;
+                } else {
+                    req_data[pl_i][name_li] = name;
+                }
+                setTimeout(request_curr_pred, 0);
             }
         });
         // Define player name submit button action

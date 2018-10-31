@@ -103,8 +103,8 @@ if(cluster.isMaster) {  // Cluster master
                 var req_i = req_d[3];
                 var res_prom = new Promise(function(resolve, reject) {
                     request_counter++;
-                    // var result = [request_counter * 10, -1, -1, req_i];
-                    // resolve(result);
+                    // var result = [req_i * 1, -1, -1, req_i];
+                    // resolve('[' + result + ']');
                     // setTimeout(function(resolve_, result_) { // Simulate processing time
                     //     resolve(result);
                     // }, 1000);
@@ -203,9 +203,32 @@ const validate_req = function(req) {
             return "request data " + i + " champion id is not valid: " + req_d_i[2];
         } else if(!((typeof req_d_i[3] == "string") || (Number.isInteger(req_d_i[3]) && req_d_i[3] == -1))) {
             return "request data " + i + " name is not a string or -1: " + req_d_i[3];
-        } else if(req_d_i[3].length > 20) {
-            return "request data " + i + " name length is more than 20";
+        } else if(req_d_i[2] === -1 && req_d_i[3] === -1) {
+            return "request data " + i + " is empty";
+        } else if(req_d_i[3] == '') {
+            return "request data " + i + " name is empty";
+        } else if(req_d_i[3].length > 16) {
+            return "request data " + i + " name length has too many characters";
         }
+    }
+    var roles = {};
+    var blue_count = 0;
+    var red_count = 0;
+    for (i = 0; i < req_d.length; i++) {
+        t = req_d[i][0]
+        r = t + '_' + req_d[i][1];
+        if (r in roles) {
+            return "request data " + i + " duplicate role: " + r;
+        }
+        blue_count += 1 - t
+        if (blue_count > 5) {
+            return "more than 5 players on blue team";
+        }
+        red_count += t
+        if (red_count > 5) {
+            return "more than 5 players on red team";
+        }
+        roles[r] = 1;
     }
     return 200;
 };
