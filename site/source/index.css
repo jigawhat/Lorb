@@ -233,6 +233,45 @@ label {
     /*border-style: solid;*/
     position: relative;
 }
+#status_area {
+    position: absolute;
+    float: right;
+    /*display: block;*/
+    background-color: rgba(0, 0, 0, 0.42);
+    right: -205px;
+    top: 25px;
+    width: 170px;
+    height: 50px;
+    /*z-index: 1;*/
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 11px;
+    /*opacity: 0;*/
+    visibility: hidden;
+}
+#warning_symb {
+    position: absolute;
+    background: url("imgs/sprite.png") -392px 0 no-repeat;
+    width: 25px;
+    height: 25px;
+    top: 5px;
+    left: 8px;
+}
+#warning_text {
+    position: absolute;
+    width: 170px;
+    height: 23px;
+    top: 8px;
+    left: 38px;
+}
+#warning_subtext {
+    position: absolute;
+    width: 170px;
+    height: 23px;
+    top: 25px;
+    left: 38px;
+    font-size: 10px;
+    color: #ddd;
+}
 #perc_area {
     text-align: left;
     position: absolute;
@@ -257,7 +296,7 @@ label {
     /*vertical-align: bottom;*/
     margin-left: auto;
     margin-right: auto;
-    width: 185px;
+    width: 184px;
     height: 50px;
     font-size: 27px;
     font-weight: bold;
@@ -299,6 +338,19 @@ label {
         /*0px 0px 10px #004;*/
     text-shadow: 0px 0px 5px #004, 0px 0px 10px #004;
 }
+#perc_arrow {
+    z-index: 500;
+    display: block;
+    position: absolute;
+    left: 38px;
+    top: -4px;
+    height: 7px;
+    width: 5px;
+    background: url("imgs/sprite.png") 0 -60px no-repeat;
+    /*background-color: rgba(0, 0, 0, 0.5);*/
+    /*font-size: 12px;*/
+    /*color: rgba(255, 255, 255, 1.0);*/
+}
 #perc_meter {
     z-index: -1;
     display: block;
@@ -309,7 +361,7 @@ label {
     bottom: 10px;
     /*border-width: 1.5px;*/
     border-style: solid;
-    border-color: rgba(255, 255, 255, 1.0);
+    border-color: rgba(255, 255, 255, 0.7);
     /*border-color: rgba(255, 255, 255, 0.7);*/
     /*border-color: rgba(255, 0, 0, 0.3);*/
     box-shadow: 0px 0px 0.05px #fff;
@@ -460,7 +512,7 @@ label {
     /*border-width: 1px;*/
     /*border-style: solid;*/
     /*background-color: #333333;*/
-    background: url('imgs/sprite.png') -141px 0 no-repeat;
+    background: url('imgs/sprite.png') -111px 0 no-repeat;
     cursor: grab;
 }
 .pl:active {
@@ -493,10 +545,10 @@ label {
     background: url('imgs/sprite.png') 0 0 no-repeat;
 }
 .search_button:hover {
-    background-position: 0 -30px;
+    background-position: -30px 0;
 }
 .search_button:active {
-    background-position: 0 -60px;
+    background-position: -60px 0;
 }
 .grid_button {
     position: relative;
@@ -508,13 +560,13 @@ label {
     border: none;
     cursor: pointer;
     background-color: #555555;
-    background: url('imgs/sprite.png') -30px 0 no-repeat;
+    background: url('imgs/sprite.png') 0 -30px no-repeat;
 }
 .grid_button:hover {
     background-position: -30px -30px;
 }
 .grid_button:active {
-    background-position: -30px -60px;
+    background-position: -60px -30px;
 }
 /* Dropdown Content (Hidden by Default) */
 .search_dropdown {
@@ -523,7 +575,7 @@ label {
     /*background-color: #bbbbbb;*/
     /*min-width: 230px;*/
     width: 200px;
-    height: 25px;
+    height: 303px;
     /*border: 1px solid #ddd;*/
     z-index: 1;
     /*left: 0px;*/
@@ -533,6 +585,8 @@ label {
     background-color: #222;
     color: #fff;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
 }
 /* Links inside the dropdown */
 /*.search_dropdown a {*/
@@ -549,7 +603,7 @@ label {
 
 #champion_grid_cont {
     width: 100%;
-    height: 100%;
+    height: 1000px;
     /*left: 0px;*/
     top: 0px;
     /*display: block;*/
@@ -563,7 +617,7 @@ label {
     left: 3px;
     margin-left: auto;
     margin-right: auto;
-    width: 800px;
+    width: 600px;
     height: 500px;
     display: block;
     position: relative;
@@ -575,7 +629,7 @@ label {
     border-width: 1px;
     border-color: rgba(0, 0, 0, 0);
     cursor: pointer;
-    height: 60px;
+    height: 68px;
     width: 60px;
     padding-top: 0px;
     padding-bottom: 0px;
@@ -588,8 +642,9 @@ label {
     /*padding: 0;*/
     /*margin: 0;*/
     background-size: 60px;
-    background-position: center center;
+    background-position: center top;
     background-repeat: no-repeat;
+    background-color: rgba(0, 0, 0, 0);
 }
 .grid_img:hover {
     border-style: solid;
@@ -601,9 +656,27 @@ label {
     border-color: green;
     border-width: 2px;
 }
+.grid_img_text {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 15px;
+    top: 30px;
+    font-size: 9px;
+    letter-spacing: 0.5px;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    color: #fff;
+    text-shadow: 0px 0px 2px #000, 0px 0px 5px #000, 0px 0px 15px #000;
+    /*float: bottom;*/
+}
 
 .role_option {
     /*font-size: 5px;*/
+    color: #fff;
+}
+.role_option_0 {
+    /*font-size: 5px;*/
+    color: #888;
 }
 .role_cont {
     position: absolute;
@@ -613,12 +686,14 @@ label {
 }
 .role_select {
     background-color: #222;
-    color: #fff;
+    /*color: #fff;*/
+    color: #888;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-    font-variant: small-caps;
-    font-size: 10px;
-    height: 25px;
-    width: 75px;
+    /*font-variant: small-caps;*/
+    font-variant: normal;
+    font-size: 9px;
+    height: 19px;
+    width: 100px;
 }
 
 .name_cont {
@@ -626,16 +701,18 @@ label {
     display: block;
     /*width: 145px;*/
     left: 123px;
-    top: 30px;
+    top: 27px;
     width: 154px;
 
 }
 .name_input {
     width: 129px;
-    height: 15px;
+    height: 17px;
     background-color: #222;
     color: #fff;
-    font-size: 12px;
+    font-size: 11px;
+    padding-left: 3px;
+    border-width: 1px;
 }
 .name_clear {
     position: absolute;
@@ -680,13 +757,29 @@ label {
     /*border-color: #fff;*/
     /*box-sizing: border-box;*/
     /*border-width: 1px;*/
-    background: url('imgs/sprite.png') -60px 0 no-repeat;
+    background: url('imgs/sprite.png') -90px 0 no-repeat;
 }
 .name_submit:hover {
-    background-position: -60px -21px;
+    background-position: -90px -21px;
 }
 .name_submit:active {
-    background-position: -60px -42px;
+    background-position: -90px -42px;
+}
+
+.pl_status_text {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 11px;
+    color: #eee;
+    position: absolute;
+    display: block;
+    float: left;
+    width: 145px;
+    height: 16px;
+    display: block;
+    left: 125px;
+    top: 49px;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
 }
 
 #below_pl_area {

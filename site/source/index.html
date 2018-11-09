@@ -16,6 +16,7 @@
 <link rel="stylesheet" type="text/css" href="chosen_v1.8.7/chosen.min.css">
 <link rel="stylesheet" type="text/css" href="chosen-dark/chosen-dark.css">
 <script src="chosen_v1.8.7/chosen.jquery.min.js"></script>
+<!-- <script src="jquery-onenter/jquery.OnEnter.js"></script> -->
 <script src="jquery-animateNumber-0.0.14/jquery.animateNumber.js"></script>
 <script src="jquery/js.cookie.min.js"></script>
 
@@ -23,6 +24,7 @@
 <!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script> -->
 
+<script src="champ_list.js"></script>
 <script src="index.js"></script>
 
 </head>
@@ -92,11 +94,17 @@
 </div></div>
 <div id="app_area">
     <div id="result_area">
+        <div id="status_area">
+            <div id="warning_symb"></div>
+            <div id="warning_text">More data needed</div>
+            <div id="warning_subtext">Low accuracy model</div>
+            <!-- <div id="warning_subtext">Summoner(s) not found</div> -->
+        </div>
         <div id="perc_area">
             <div id="result_perc"><span id="perc_text">50</span><span id="perc_symb">%</span></div>
             <span id="win_text">&nbsp;<span id="res_team_col">blue</span> team wins</span>
             <div id="orb_load_ring"></div>
-            <div id="perc_meter"></div>
+            <div id="perc_meter"><div id="perc_arrow"></div></div>
             <div id="perc_meter_left_marker"></div>
             <div id="perc_meter_center_marker"></div>
             <div id="perc_meter_right_marker"></div>
@@ -109,7 +117,7 @@
     <div id="below_pl_area">
         <div id="l_team_col" class="team_col pl_w_obj"><div id="l_team_col_text" class="team_col_text"></div></div>
         <div id="r_team_col" class="team_col pl_w_obj"><div id="r_team_col_text" class="team_col_text"></div></div>
-        <button id="switch_cols_button"><- swap colors -></button>
+        <button id="switch_cols_button"><- swap sides -></button>
         <div id="chat_import_cont">
             <textarea id="chat_import_input" placeholder="paste full chat log here" value=""></textarea>
             <div id="chat_import_text"></div>

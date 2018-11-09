@@ -35,10 +35,10 @@ if(cluster.isMaster) {  // Cluster master
 } else { // Cluster worker
 
     // Load champion dictionary
-    const ch_json = JSON.parse(fs.readFileSync('site/source/champ_list.json', 'utf8'));
-    var champ_dict = {}
-    for (var i = 0; i < ch_json.length; i++) {
-        champ_dict[ch_json[i][0]] = ch_json[i][2];
+    const ch_json = JSON.parse(eval(fs.readFileSync('site/source/champ_list.js', 'utf8')));
+    var champ_dict = {};
+    for (var i = 0; i < ch_json["list"].length; i++) {
+        champ_dict[ch_json["list"][i][0]] = ch_json["list"][i][2];
     }
 
     // amqp.connect('amqp://localhost', function(err, conn) {});

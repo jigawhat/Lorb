@@ -53,6 +53,7 @@ a = [1, 2];
 a[2] = 3;
 console.log(a, typeof a);
 console.log(a.slice(0,3))
+console.log(Math.max.apply(null, [0,4,2,6,2,3,4]))
 // console.log("dfgr_57".split('_')[1]);
 
 

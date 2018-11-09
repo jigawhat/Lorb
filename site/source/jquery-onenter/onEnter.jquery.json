@@ -1,0 +1,38 @@
+{
+    "name": "onEnter",
+    "title": "onEnter",
+    "description": "Automatically creates a Javascript handle for all onenter events the same way browsers natively support onclick, onblur, etc.",
+    "keywords": [
+        "onenter",
+        "event"
+    ],
+    "version": "1.0.1",
+    "author": {
+        "name": "RWSApps",
+        "url": "http://jquery.rwsapps.com/OnEnter"
+    },
+    "maintainers": [
+        {
+            "name": "Ryan Schwartz",
+            "email": "contact@rwsapps.com",
+            "url": "http://jquery.rwsapps.com/"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/schwartzrw/jquery-onenter/blob/master/RWSApps%20MIT.rtf"
+        },
+        {
+            "type": "GNU",
+            "url": "https://github.com/schwartzrw/jquery-onenter/blob/master/RWSApps%20GNU.rtf"
+        }
+    ],
+    "bugs": "https://github.com/schwartzrw/jquery-onenter/issues",
+    "homepage": "http://jquery.rwsapps.com/OnEnter",
+    "docs": "http://jquery.rwsapps.com/OnEnter/documentation",
+    "download": "https://github.com/schwartzrw/jquery-onenter",
+    "dependencies": {
+        "jquery": ">=1.5"
+    }
+}
