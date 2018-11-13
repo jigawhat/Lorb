@@ -169,6 +169,7 @@ const validate_req = function(req) {
     } else if (!(req[0] instanceof Array)) {
         return "request data not array";
     } else if (!Number.isInteger(req[1])) {
+        console.log(req[1])
         return "request region index is not an integer";
     } else if (req[1] < 0 || req[1] > 10) {
         return "request region index is not between 0 and 10 (inclusive)";
@@ -199,7 +200,7 @@ const validate_req = function(req) {
             return "request data " + i + " role index is not between 0 and 4 (inclusive)";
         } else if(!Number.isInteger(req_d_i[2])) {
             return "request data " + i + " champion id is not an integer";
-        } else if(!(req_d_i[2] in champ_dict)) {
+        } else if((!(req_d_i[2] in champ_dict)) && (!(req_d_i[2] == -2))) {
             return "request data " + i + " champion id is not valid: " + req_d_i[2];
         } else if(!((typeof req_d_i[3] == "string") || (Number.isInteger(req_d_i[3]) && req_d_i[3] == -1))) {
             return "request data " + i + " name is not a string or -1: " + req_d_i[3];
