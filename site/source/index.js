@@ -66,8 +66,12 @@ $( function() {
     var i = 0;
 
     $( "#status_area" ).fadeOut(0);
-    $( "#perc_warning_symb" ).fadeOut(0);
     $( "#share_area" ).fadeOut(0);
+    $( "#perc_warning_symb" ).fadeOut(0);
+    $( "#champions_perc_warning_symb" ).fadeOut(0);
+    $( "#summoners_perc_warning_symb" ).fadeOut(0);
+    $( "#champions_perc_area" ).fadeOut(0);
+    $( "#summoners_perc_area" ).fadeOut(0);
 
     var showing_share = false;
 
@@ -117,7 +121,6 @@ $( function() {
     // {
 
     // Constants
-    // console.log(champ_data);
     var data = JSON.parse(champ_data);
     var champ_list = data["list"];   // Riot champion data
     var role_aa_order = data["role_fill_order"]; // Order in which to auto assign roles
@@ -208,6 +211,8 @@ $( function() {
     var last_req_t = 0;
     var waiting_for_refresh = -1;
     var selected_ch_indices; // Selected champion list indices for each pl
+    var disp_champs_perc = false;
+    var disp_summs_perc = false;
     // var curr_req_disp = 0;
 
     var req_data = [];
@@ -215,12 +220,8 @@ $( function() {
     var pl_ropts = [];
     var rdict = [];
     var initialise_vars = function() {
-        // console.log(req_data_init);
         var thing = clone_2d_arr(req_data_init);
-        // console.log(clone_2d_arr(req_data_init));
-        // console.log(thing);
         req_data = thing;
-        // console.log(req_data);
         pl_ropts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         rdict = [{}, {}];
         for (i = 0; i < 5; i++) {
@@ -314,26 +315,55 @@ $( function() {
     var left_col = "blue";
     var left_text_col = "#ddddff";
     var left_text_col_l = "#636bff";
+    var left_ptxt_shadow_col = 
+        "0px 0px 5px #004, 0px 0px 10px #004, 0px 0px 20px #004, 0px 0px 50px #004, 0px 0px 50px #004";
     // var left_text_col = "#66ccff";
     var right_col = "red";
     var right_text_col = "#ffb3b3";
     var right_text_col_l = "#ff5959";
+    var right_ptxt_shadow_col = 
+        "0px 0px 5px #300, 0px 0px 10px #300, 0px 0px 20px #300, 0px 0px 50px #300, 0px 0px 50px #300";
     $( "#l_team_col_text" ).html(left_col);
     $( "#l_team_col_text" ).css("color", left_text_col_l);
     $( "#r_team_col_text" ).html(right_col);
     $( "#r_team_col_text" ).css("color", right_text_col_l);
     $( "#res_team_col" ).html(left_col);
     $( "#res_team_col" ).css('color', left_text_col);
+    $( "#champions_perc_team_col" ).html(left_col)
+    $( "#champions_perc_team_col" ).css('color', left_text_col);
+    $( "#summoners_perc_team_col" ).html(left_col)
+    $( "#summoners_perc_team_col" ).css('color', left_text_col);
+    $( "#perc_text" ).css('text-shadow', left_ptxt_shadow_col)
+    $( "#champions_perc_team_col" ).css('text-shadow', left_ptxt_shadow_col)
+    $( "#summoners_perc_team_col" ).css('text-shadow', left_ptxt_shadow_col)
+    $( "#champions_perc" ).css('text-shadow', left_ptxt_shadow_col)
+    $( "#summoners_perc" ).css('text-shadow', left_ptxt_shadow_col)
+    $( "#perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
+    $( "#champions_perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
+    $( "#summoners_perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
     var swap_sides = function() {
         left_col = [right_col, right_col = left_col][0]; // Swap variable values (pre-ES6 compatible)
         left_text_col = [right_text_col, right_text_col = left_text_col][0];
         left_text_col_l = [right_text_col_l, right_text_col_l = left_text_col_l][0];
+        left_ptxt_shadow_col = [right_ptxt_shadow_col, right_ptxt_shadow_col = left_ptxt_shadow_col][0];
         $( "#l_team_col_text" ).html(left_col);
         $( "#l_team_col_text" ).css("color", left_text_col_l);
         $( "#r_team_col_text" ).html(right_col);
         $( "#r_team_col_text" ).css("color", right_text_col_l);
         $( "#res_team_col" ).html(left_col);
         $( "#res_team_col" ).css('color', left_text_col);
+        $( "#champions_perc_team_col" ).html(left_col)
+        $( "#champions_perc_team_col" ).css('color', left_text_col);
+        $( "#summoners_perc_team_col" ).html(left_col)
+        $( "#summoners_perc_team_col" ).css('color', left_text_col);
+        $( "#perc_text" ).css('text-shadow', left_ptxt_shadow_col)
+        $( "#champions_perc_team_col" ).css('text-shadow', left_ptxt_shadow_col)
+        $( "#summoners_perc_team_col" ).css('text-shadow', left_ptxt_shadow_col)
+        $( "#champions_perc" ).css('text-shadow', left_ptxt_shadow_col)
+        $( "#summoners_perc" ).css('text-shadow', left_ptxt_shadow_col)
+        $( "#perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
+        $( "#champions_perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
+        $( "#summoners_perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
 
         // Change result percentage for opposite team
         inv_perc = !inv_perc;
@@ -348,7 +378,6 @@ $( function() {
     });
 
     var set_opgg_link = function (pl, name) {
-        // console.log(name);
         if (name === '') {
             pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).html('');
             return;
@@ -360,9 +389,6 @@ $( function() {
 
     // Auto assign roles
     var auto_assign_roles = function() {
-        // console.log(pl_ropts);
-        // console.log(rdict);
-        // console.log(req_data);
         for (side = 0; side < 2; side++) { // For each team
             var side_char = side === 0 ? 'l' : 'r';
             // var side_char = side === 0 ? (inv_perc ? 'r' : 'l') : (inv_perc ? 'l' : 'r');
@@ -379,25 +405,18 @@ $( function() {
             var no_champs_pls = {};
             for (j = 0; j < 5; j++) {
                 var pl_i = plph_occupancy["plph_" + side_char + '_' + j];
-                // console.log(pl_ropts[pl_i], rdict[side]);
                 if (pl_ropts[pl_i] === 0) {
                     var cid = req_data[pl_i][cid_li];
                     if (cid !== -1) {
                         champions[cid] = pl_i;
-                        // console.log(cid)
                     } else {
                         no_champs_pls[pl_i] = null;
                     }
                 }
-                // console.log(rdict[side][j]);
                 if (rdict[side][j] === -1) {
                     aa_roles[j] = null;
                 }
             }
-            // console.log(aa_roles);
-            // console.log(champions);
-            // console.log(Object.keys(aa_roles));
-            // console.log(champ_role_is_ordered[68]);
             j = 0;
             champion_inds_mins = [];
             ch_keys = Object.keys(champions);
@@ -409,40 +428,27 @@ $( function() {
                 .map((item, j) => [champion_inds_mins[j], item])
                 .sort(([count1], [count2]) => count1 - count2)
                 .map(([, item]) => item);
-            // console.log(sorted_cids);
             for (let cid of sorted_cids) {
-                // console.log(cid);
                 ris = Object.keys(aa_roles);
-                // console.log(ris);
                 ris = ris
                     .map((item, j) => [champ_role_is_ordered[cid][parseInt(item)], item])
                     .sort(([count1], [count2]) => count1 - count2)
                     .map(([, item]) => item);
-                // console.log(ris);
                 role = ris[0];
 
-                // console.log(role, cid);
                 pl_i = champions[cid];
-                // console.log(cid, pl_i);
                 delete champions[cid];
                 delete aa_roles[role];
-                // console.log(aa_roles);
-                // console.log(pl_i, role, ris);
                 role = parseInt(role);
-                // console.log(role);
                 // pl_roles[pl_i] = role;
                 req_data[pl_i][role_li] = role;
                 // rdict[side][role] = pl_i;
                 $( "#pl_" + pl_i ).find(".role_cont").find(".role_select").find(
                     ".role_option_0").html(roles_opts[role + 1] + " &nbsp(auto assign)");
             }
-            // console.log(aa_roles);
-            // console.log(no_champs_pls);
             for (var pl_i in no_champs_pls) { // Assign remaining roles in order (no champion info)
                 role = parseInt(Object.keys(aa_roles)[0]);
                 // if (roles_opts[role + 1] == undefined) {
-                //     console.log(role);
-                //     console.log(aa_roles);
                 // }
                 delete aa_roles[role];
                 // pl_roles[pl_i] = role;
@@ -452,8 +458,6 @@ $( function() {
                     ".role_option_0").html(roles_opts[role + 1] + " &nbsp(auto assign)");
             }
         }
-        // console.log(req_data);
-        // console.log(clone_2d_arr(req_data));
     };
 
     var reset_everything = function() {
@@ -470,7 +474,6 @@ $( function() {
 
     // Request the prediction for the current data & update the displayed result
     var request_curr_pred = function() {
-        // console.log(req_data);
         d = new Date()
         last_req_t = d.getTime()
         // Slim request
@@ -486,7 +489,6 @@ $( function() {
         var r_fix_roles = [];
         var b_fr_i = 0;
         var r_fr_i = 0;
-        // console.log(req_data);
         for (i = 0; i < 10; i++) {
             r = req_data[i][role_li];
             if (req_data[i][team_li] === 0) {
@@ -552,6 +554,7 @@ $( function() {
             "placeholders": plph_occupancy,
         };
         Cookies.set('match_composition', new_comp);
+
         // var new_url = hostn + "?comp=" + btoa(JSON.stringify(new_comp));
         // $( "#share_input" ).html(new_url);
         // $( "#share_suff_text" ).html("");
@@ -561,7 +564,6 @@ $( function() {
 
         // Send request
         var d = [rq_data, region, avg_elo, curr_req_i];
-        // console.log(d);
         $( "#perc_text" ).css("color", "#999");
         $( ".orb_load_ring" ).css("visibility", "visible");
         var server_url = "http://" + document.location.hostname + ":32077";
@@ -595,12 +597,10 @@ $( function() {
         var inv_p = comp["inv_perc"];
         var rdata = comp["data"];
         var ropts = comp["pl_ropts"];
-        // console.log(rdata);
 
         if (inv_perc !== inv_p) {
             swap_sides();
         }
-        // console.log(inv_perc);
         // pl_ropts = [0,0,0,0,0,0,0,0,0,0];
         rdict = [{}, {}];
         for (i = 0; i < 5; i++) {
@@ -617,10 +617,7 @@ $( function() {
                 var pl_i = plph_occupancy[plph_id];
                 var rd = clone_2d_arr(rdata[old_pl_i]);
                 // var rd = rdata[old_pl_i].slice();
-                // console.log(rd[team_li], rd[cid_li]);
-                // console.log(rd, old_pl_i);
                 req_data[pl_i] = rd;
-                // console.log(req_data[pl_i]);
                 var ropt = ropts[old_pl_i];
                 pl_ropts[pl_i] = ropt;
                 var pl = $( "#pl_" + pl_i );
@@ -664,10 +661,7 @@ $( function() {
         $( "#status_area" ).fadeOut(status_fade_duration);
         $( "#perc_text" ).css("color", "#999");
         // req_data = clone_2d_arr(req_data);
-        // console.log(req_data);
-        // console.log(clone_2d_arr(req_data));
         auto_assign_roles();
-        // console.log(req_data);
         // setTimeout(request_curr_pred, 0);
     };
 
@@ -732,20 +726,37 @@ $( function() {
     $( "#status_area" ).css('visibility', 'visible');
     $( "#perc_warning_symb" ).css('visibility', 'visible');
     $( "#share_area" ).css('visibility', 'visible');
+    $( "#champions_perc_area" ).css('visibility', 'visible');
+    $( "#summoners_perc_area" ).css('visibility', 'visible');
     var receive_curr_pred = function(res, status) {
         // res = JSON.parse(res); // Already parsed because content type = application/json
-        // console.log(res);
         var perc = curr_perc;
+        var perc_ch = curr_perc_ch;
+        var perc_pl = curr_perc_pl;
+        var got_perc_ch = false;
+        var got_perc_pl = false;
         if (status === "success") {
             var req_i = res[3];
             // if (req_i >= curr_req_disp) {
             // if (req_i >= curr_req_i - 5) {
             if (req_i >= curr_req_i - 1) {
                 perc = res[0];
+                perc_ch = res[1];
+                perc_pl = res[2];
+                if (perc_ch !== -1) {
+                    got_perc_ch = true;
+                }
+                if (perc_pl !== -1) {
+                    got_perc_pl = true;
+                }
                 if (inv_perc) {
                     perc = 100.0 - perc;
+                    perc_ch = 100.0 - perc_ch;
+                    perc_pl = 100.0 - perc_pl;
                 }
                 // curr_req_disp = req_i;
+            } else {
+                return;
             }
         } else {
             console.log("Request failed with status: " + status);
@@ -792,35 +803,167 @@ $( function() {
             }
         }
 
+        if (got_perc_ch) {
+            if (!disp_champs_perc) {
+                $( "#champions_perc_area" ).fadeIn();
+                disp_champs_perc = true;
+            }
+        } else {
+            if (disp_champs_perc) {
+                $( "#champions_perc_area" ).fadeOut();
+                disp_champs_perc = false;
+            }
+        }
+        if (got_perc_pl) {
+            if (!disp_summs_perc) {
+                $( "#summoners_perc_area" ).fadeIn();
+                disp_summs_perc = true;
+            }
+        } else {
+            if (disp_summs_perc) {
+                $( "#summoners_perc_area" ).fadeOut();
+                disp_summs_perc = false;
+            }
+        }
+
         var prev_perc = curr_perc;
+        var prev_perc_ch = curr_perc_ch;
+        var prev_perc_pl = curr_perc_pl;
         curr_perc = perc;
+        curr_perc_ch = perc_ch;
+        curr_perc_pl = perc_pl;
         var perc_delta = curr_perc - prev_perc;
+        var perc_delta_ch = curr_perc_ch - prev_perc_ch;
+        var perc_delta_pl = curr_perc_pl - prev_perc_pl;
         var perc_delta_abs = Math.abs(perc_delta);
-        // console.log(perc)
+        var perc_delta_abs_ch = Math.abs(perc_delta_ch);
+        var perc_delta_abs_pl = Math.abs(perc_delta_pl);
         // $( "#perc_text" ).html(perc);
 
+        const warning_threshold = 49.5;
         if (perc_delta_abs > 0) {
             anim_t = ((Math.min(perc_delta_abs, 50) / 50) * 1000) + 300;
 
             // Figure out whether to display enemy (winning) percentage
             var disp_enemy_p = disp_winning_p && perc < 50.0;
+            var disp_enemy_p_ch = disp_winning_p && perc_ch < 50.0;
+            var disp_enemy_p_pl = disp_winning_p && perc_pl < 50.0;
             var number = disp_enemy_p ? 100.0 - perc : perc;
+            var number_ch = disp_enemy_p_ch ? 100.0 - perc_ch : perc_ch;
+            var number_pl = disp_enemy_p_pl ? 100.0 - perc_pl : perc_pl;
             var prev_disp_enemy_p = disp_winning_p && prev_perc < 50.0;
+            var prev_disp_enemy_p_ch = disp_winning_p && prev_perc_ch < 50.0;
+            var prev_disp_enemy_p_pl = disp_winning_p && prev_perc_pl < 50.0;
             var prev_number = prev_disp_enemy_p ? 100.0 - prev_perc : prev_perc;
+            var prev_number_ch = prev_disp_enemy_p_ch ? 100.0 - prev_perc_ch : prev_perc_ch;
+            var prev_number_pl = prev_disp_enemy_p_pl ? 100.0 - prev_perc_pl : prev_perc_pl;
 
-            first_t = (Math.abs(50 - prev_number) / perc_delta_abs) * anim_t;
-            second_t = (Math.abs(50 - number) / perc_delta_abs) * anim_t;
+            var first_t = (Math.abs(50 - prev_number) / perc_delta_abs) * anim_t;
+            var first_t_ch = (Math.abs(50 - prev_number_ch) / perc_delta_abs_ch) * anim_t;
+            var first_t_pl = (Math.abs(50 - prev_number_pl) / perc_delta_abs_pl) * anim_t;
+            var second_t = (Math.abs(50 - number) / perc_delta_abs) * anim_t;
+            var second_t_ch = (Math.abs(50 - number_ch) / perc_delta_abs_ch) * anim_t;
+            var second_t_pl = (Math.abs(50 - number_pl) / perc_delta_abs_pl) * anim_t;
 
             var switching_sides = 
                ((disp_winning_p && disp_enemy_p && prev_perc >= 50.0) ||
                 (disp_winning_p && (!disp_enemy_p) && prev_perc < 50.0));
+            var switching_sides_ch = 
+               ((disp_winning_p && disp_enemy_p_ch && prev_perc_ch >= 50.0) ||
+                (disp_winning_p && (!disp_enemy_p_ch) && prev_perc_ch < 50.0));
+            var switching_sides_pl = 
+               ((disp_winning_p && disp_enemy_p_pl && prev_perc_pl >= 50.0) ||
+                (disp_winning_p && (!disp_enemy_p_pl) && prev_perc_pl < 50.0));
 
             setTimeout(function() {
                 $( "#res_team_col" ).html(disp_enemy_p ? right_col : left_col);
                 $( "#res_team_col" ).css('color', disp_enemy_p ? right_text_col : left_text_col);
+                $( "#perc_text" ).css('text-shadow', disp_enemy_p ? right_ptxt_shadow_col : left_ptxt_shadow_col)
+                $( "#perc_symb" ).css('text-shadow', disp_enemy_p ? right_ptxt_shadow_col : left_ptxt_shadow_col)
             }, switching_sides ? first_t * 0.92 : anim_t / 2);
+            if (got_perc_ch) {
+                setTimeout(function() {
+                    $( "#champions_perc_team_col" ).html(disp_enemy_p_ch ? right_col : left_col);
+                    $( "#champions_perc_team_col" ).css('color', disp_enemy_p_ch ? right_text_col : left_text_col);
+                    $( "#champions_perc_team_col" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+                    $( "#champions_perc" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+                    $( "#champions_perc_symb" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+                }, switching_sides_ch ? first_t_ch * 0.92 : anim_t / 2);
+                if (perc_ch < warning_threshold && prev_perc_ch >= warning_threshold) {
+                    $( "#champions_perc_warning_symb" ).fadeIn();
+                } else if(perc_ch >= warning_threshold && prev_perc_ch < warning_threshold) {
+                    $( "#champions_perc_warning_symb" ).fadeOut();
+                }
+                if (switching_sides_ch) {
+                    // Animate the first half
+                    $( "#champions_perc" ).prop('number', prev_number_ch).animateNumber({
+                            number: 50,
+                        },
+                        first_t_ch * 0.92,
+                        'linear',
+                    );
+                    // and then the second
+                    $( "#champions_perc" ).prop('number', 50).animateNumber({
+                            number: Math.round(number_ch),
+                        },
+                        second_t * 0.92,
+                        'linear',
+                    );
+                } else {
+                    // else the whole thing as one
+                    $( "#champions_perc" ).prop('number', prev_number_ch).animateNumber({
+                            number: Math.round(number_ch),
+                        },
+                        anim_t,
+                        'linear',
+                    );
+                }
+                var new_deg_ch = 270 + ((180 * ((100 - perc_ch) / 100)) - 90);
+                animateRotate($( "#champions_perc_meter" ), curr_deg_ch, new_deg_ch, anim_t, null);
+                curr_deg_ch = new_deg_ch;
+            }
+            if (got_perc_pl) {
+                setTimeout(function() {
+                    $( "#summoners_perc_team_col" ).html(disp_enemy_p_pl ? right_col : left_col);
+                    $( "#summoners_perc_team_col" ).css('color', disp_enemy_p_pl ? right_text_col : left_text_col);
+                    $( "#summoners_perc_team_col" ).css('text-shadow', disp_enemy_p_pl ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+                    $( "#summoners_perc" ).css('text-shadow', disp_enemy_p_pl ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+                    $( "#summoners_perc_symb" ).css('text-shadow', disp_enemy_p_pl ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+                }, switching_sides_pl ? first_t_pl * 0.92 : anim_t / 2);
+                if (perc_pl < warning_threshold && prev_perc_pl >= warning_threshold) {
+                    $( "#summoners_perc_warning_symb" ).fadeIn();
+                } else if(perc_pl >= warning_threshold && prev_perc_pl < warning_threshold) {
+                    $( "#summoners_perc_warning_symb" ).fadeOut();
+                }
+                if (switching_sides_pl) {
+                    // Animate the first half
+                    $( "#summoners_perc" ).prop('number', prev_number_pl).animateNumber({
+                            number: 50,
+                        },
+                        first_t_pl * 0.92,
+                        'linear',
+                    );
+                    // and then the second
+                    $( "#summoners_perc" ).prop('number', 50).animateNumber({
+                            number: Math.round(number_pl),
+                        },
+                        second_t_pl * 0.92,
+                        'linear',
+                    );
+                } else {
+                    // else the whole thing as one
+                    $( "#summoners_perc" ).prop('number', prev_number_pl).animateNumber({
+                            number: Math.round(number_pl),
+                        },
+                        anim_t,
+                        'linear',
+                    );
+                }
+                var new_deg_pl = 270 + ((180 * ((100 - perc_pl) / 100)) - 90);
+                animateRotate($( "#summoners_perc_meter" ), curr_deg_pl, new_deg_pl, anim_t, null);
+                curr_deg_pl = new_deg_pl;
+            }
 
-            warning_threshold = 49.5;
             if (perc < warning_threshold && prev_perc >= warning_threshold) {
                 $( "#perc_warning_symb" ).fadeIn();
             } else if(perc >= warning_threshold && prev_perc < warning_threshold) {
@@ -837,7 +980,7 @@ $( function() {
                     first_t * 0.92,
                     'linear',
                 );
-                // And then the second
+                // and then the second
                 $( "#perc_text" ).prop('number', 50).animateNumber({
                         number: Math.round(number),
                     },
@@ -845,7 +988,7 @@ $( function() {
                     'linear',
                 );
             } else {
-                // And then the whole thing as one
+                // else the whole thing as one
                 $( "#perc_text" ).prop('number', prev_number).animateNumber({
                         number: Math.round(number),
                     },
@@ -888,8 +1031,6 @@ $( function() {
                 continue;
             }
             code = res[4][pl_indices_inv[i]];
-            // console.log(res)
-            // console.log(pl_indices_inv[i])
             if (code == -1) {
                 $( "#pl_" + i ).find( ".pl_status_text" ).html("");
             } else if (code == 404) {
@@ -978,7 +1119,6 @@ $( function() {
                   (req_data[pl_i][team_li] === 1 && left_col == "red")) {
                 side = 0;
             }
-            // console.log(side);
             // If previously we had an actual role selected
             if (prev_ropt > 0) {
                 rdict[side][prev_role] = -1;
@@ -986,13 +1126,9 @@ $( function() {
             // If user selected an actual role (not auto assign)
             if (ropt > 0) {
                 // pl_roles[pl_i] = role;
-                // console.log(pl_i);
-                // console.log("HERE " + role);
                 req_data[pl_i][role_li] = role;
                 
                 prev_pl_i = rdict[side][role];
-                // console.log(pl_i);
-                // console.log(prev_pl_i);
                 rdict[side][role] = pl_i;
                 if (prev_pl_i !== -1) { // If the role was previously taken
                     if (prev_role >= 0) { // If this player previously had a role
@@ -1120,7 +1256,6 @@ $( function() {
         $( "#perc_text" ).css("color", "#999");
         $( "#perc_warning_symb" ).fadeOut();
         $( "#status_area" ).fadeOut(status_fade_duration);
-        // console.log(req_data);
         reset_everything();
     });
 
@@ -1301,7 +1436,6 @@ $( function() {
         var dropdown_elem = $( ".search_dropdown" );
         // dropdown_elem.toggleClass("show");
         dropdown_elem.addClass("hide");
-        // console.log(evt)
 
         // At this point, set the new champion id & image
         var sel_ind = $(this)[0].selectedIndex;
@@ -1357,7 +1491,6 @@ $( function() {
     });
     // Search dropdown and document click triggers for deciding to open next player's dropdown
     $( '.search_dropdown' ).click( function (e) {
-        // console.log("THIS");
         e.stopPropagation(); // Stop click event from propagating to the container
         // last_sd_click = true;
         // setTimeout(function() {
@@ -1365,7 +1498,6 @@ $( function() {
         // }, 200);
     });
     $( '.search_dropdown' ).mousedown( function (e) {
-        // console.log("THIS");
         e.stopPropagation(); // Stop click event from propagating to the container
         // last_sd_click = true;
         // setTimeout(function() {
@@ -1373,7 +1505,6 @@ $( function() {
         // }, 200);
     });
     $( '.search_dropdown' ).mouseup( function (e) {
-        // console.log("THIS");
         e.stopPropagation(); // Stop click event from propagating to the container
         // last_sd_click = true;
         // setTimeout(function() {
@@ -1381,12 +1512,10 @@ $( function() {
         // }, 200);
     });
     $( document ).mousedown( function (e) {
-        // console.log("DOC DOWN");
         var d = new Date();
         last_doc_click = d.getTime();
     });
     $( document ).mouseup( function (e) {
-        // console.log("DOC UP");
         var d = new Date();
         last_doc_click = d.getTime();
     });
@@ -1559,7 +1688,6 @@ $( function() {
         }
         var jtr = joined_lobby_strs[region];
         if (inp.indexOf(jtr) === -1) {
-            // console.log("no jtr found: " + jtr);
 
             for (i = 0; i < region_strs.length; i++) {
                 jtr = joined_lobby_strs[i];

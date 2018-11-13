@@ -363,10 +363,10 @@ label {
     visibility: hidden;
 }
 #summoners_perc_warning_symb {
-    visibility: hidden;
+    /*visibility: hidden;*/
 }
 #champions_perc_warning_symb {
-    visibility: hidden;
+    /*visibility: hidden;*/
 }
 .p_warning_symb {
     position: absolute;
@@ -449,12 +449,19 @@ label {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
     /*text-shadow: 0px 0px 5px #004, 0px 0px 10px #004, 0px 0px 20px #004, 0px 0px 20px #004;*/
+    /*text-shadow: 0px 0px 5px #400, 0px 0px 10px #400,0px 0px 20px #400;*/
     text-shadow: 0px 0px 5px #004, 0px 0px 10px #004,0px 0px 20px #004;
     letter-spacing: 0.5px;
     /*color: rgba(255, 255, 255, 0.94);*/
 }
 #res_team_col {
     color: #ddddff;
+}
+#champions_perc_team_col {
+    color: #ddddff;    
+}
+#summoners_perc_team_col {
+    color: #ddddff;    
 }
 #perc_text {
     z-index: 1000;
@@ -464,6 +471,7 @@ label {
     line-height: 17px;
     /*text-shadow: 0px 0px 5px #004, 0px 0px 5px #004, 0px 0px 10px #004,*/
         /*0px 0px 10px #004, 0px 0px 20px #004, 0px 0px 20px #004, 0px 0px 50px #004;*/
+    /*text-shadow: 0px 0px 5px #300, 0px 0px 10px #300, 0px 0px 20px #300, 0px 0px 50px #300, 0px 0px 50px #300;*/
     text-shadow: 0px 0px 5px #004, 0px 0px 10px #004, 0px 0px 20px #004, 0px 0px 50px #004, 0px 0px 50px #004;
 }
 #perc_symb {
@@ -588,22 +596,23 @@ label {
     left: 40.3%;
     width: 141px;
     height: 80px;
-    background-color: rgba(55, 55, 55, 0.6);
+    background-color: rgba(0, 0, 0, 0.25);
     border-radius: 5px;
     box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.3);
     /*box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.7), 0px 0px 3px rgba(255, 255, 255, 0.7);*/
 }
 #summoners_perc_area {
     top: 266px;
-    /*visibility: hidden;*/
+    visibility: hidden;
 }
 #champions_perc_area {
     top: 181px;
-    /*visibility: hidden;*/
+    visibility: hidden;
 }
 .j_perc_above_text {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
+    text-shadow: 0px 0px 2px #000, 0px 0px 5px #000;
     display: block;
     top: 1px;
     width: 100%;
@@ -617,6 +626,7 @@ label {
 .j_perc_below_text {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
+    text-shadow: 0px 0px 2px #000, 0px 0px 5px #000;
     top: 60px;
     width: 100%;
     position: relative;
@@ -712,6 +722,14 @@ label {
     /*text-shadow: 0px 0px 5px #005, 0px 0px 5px #005, 0px 0px 10px #005,*/
         /*0px 0px 10px #005;*/
     text-shadow: 0px 0px 5px #005, 0px 0px 10px #005;
+}
+
+.orb_shift {
+    position: absolute;
+    top: -13px;
+    left: -23px;
+    transform: scale(0.85);
+    opacity: 0.75;
 }
 
 .orb_load_ring {
@@ -1453,7 +1471,7 @@ label {
 }
 #options_inner_area {
     display: block;
-    width: 270px;
+    width: 130px;
     height: 100%;
     margin-left: auto;
     margin-right: auto;
