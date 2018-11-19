@@ -7,13 +7,26 @@ function parseBool(value, defaultValue) {
     return (value == 'true' || value == 'false' || value === true || value === false) && JSON.parse(value) || defaultValue;
 }
 
+function randomString(length, chars) {
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+    return result;
+}
+
+function generateUuid() {
+    // return Math.random().toString().slice(2) +
+    //        Math.random().toString().slice(2) +
+    //        Math.random().toString().slice(2);
+    return randomString(32, '0123456789abcdefghijklmnopqrstuvwxyz');
+}
+
 var clone_2d_arr = function(arr) {
-    // var res = [];
-    // for (i = 0; i < arr.length; i++) {
-    //     res[i] = arr[i].slice();
-    // }
-    // return res;
-    return JSON.parse(JSON.stringify(arr));
+    var res = [];
+    for (var i = 0; i < arr.length; i++) {
+        res[i] = arr[i].slice();
+    }
+    return res;
+    // return JSON.parse(JSON.stringify(arr));
 };
 
 const conv_name = function(name) {
@@ -26,10 +39,14 @@ const conv_name = function(name) {
 
 // Constants
 
-// const hostn = "http://lorb.gg/";
-const hostn = "http://192.168.0.18:8080/";
+// const hostn = "http://lorb.gg";
+// const hostn = "http://192.168.0.18:8080";
+const hostn = "http://" + document.location.hostname;
 const status_fade_duration = 300;
 const refresh_sleep_time = (7 + 1) * 1000;
+const cached_lifespan = 60 * 5 * 1000;
+
+const session_id = generateUuid();
 
 // joined the lobby strings
 const region_strs = [
@@ -59,6 +76,23 @@ const joined_lobby_strs = [
     " joined the lobby",
 ]
 
+const date_form = { 'weekday': 'long', 'year': 'numeric', 'month': 'long', 'day': 'numeric' };
+const time_form = { 'hour': 'numeric', 'minute': '2-digit', 'hour12': true };
+
+const team_li = 0; // Indexes of each feature in req_data
+const role_li = 1;
+const cid_li = 2;
+const name_li = 3;
+
+const ch_cid_li = 0; // Indexes of each feature in champ_list
+const ch_id_li = 1;
+const ch_name_li = 2;
+
+
+// Globals
+
+var request_cache = {};
+
 
 // App
 $( function() {
@@ -72,8 +106,13 @@ $( function() {
     $( "#summoners_perc_warning_symb" ).fadeOut(0);
     $( "#champions_perc_area" ).fadeOut(0);
     $( "#summoners_perc_area" ).fadeOut(0);
+    $( "#recc_cont" ).fadeOut(0);
+    $( "#timestamp_area" ).fadeOut(0);
+    // $( "#recc_outer_area" ).fadeOut(0);
+    // $( ".recc_button" ).fadeOut(0);
 
     var showing_share = false;
+    var ts_area_vis = false;
 
     // $( "#elo_info" ).tooltip({ // Setup tooltip(s)
     //     position: { my: "right top", at: "left bottom", collision: "none", },
@@ -104,6 +143,20 @@ $( function() {
             console.log(err);
         }
     }
+    var reg_str = $( "#region_select :selected" ).val();
+
+    // Set average elo from cookie
+    var avg_elo = 0;
+    var elo_ind_ck = Cookies.get('elo_index');
+    if (typeof elo_ind_ck != 'undefined') {
+        try {
+            elo_ind_ck = parseInt(elo_ind_ck);
+            avg_elo = elo_ind_ck;
+            $( "#elo_select" )[0].selectedIndex = avg_elo;
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
     var disp_winning_p = true;
     var disp_winning_p_ck = Cookies.get('disp_winning_p');
@@ -126,30 +179,30 @@ $( function() {
     var role_aa_order = data["role_fill_order"]; // Order in which to auto assign roles
     var champ_role_is_ordered = data["champ_role_is_ordered"]; // Champion role frequency orderings
 
-    var ch_cid_li = 0; // Indexes of each feature in champ_list
-    var ch_id_li = 1;
-    var ch_name_li = 2;
-
     // Create dictionary from indexes to cids
     var champ_ind_dict = {};
-    for (i = 0; i < champ_list.length; i++) {
+    for (var i = 0; i < champ_list.length; i++) {
         champ_ind_dict[champ_list[i][ch_cid_li]] = i;
     }
 
     var ddrag_ver = "8.20.1";
     var ddrag_url = "https://ddragon.leagueoflegends.com/cdn/" + ddrag_ver + "/img/champion/";
     var none_champ_img = "imgs/none_champ.png";
-    var roles_opts = ['auto assign', 'top', 'jungle', 'mid', 'support', 'bottom'];
+    var roles_opts_lower = ['auto assign', 'top', 'jungle', 'mid', 'support', 'bottom'];
+    var roles_opts = [roles_opts_lower[0]];
     for (i = 1; i < 6; i++) {
-        roles_opts[i] = roles_opts[i].toUpperCase();
+        roles_opts[i] = roles_opts_lower[i].toUpperCase();
     }
 
-    // Champion grid element
+    // Champion grid element (also do pick recommendation content)
     var grid_content = '';
-    for (i = 0; i < champ_list.length; i++) {
+    var recc_content = '';
+    for (var i = 0; i < champ_list.length; i++) {
         var img_url = none_champ_img;
+        var cid = champ_list[i][ch_cid_li];
+        var ch_id = champ_list[i][ch_id_li];
         if (i > 0) {
-            img_url = ddrag_url + champ_list[i][ch_id_li] + '.png';
+            img_url = ddrag_url + ch_id + '.png';
         }
         var c_name = champ_list[i][ch_name_li];
         if (c_name.slice(0, 4) == "None") {
@@ -171,20 +224,31 @@ $( function() {
             '\');" height="60" width="60" class="grid_img" id="grid_img_' + i + '">' + 
             '<span ' + extra_style + 'class="grid_img_text" id="grid_img_text_' + i + '">' +
              c_name + '</span></button>';
+
+        // Pick recommendation box content
+        if (i > 0) {
+            recc_content += '<div id="recc_ch_' + cid + '" class="recc_champion recc_champion_ch" cid_i="' + i + '" ' + 
+                'style="top: ' + (18 * (i - 1)) + 'px;">' +
+                '<div class="recc_thumb" style="background-image: url(\'' + img_url + '\');"></div>' +
+                '<div class="recc_name">' + c_name + '</div>' +
+                '<div id="recc_ch_' + cid + '_perc" class="recc_perc">99.9%</div>' +
+                '</div>';
+            recc_content += '<div id="recc_pl_' + cid + '" class="recc_champion recc_champion_pl" cid_i="' + i + '" ' + 
+                'style="top: ' + (18 * (i - 1)) + 'px;">' +
+                '<div class="recc_thumb" style="background-image: url(\'' + img_url + '\');"></div>' +
+                '<div class="recc_name">' + c_name + '</div>' +
+                '<div id="recc_pl_' + cid + '_perc" class="recc_perc">99.9%</div>' +
+                '</div>';
+        }
     }
-    $("body").append($('<div id="champion_grid_cont"><div id="champion_grid">' +
+    $( "body" ).append($('<div id="champion_grid_cont"><div id="champion_grid">' +
         grid_content + '</div></div>'));
+    $( "#recc_inner_area" ).html(recc_content);
 
     // Data
-    var avg_elo = 0;
-
-    const team_li = 0; // Indexes of each feature in req_data
-    const role_li = 1;
-    const cid_li = 2;
-    const name_li = 3;
-
     // var pl_roles = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]; // Stores actual roles (0 - 4 inclusive)
-    var req_data_init = [
+    // var req_data_init = [
+    var req_data = [
         [ 0, 0, -1, -1 ],
         [ 0, 1, -1, -1 ],
         [ 0, 2, -1, -1 ],
@@ -196,6 +260,10 @@ $( function() {
         [ 1, 3, -1, -1 ],
         [ 1, 4, -1, -1 ],
     ];
+    // var req_data = [];
+    var last_preq_hash = null;
+    var last_preq_recc_hash = null;
+
     var curr_req_i = 0;
     var curr_perc = 50;
     var curr_perc_ch = 50;
@@ -213,18 +281,20 @@ $( function() {
     var selected_ch_indices; // Selected champion list indices for each pl
     var disp_champs_perc = false;
     var disp_summs_perc = false;
-    // var curr_req_disp = 0;
+    var curr_req_disp = 999;
 
-    var req_data = [];
     var rq_data = [];
     var pl_ropts = [];
     var rdict = [];
     var initialise_vars = function() {
-        var thing = clone_2d_arr(req_data_init);
-        req_data = thing;
+        // req_data = clone_2d_arr(req_data_init);
         pl_ropts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        rdict = [{}, {}];
-        for (i = 0; i < 5; i++) {
+        rdict = [[], []];
+        for (var i = 0; i < 5; i++) {
+            req_data[i][cid_li] = -1;
+            req_data[i][name_li] = -1;
+            req_data[i + 5][cid_li] = -1;
+            req_data[i + 5][name_li] = -1;
             rdict[0][i] = -1;
             rdict[1][i] = -1;
         }
@@ -259,22 +329,22 @@ $( function() {
         '<button class="search_button"></button></div>' + 
         '<div class="champion_box"></div>' + 
         '<div class="role_cont"><select class="role_select">';
-    for (i = 0; i < 6; i++) {
+    for (var i = 0; i < 6; i++) {
         pl_inner += '<option value=' + i + ' class="role_option role_option_' + i + '">' + roles_opts[i] + '</option>';
     }
-    reg_str = $( "#region_select :selected" ).val();
     pl_inner += '</select></div>' +
-        '<div class="name_cont">' + 
+        '<button class="recc_button">&#128161;</button>' +
+        '<div class="name_cont">' +
         '<input type="text" placeholder="enter summoner" class="name_input" value=""></input>' +
         // '<div class="name_clear">&#128465;</div>' +
         '<div class="name_clear"><div class="cross"></div></div>' +
-        '<button class="name_submit"></button></div>' +
+        // '<button class="name_submit"></button></div>' +
         '<div class="pl_status_text"></div>' + 
         '<div class="pl_opgg_link"><a class="pl_opgg_link_a" href="" target="_blank"></a></div>' +
         '';
 
     // Create left side player objects, and all player placeholders
-    for (i = 0; i < 5; i++) {
+    for (var i = 0; i < 5; i++) {
         $( "#pl_area" ).append($('<div id="pl_' + i + '" class="pl pl_obj pl_w_obj" plph_id="plph_l_' +
             i + '">' + pl_inner + '</div>'));
         plph_occupancy['plph_l_' + i] = i;
@@ -302,7 +372,7 @@ $( function() {
     // Define champion search dropdown box
     var search_dropdown_inner = '<div class="search_dropdown">' +
         '<select data-placeholder="None [unknown]" class="chosen-select search_select" tabindex="1">';
-    for (i = 0; i < champ_list.length; i++) {
+    for (var i = 0; i < champ_list.length; i++) {
         ch = champ_list[i];
         search_dropdown_inner += '<option value="' + ch[ch_cid_li] + '">' + ch[ch_name_li] + '</option>';
     }
@@ -316,13 +386,13 @@ $( function() {
     var left_text_col = "#ddddff";
     var left_text_col_l = "#636bff";
     var left_ptxt_shadow_col = 
-        "0px 0px 5px #004, 0px 0px 10px #004, 0px 0px 20px #004, 0px 0px 50px #004, 0px 0px 50px #004";
+        "0px 0px 5px #004, 0px 0px 10px #004, 0px 0px 20px #004, 0px 0px 30px #004";//, 0px 0px 50px #004, 0px 0px 50px #004";
     // var left_text_col = "#66ccff";
     var right_col = "red";
     var right_text_col = "#ffb3b3";
     var right_text_col_l = "#ff5959";
     var right_ptxt_shadow_col = 
-        "0px 0px 5px #300, 0px 0px 10px #300, 0px 0px 20px #300, 0px 0px 50px #300, 0px 0px 50px #300";
+        "0px 0px 5px #300, 0px 0px 10px #300, 0px 0px 20px #300, 0px 0px 30px #300";//, 0px 0px 50px #300, 0px 0px 50px #300";
     $( "#l_team_col_text" ).html(left_col);
     $( "#l_team_col_text" ).css("color", left_text_col_l);
     $( "#r_team_col_text" ).html(right_col);
@@ -334,6 +404,7 @@ $( function() {
     $( "#summoners_perc_team_col" ).html(left_col)
     $( "#summoners_perc_team_col" ).css('color', left_text_col);
     $( "#perc_text" ).css('text-shadow', left_ptxt_shadow_col)
+    $( "#win_text" ).css('text-shadow', left_ptxt_shadow_col)
     $( "#champions_perc_team_col" ).css('text-shadow', left_ptxt_shadow_col)
     $( "#summoners_perc_team_col" ).css('text-shadow', left_ptxt_shadow_col)
     $( "#champions_perc" ).css('text-shadow', left_ptxt_shadow_col)
@@ -357,6 +428,7 @@ $( function() {
         $( "#summoners_perc_team_col" ).html(left_col)
         $( "#summoners_perc_team_col" ).css('color', left_text_col);
         $( "#perc_text" ).css('text-shadow', left_ptxt_shadow_col)
+        $( "#win_text" ).css('text-shadow', left_ptxt_shadow_col)
         $( "#champions_perc_team_col" ).css('text-shadow', left_ptxt_shadow_col)
         $( "#summoners_perc_team_col" ).css('text-shadow', left_ptxt_shadow_col)
         $( "#champions_perc" ).css('text-shadow', left_ptxt_shadow_col)
@@ -371,7 +443,7 @@ $( function() {
     $( "#switch_cols_button" ).click(function() {
         swap_sides();
         // Change request data values
-        for (i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
             req_data[i][team_li] = 1 - req_data[i][team_li];
         }
         setTimeout(request_curr_pred, 0);
@@ -382,7 +454,7 @@ $( function() {
             pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).html('');
             return;
         }
-        opgg_link = "http://" + reg_str + ".op.gg/summoner/userName=" + name;
+        const opgg_link = "http://" + reg_str + ".op.gg/summoner/userName=" + name;
         pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).attr('href', opgg_link);
         pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).html('op.gg');
     };
@@ -403,7 +475,7 @@ $( function() {
             var aa_roles = {};
             var champions = {};
             var no_champs_pls = {};
-            for (j = 0; j < 5; j++) {
+            for (var j = 0; j < 5; j++) {
                 var pl_i = plph_occupancy["plph_" + side_char + '_' + j];
                 if (pl_ropts[pl_i] === 0) {
                     var cid = req_data[pl_i][cid_li];
@@ -418,8 +490,8 @@ $( function() {
                 }
             }
             j = 0;
-            champion_inds_mins = [];
-            ch_keys = Object.keys(champions);
+            var champion_inds_mins = [];
+            var ch_keys = Object.keys(champions);
             for (cid in ch_keys) {
                 // cid = parseInt(cid);
                 champion_inds_mins[j] = Math.min(champ_role_is_ordered[cid]);
@@ -429,14 +501,14 @@ $( function() {
                 .sort(([count1], [count2]) => count1 - count2)
                 .map(([, item]) => item);
             for (let cid of sorted_cids) {
-                ris = Object.keys(aa_roles);
+                var ris = Object.keys(aa_roles);
                 ris = ris
                     .map((item, j) => [champ_role_is_ordered[cid][parseInt(item)], item])
                     .sort(([count1], [count2]) => count1 - count2)
                     .map(([, item]) => item);
-                role = ris[0];
+                var role = ris[0];
 
-                pl_i = champions[cid];
+                var pl_i = champions[cid];
                 delete champions[cid];
                 delete aa_roles[role];
                 role = parseInt(role);
@@ -447,7 +519,7 @@ $( function() {
                     ".role_option_0").html(roles_opts[role + 1] + " &nbsp(auto assign)");
             }
             for (var pl_i in no_champs_pls) { // Assign remaining roles in order (no champion info)
-                role = parseInt(Object.keys(aa_roles)[0]);
+                var role = parseInt(Object.keys(aa_roles)[0]);
                 // if (roles_opts[role + 1] == undefined) {
                 // }
                 delete aa_roles[role];
@@ -461,8 +533,13 @@ $( function() {
     };
 
     var reset_everything = function() {
-        Cookies.remove('match_composition');
+        var prev_comp = Cookies.get('match_composition')
+        if (typeof prev_comp != 'undefined') {
+            Cookies.set('match_composition_previous', prev_comp);
+            Cookies.remove('match_composition');
+        }
         $( "#perc_text" ).css("color", "#999");
+        $( ".j_perc" ).css("color", "#999");
         if ((errored || $( "#status_area" ).css("opacity") == 1)) {
             errored = false;
             $( "#status_area" ).fadeOut(status_fade_duration);
@@ -472,13 +549,39 @@ $( function() {
         }
     };
 
-    // Request the prediction for the current data & update the displayed result
-    var request_curr_pred = function() {
-        d = new Date()
-        last_req_t = d.getTime()
-        // Slim request
-        rq_data = [];
-        var rq_i = 0;
+    var prep_req_data = function (rd) {
+
+        for (var team_i = 0; team_i < 2; team_i++) {
+            // var side = team_i === 0 ? (inv_p ? 'r' : 'l') : (inv_p ? 'l' : 'r');
+            var side = team_i === 0 ? 'l' : 'r';
+            var team_i_act = inv_perc ? 1 - team_i : team_i;
+            for (var i = 0; i < 5; i++) {
+                if (rd[plph_occupancy["plph_" + side + '_' + i]][team_li] !== team_i_act) {
+                    console.log("Invalid cookie team, prediction request failed");
+                    console.log(rdict);
+                    console.log(pl_ropts);
+                    console.log(plph_occupancy);
+                    console.log(rd);
+                    console.log(inv_perc);
+                    reset_everything();
+                    var plph_str = '{';
+                    for (key in plph_occupancy) {
+                        plph_str += key + ':' + plph_occupancy[key] + ', ';
+                    }
+                    plph_str += '}';
+                    alert('Fatal error! Heisenbug code-' + 420 +
+                        ', please send a report with details on what you were doing when' + 
+                        ' this box appeared to the monkeys at contact@lorg.gg and give them this information: \n' +
+                        'PLPH: ' + plph_str + '\nRD: ' + rd + "\n" + 
+                        'The page will now refresh. Click undo to restore previous composition.\n' +
+                        'Apologies for any inconvenience caused.');
+                    reset_everything();
+                    window.location.href = "";
+                    return false;
+                }
+            }
+        }
+
         pl_indices = {};
         pl_indices_inv = {};
 
@@ -489,19 +592,21 @@ $( function() {
         var r_fix_roles = [];
         var b_fr_i = 0;
         var r_fr_i = 0;
-        for (i = 0; i < 10; i++) {
-            r = req_data[i][role_li];
-            if (req_data[i][team_li] === 0) {
+        for (var i = 0; i < 10; i++) {
+            r = rd[i][role_li];
+            if (rd[i][team_li] === 0) {
                 if (r in b_roles_taken) {
                     console.log("Fixing duplicate role: " + i + '-' + r);
+                    console.log(pl_ropts, rdict)
                     b_fix_roles[b_fr_i] = i;
                     b_fr_i++;
                 } else {
                     b_roles_taken[r] = i;
                 }
-            } else if (req_data[i][team_li] === 1) {
+            } else if (rd[i][team_li] === 1) {
                 if (r in r_roles_taken) {
                     console.log("Fixing duplicate role: " + i + '-' + r);
+                    console.log(pl_ropts, rdict)
                     r_fix_roles[r_fr_i] = i;
                     r_fr_i++;
                 } else {
@@ -515,60 +620,109 @@ $( function() {
             if (!(ri in b_roles_taken)) {
                 i = b_fix_roles[b_fr_i];
                 b_fr_i++;
-                req_data[i][role_li] = ri;
+                rd[i][role_li] = ri;
                 $( "#pl_" + i ).find(".role_cont").find(".role_select")[0].selectedIndex = ri;
             }
             if (!(ri in r_roles_taken)) {
                 i = r_fix_roles[r_fr_i];
                 r_fr_i++;
-                req_data[i][role_li] = ri;
+                rd[i][role_li] = ri;
                 $( "#pl_" + i ).find(".role_cont").find(".role_select")[0].selectedIndex = ri;
             }
         }
 
-        for (i = 0; i < 10; i++) {
-            name = req_data[i][name_li];
-            if (req_data[i][cid_li] != -1 || name != -1) {
-                rq_data[rq_i] = req_data[i].slice(0, 3);
+        // Reorder
+        var rord = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (var i = 0; i < 10; i++) {
+            rord[(rd[i][team_li] * 5) + rd[i][role_li]] = i;
+        }
+
+        // Slim request
+        var rq_data = [];
+        var rq_i = 0;
+        for (var i = 0; i < 10; i++) {
+            const ord_i = rord[i];
+            const rd_ = rd[ord_i];
+            const name = rd_[name_li];
+            if (rd_[cid_li] != -1 || name != -1) {
+                rq_data[rq_i] = rd_.slice(0, 3);
                 if (name != -1) {
-                    rq_data[rq_i][name_li] = ('' + req_data[i][name_li]).trim().slice(0, 16);
+                    rq_data[rq_i][name_li] = ('' + name).trim().slice(0, 16).toLowerCase();
                 } else {
                     rq_data[rq_i][name_li] = -1;
                 }
-                pl_indices[rq_i] = i;
-                pl_indices_inv[i] = rq_i;
+                pl_indices[rq_i] = ord_i;
+                pl_indices_inv[ord_i] = rq_i;
                 rq_i++;
             }
         }
+        return [rq_data, rq_i];
+    };
+
+    var get_current_comp = function() {
+        return {
+            "data": req_data,
+            "pl_ropts": pl_ropts,
+            "inv_perc": inv_perc,
+            "placeholders": plph_occupancy,
+            "pl_indices": pl_indices,
+            "pl_indices_inv": pl_indices_inv,
+            "region_i": region,
+            "avg_elo_i": avg_elo,
+        };
+    };
+
+    // Request the prediction for the current data & update the displayed result reqcurr
+    var request_curr_pred = function() {
+        var d = new Date();
+        last_req_t = d.getTime();
+
+        var prep_req = prep_req_data(req_data);
+        var rq_data = prep_req[0];
+        var rq_i = prep_req[1];
+        
         reset_pl_statuses();
         if (rq_i == 0) {  // Return if we have no input data
             reset_everything();
             return;
         }
 
-        // Store request data in cookie
-        var new_comp = {
-            "data": req_data,
-            "pl_ropts": pl_ropts,
-            "inv_perc": inv_perc,
-            "placeholders": plph_occupancy,
-        };
-        Cookies.set('match_composition', new_comp);
+        // Store request data in cookie (keep previous cookie for undo button)
+        const curr_comp = get_current_comp();
+        const prev_comp = Cookies.get('match_composition')
+        if (typeof prev_comp != 'undefined') {
+            Cookies.set('match_composition_previous', prev_comp);
+        }
+        Cookies.set('match_composition', curr_comp);
 
-        // var new_url = hostn + "?comp=" + btoa(JSON.stringify(new_comp));
-        // $( "#share_input" ).html(new_url);
-        // $( "#share_suff_text" ).html("");
-        // if (!showing_share) {
-        //     $( "#share_area" ).fadeIn();
-        // }
+        // Disable pick recommendation buttons until we receive response
+        $( ".recc_button" ).css('opacity', 0.5);
+        $( ".recc_button" ).attr('disabled', true);
 
-        // Send request
-        var d = [rq_data, region, avg_elo, curr_req_i];
+        // Set loading symbols
         $( "#perc_text" ).css("color", "#999");
+        $( ".j_perc" ).css("color", "#999");
         $( ".orb_load_ring" ).css("visibility", "visible");
-        var server_url = "http://" + document.location.hostname + ":32077";
+
+        const hash = get_request_hash(rq_data);
+        last_preq_hash = hash;
+        if (hash in request_cache && false) {  // If request cached locally
+            cache_load(hash, receive_res);  // Load from cache
+            curr_req_disp = curr_req_i;
+        } else {
+            // Else send request
+            send_pred_req(rq_data, -1, curr_comp, receive_curr_pred);
+        }
+
         curr_req_i++;
-        $.post(server_url, JSON.stringify(d), receive_curr_pred, "json");
+    };
+
+    var send_pred_req = function(rq_data, shortlink, comp, callback) {
+        var d = [rq_data, region, avg_elo, curr_req_i, session_id, shortlink, comp];
+        var server_url = hostn + ":32077";
+        // var server_url = "http://" + document.location.hostname + ":32077";
+
+        $.post(server_url, JSON.stringify(d), callback, "json");
         // $.ajax({
         //         url: server_url,
         //         data: JSON.stringify(d),
@@ -598,24 +752,52 @@ $( function() {
         var rdata = comp["data"];
         var ropts = comp["pl_ropts"];
 
+
+        // Check team sides make sense
+        for (var team_i = 0; team_i < 2; team_i++) {
+            // var side = team_i === 0 ? (inv_p ? 'r' : 'l') : (inv_p ? 'l' : 'r');
+            var side = team_i === 0 ? 'l' : 'r';
+            var team_i_act = inv_p ? 1 - team_i : team_i;
+            for (var i = 0; i < 5; i++) {
+                if (rdata[ph_occ["plph_" + side + '_' + i]][team_li] !== team_i_act) {
+                    console.log("Invalid cookie team, not loading composition.");
+                    return false;
+                }
+            }
+        }
+
+        if ("pl_indices" in comp) {
+            pl_indices = comp["pl_indices"]
+            pl_indices_inv = comp["pl_indices_inv"]
+        }
+
+        if ("region_i" in comp) {
+            set_region(comp["region_i"]);
+        }
+        if ("avg_elo_i" in comp) {
+            set_avg_elo(comp["avg_elo_i"]);
+        }
+
         if (inv_perc !== inv_p) {
             swap_sides();
         }
+
         // pl_ropts = [0,0,0,0,0,0,0,0,0,0];
-        rdict = [{}, {}];
-        for (i = 0; i < 5; i++) {
+        rdict = [[], []];
+        for (var i = 0; i < 5; i++) {
             rdict[0][i] = -1;
             rdict[1][i] = -1;
         }
 
-        for (team_i = 0; team_i < 2; team_i++) {
+        for (var team_i = 0; team_i < 2; team_i++) {
             // var side = team_i === 0 ? (inv_p ? 'r' : 'l') : (inv_p ? 'l' : 'r');
             var side = team_i === 0 ? 'l' : 'r';
-            for (i = 0; i < 5; i++) {
+            for (var i = 0; i < 5; i++) {
                 var plph_id = "plph_" + side + '_' + i;
                 var old_pl_i = ph_occ[plph_id];
                 var pl_i = plph_occupancy[plph_id];
-                var rd = clone_2d_arr(rdata[old_pl_i]);
+                var rd = rdata[old_pl_i];
+
                 // var rd = rdata[old_pl_i].slice();
                 req_data[pl_i] = rd;
                 var ropt = ropts[old_pl_i];
@@ -660,44 +842,33 @@ $( function() {
         $( "#perc_warning_symb" ).fadeOut();
         $( "#status_area" ).fadeOut(status_fade_duration);
         $( "#perc_text" ).css("color", "#999");
+        $( ".j_perc" ).css("color", "#999");
         // req_data = clone_2d_arr(req_data);
         auto_assign_roles();
         // setTimeout(request_curr_pred, 0);
+        return true;
     };
 
-    // Try to load match composition from current URL or cookie
-    var comp_str = window.location.href.split('?comp=');
-    var url_comp = null;
-    if (comp_str.length > 1) {
-        try {
-            url_comp = JSON.parse(atob(comp_str[1]));
-            load_comp(url_comp);
-            setTimeout(request_curr_pred, 0);
-        } catch (err) {
-            console.log("Error importing from URL: ", err);
-        }
-    }
-    if (url_comp == null) {
-        var comp_cookie = Cookies.getJSON('match_composition');
-        if (typeof comp_cookie != 'undefined') {
-            load_comp(comp_cookie);
-        }
-    }
-
     var reset_pl_statuses = function() {
-        for (i = 0; i < req_data.length; i++) {
+        for (var i = 0; i < req_data.length; i++) {
             var txt = $( "#pl_" + i ).find( ".pl_status_text" );
             if (req_data[i][name_li] == -1) {
                 txt.html("");
                 continue;
             }
-            loadin_str = '<span style="color:#ccc">' + " Loading..." + '</span>'
+            const loadin_str_1 = '<span style="color:#ccc">';
+            const loadin_str_2 = '' + " loading..." + '</span>'
+            var loadin_str = loadin_str_1 + loadin_str_2;
             if (pl_percs[i] !== -1) {
-                existing_txt = txt.html();
-                if (existing_txt.indexOf("Loading...") !== -1) {
+                const existing_txt = txt.html();
+                if (existing_txt.indexOf("loading...") !== -1) {
                     continue;
                 }
-                loadin_str = txt.html() + loadin_str
+                if (existing_txt.indexOf("refreshing...") !== -1) {
+                    loadin_str = existing_txt.slice(0, existing_txt.indexOf("refreshing...")) + loadin_str_2
+                } else {
+                    loadin_str = existing_txt + loadin_str_1 + loadin_str_2
+                }
             }
             txt.html(loadin_str);
         }
@@ -721,86 +892,68 @@ $( function() {
         }
     )};
 
-    var errored = false;
-    var refresh_ts = 0;
-    $( "#status_area" ).css('visibility', 'visible');
-    $( "#perc_warning_symb" ).css('visibility', 'visible');
-    $( "#share_area" ).css('visibility', 'visible');
-    $( "#champions_perc_area" ).css('visibility', 'visible');
-    $( "#summoners_perc_area" ).css('visibility', 'visible');
-    var receive_curr_pred = function(res, status) {
-        // res = JSON.parse(res); // Already parsed because content type = application/json
+    var get_request_hash = function(prep_req) {
+        var d = new Date();
+        const hash_ts = Math.floor(d.getTime() / cached_lifespan);
+        return JSON.stringify([prep_req, region, avg_elo, hash_ts]);
+    };
+
+    var cache_store = function(hash, res) {
+        request_cache[hash] = JSON.stringify(res);
+        setTimeout(function () {
+            delete request_cache[hash];
+        }, cached_lifespan * 1.2);
+    };
+
+    var cache_load = function(hash, callback) {
+        res = JSON.parse(request_cache[hash]);
+        callback(res);
+    };
+
+    var receive_res = function(res) {
+    
         var perc = curr_perc;
         var perc_ch = curr_perc_ch;
         var perc_pl = curr_perc_pl;
         var got_perc_ch = false;
         var got_perc_pl = false;
-        if (status === "success") {
-            var req_i = res[3];
-            // if (req_i >= curr_req_disp) {
-            // if (req_i >= curr_req_i - 5) {
-            if (req_i >= curr_req_i - 1) {
-                perc = res[0];
-                perc_ch = res[1];
-                perc_pl = res[2];
-                if (perc_ch !== -1) {
-                    got_perc_ch = true;
-                }
-                if (perc_pl !== -1) {
-                    got_perc_pl = true;
-                }
-                if (inv_perc) {
-                    perc = 100.0 - perc;
-                    perc_ch = 100.0 - perc_ch;
-                    perc_pl = 100.0 - perc_pl;
-                }
-                // curr_req_disp = req_i;
-            } else {
-                return;
-            }
-        } else {
-            console.log("Request failed with status: " + status);
-            console.log(res)
+        perc = res[0];
+        perc_ch = res[1];
+        perc_pl = res[2];
+        if (perc_ch !== -1) {
+            got_perc_ch = true;
+        }
+        if (perc_pl !== -1) {
+            got_perc_pl = true;
+        }
+        if (inv_perc) {
+            perc = 100.0 - perc;
+            perc_ch = 100.0 - perc_ch;
+            perc_pl = 100.0 - perc_pl;
         }
 
         // Store response summoner percentages
-        pl_ps = res[7];
+        var pl_ps = res[7];
         if (pl_ps instanceof Array) {
-            for (i = 0; i < req_data.length; i++) {
-                rq_i = pl_indices_inv[i];
-                pl_percs[i] = Math.round(pl_ps[rq_i], 1);
+            for (var i = 0; i < req_data.length; i++) {
+                var rq_i = pl_indices_inv[i];
+                var pl_perc = pl_ps[rq_i];
+                if (req_data[i][team_li] === 1) {
+                    pl_perc = 100 - pl_perc;
+                }
+                pl_percs[i] = Math.round(pl_perc);
             }
         }
 
         // Handle summoner request error codes
         handle_summoner_codes(res);
 
-        // Handle whole request error code
-        err_code = res[5];
-        if (err_code !== 200) {
-            if (!handle_error(res, err_code)) {
-                $( ".orb_load_ring" ).css("visibility", "hidden");
-                return;
-            }
-        }
-        if ((errored || $( "#status_area" ).css("opacity") == 1) && err_code === 200) {
-            errored = false;
-            $( "#status_area" ).fadeOut(status_fade_duration);
-        }
-
-        // Send another request in a few seconds if we are refreshing summoners
-        if (res[6] != -1) {
-            refreshes = res[6];
-            for (i = 0; i < req_data.length; i++) {
-                rq_i = pl_indices_inv[i];
-                if (refreshes[rq_i] === true) {
-                    var d = new Date();
-                    refresh_ts = d.getTime();
-                    waiting_for_refresh = curr_req_i;
-                    setTimeout(refresh_request, refresh_sleep_time);
-                    break;
-                }
-            }
+        // Set share link
+        var new_url = hostn + "/?c=" + res[8];
+        $( "#share_input" ).val(new_url);
+        $( "#share_suff_text" ).html("");
+        if (!showing_share) {
+            $( "#share_area" ).fadeIn();
         }
 
         if (got_perc_ch) {
@@ -826,52 +979,52 @@ $( function() {
             }
         }
 
-        var prev_perc = curr_perc;
-        var prev_perc_ch = curr_perc_ch;
-        var prev_perc_pl = curr_perc_pl;
+        const prev_perc = curr_perc;
+        const prev_perc_ch = curr_perc_ch;
+        const prev_perc_pl = curr_perc_pl;
         curr_perc = perc;
         curr_perc_ch = perc_ch;
         curr_perc_pl = perc_pl;
-        var perc_delta = curr_perc - prev_perc;
-        var perc_delta_ch = curr_perc_ch - prev_perc_ch;
-        var perc_delta_pl = curr_perc_pl - prev_perc_pl;
-        var perc_delta_abs = Math.abs(perc_delta);
-        var perc_delta_abs_ch = Math.abs(perc_delta_ch);
-        var perc_delta_abs_pl = Math.abs(perc_delta_pl);
+        const perc_delta = curr_perc - prev_perc;
+        const perc_delta_ch = curr_perc_ch - prev_perc_ch;
+        const perc_delta_pl = curr_perc_pl - prev_perc_pl;
+        const perc_delta_abs = Math.abs(perc_delta);
+        const perc_delta_abs_ch = Math.abs(perc_delta_ch);
+        const perc_delta_abs_pl = Math.abs(perc_delta_pl);
         // $( "#perc_text" ).html(perc);
 
         const warning_threshold = 49.5;
         if (perc_delta_abs > 0) {
-            anim_t = ((Math.min(perc_delta_abs, 50) / 50) * 1000) + 300;
+            const anim_t = ((Math.min(perc_delta_abs, 50) / 50) * 1000) + 300;
 
             // Figure out whether to display enemy (winning) percentage
-            var disp_enemy_p = disp_winning_p && perc < 50.0;
-            var disp_enemy_p_ch = disp_winning_p && perc_ch < 50.0;
-            var disp_enemy_p_pl = disp_winning_p && perc_pl < 50.0;
-            var number = disp_enemy_p ? 100.0 - perc : perc;
-            var number_ch = disp_enemy_p_ch ? 100.0 - perc_ch : perc_ch;
-            var number_pl = disp_enemy_p_pl ? 100.0 - perc_pl : perc_pl;
-            var prev_disp_enemy_p = disp_winning_p && prev_perc < 50.0;
-            var prev_disp_enemy_p_ch = disp_winning_p && prev_perc_ch < 50.0;
-            var prev_disp_enemy_p_pl = disp_winning_p && prev_perc_pl < 50.0;
-            var prev_number = prev_disp_enemy_p ? 100.0 - prev_perc : prev_perc;
-            var prev_number_ch = prev_disp_enemy_p_ch ? 100.0 - prev_perc_ch : prev_perc_ch;
-            var prev_number_pl = prev_disp_enemy_p_pl ? 100.0 - prev_perc_pl : prev_perc_pl;
+            const disp_enemy_p = disp_winning_p && perc < 50.0;
+            const disp_enemy_p_ch = disp_winning_p && perc_ch < 50.0;
+            const disp_enemy_p_pl = disp_winning_p && perc_pl < 50.0;
+            const number = disp_enemy_p ? 100.0 - perc : perc;
+            const number_ch = disp_enemy_p_ch ? 100.0 - perc_ch : perc_ch;
+            const number_pl = disp_enemy_p_pl ? 100.0 - perc_pl : perc_pl;
+            const prev_disp_enemy_p = disp_winning_p && prev_perc < 50.0;
+            const prev_disp_enemy_p_ch = disp_winning_p && prev_perc_ch < 50.0;
+            const prev_disp_enemy_p_pl = disp_winning_p && prev_perc_pl < 50.0;
+            const prev_number = prev_disp_enemy_p ? 100.0 - prev_perc : prev_perc;
+            const prev_number_ch = prev_disp_enemy_p_ch ? 100.0 - prev_perc_ch : prev_perc_ch;
+            const prev_number_pl = prev_disp_enemy_p_pl ? 100.0 - prev_perc_pl : prev_perc_pl;
 
-            var first_t = (Math.abs(50 - prev_number) / perc_delta_abs) * anim_t;
-            var first_t_ch = (Math.abs(50 - prev_number_ch) / perc_delta_abs_ch) * anim_t;
-            var first_t_pl = (Math.abs(50 - prev_number_pl) / perc_delta_abs_pl) * anim_t;
-            var second_t = (Math.abs(50 - number) / perc_delta_abs) * anim_t;
-            var second_t_ch = (Math.abs(50 - number_ch) / perc_delta_abs_ch) * anim_t;
-            var second_t_pl = (Math.abs(50 - number_pl) / perc_delta_abs_pl) * anim_t;
+            const first_t = (Math.abs(50 - prev_number) / perc_delta_abs) * anim_t;
+            const first_t_ch = (Math.abs(50 - prev_number_ch) / perc_delta_abs_ch) * anim_t;
+            const first_t_pl = (Math.abs(50 - prev_number_pl) / perc_delta_abs_pl) * anim_t;
+            const second_t = (Math.abs(50 - number) / perc_delta_abs) * anim_t;
+            const second_t_ch = (Math.abs(50 - number_ch) / perc_delta_abs_ch) * anim_t;
+            const second_t_pl = (Math.abs(50 - number_pl) / perc_delta_abs_pl) * anim_t;
 
-            var switching_sides = 
+            const switching_sides = 
                ((disp_winning_p && disp_enemy_p && prev_perc >= 50.0) ||
                 (disp_winning_p && (!disp_enemy_p) && prev_perc < 50.0));
-            var switching_sides_ch = 
+            const switching_sides_ch = 
                ((disp_winning_p && disp_enemy_p_ch && prev_perc_ch >= 50.0) ||
                 (disp_winning_p && (!disp_enemy_p_ch) && prev_perc_ch < 50.0));
-            var switching_sides_pl = 
+            const switching_sides_pl = 
                ((disp_winning_p && disp_enemy_p_pl && prev_perc_pl >= 50.0) ||
                 (disp_winning_p && (!disp_enemy_p_pl) && prev_perc_pl < 50.0));
 
@@ -879,8 +1032,10 @@ $( function() {
                 $( "#res_team_col" ).html(disp_enemy_p ? right_col : left_col);
                 $( "#res_team_col" ).css('color', disp_enemy_p ? right_text_col : left_text_col);
                 $( "#perc_text" ).css('text-shadow', disp_enemy_p ? right_ptxt_shadow_col : left_ptxt_shadow_col)
+                $( "#win_text" ).css('text-shadow', disp_enemy_p ? right_ptxt_shadow_col : left_ptxt_shadow_col)
                 $( "#perc_symb" ).css('text-shadow', disp_enemy_p ? right_ptxt_shadow_col : left_ptxt_shadow_col)
             }, switching_sides ? first_t * 0.92 : anim_t / 2);
+
             if (got_perc_ch) {
                 setTimeout(function() {
                     $( "#champions_perc_team_col" ).html(disp_enemy_p_ch ? right_col : left_col);
@@ -889,7 +1044,8 @@ $( function() {
                     $( "#champions_perc" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
                     $( "#champions_perc_symb" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
                 }, switching_sides_ch ? first_t_ch * 0.92 : anim_t / 2);
-                if (perc_ch < warning_threshold && prev_perc_ch >= warning_threshold) {
+                // if (perc_ch < warning_threshold && (prev_perc_ch >= warning_threshold)) {
+                if (perc_ch < warning_threshold) {
                     $( "#champions_perc_warning_symb" ).fadeIn();
                 } else if(perc_ch >= warning_threshold && prev_perc_ch < warning_threshold) {
                     $( "#champions_perc_warning_symb" ).fadeOut();
@@ -906,7 +1062,7 @@ $( function() {
                     $( "#champions_perc" ).prop('number', 50).animateNumber({
                             number: Math.round(number_ch),
                         },
-                        second_t * 0.92,
+                        second_t_ch * 0.92,
                         'linear',
                     );
                 } else {
@@ -918,10 +1074,11 @@ $( function() {
                         'linear',
                     );
                 }
-                var new_deg_ch = 270 + ((180 * ((100 - perc_ch) / 100)) - 90);
+                const new_deg_ch = 270 + ((180 * ((100 - perc_ch) / 100)) - 90);
                 animateRotate($( "#champions_perc_meter" ), curr_deg_ch, new_deg_ch, anim_t, null);
                 curr_deg_ch = new_deg_ch;
             }
+
             if (got_perc_pl) {
                 setTimeout(function() {
                     $( "#summoners_perc_team_col" ).html(disp_enemy_p_pl ? right_col : left_col);
@@ -930,7 +1087,8 @@ $( function() {
                     $( "#summoners_perc" ).css('text-shadow', disp_enemy_p_pl ? right_ptxt_shadow_col : left_ptxt_shadow_col);
                     $( "#summoners_perc_symb" ).css('text-shadow', disp_enemy_p_pl ? right_ptxt_shadow_col : left_ptxt_shadow_col);
                 }, switching_sides_pl ? first_t_pl * 0.92 : anim_t / 2);
-                if (perc_pl < warning_threshold && prev_perc_pl >= warning_threshold) {
+                // if (perc_pl < warning_threshold && prev_perc_pl >= warning_threshold) {
+                if (perc_pl < warning_threshold) {
                     $( "#summoners_perc_warning_symb" ).fadeIn();
                 } else if(perc_pl >= warning_threshold && prev_perc_pl < warning_threshold) {
                     $( "#summoners_perc_warning_symb" ).fadeOut();
@@ -959,12 +1117,13 @@ $( function() {
                         'linear',
                     );
                 }
-                var new_deg_pl = 270 + ((180 * ((100 - perc_pl) / 100)) - 90);
+                const new_deg_pl = 270 + ((180 * ((100 - perc_pl) / 100)) - 90);
                 animateRotate($( "#summoners_perc_meter" ), curr_deg_pl, new_deg_pl, anim_t, null);
                 curr_deg_pl = new_deg_pl;
             }
 
-            if (perc < warning_threshold && prev_perc >= warning_threshold) {
+            // if (perc < warning_threshold && prev_perc >= warning_threshold) {
+            if (perc < warning_threshold) {
                 $( "#perc_warning_symb" ).fadeIn();
             } else if(perc >= warning_threshold && prev_perc < warning_threshold) {
                 $( "#perc_warning_symb" ).fadeOut();
@@ -996,51 +1155,163 @@ $( function() {
                     'linear',
                 );
             }
-            var new_deg = 270 + ((180 * ((100 - perc) / 100)) - 90);
+            const new_deg = 270 + ((180 * ((100 - perc) / 100)) - 90);
             animateRotate($( "#perc_meter" ), curr_deg, new_deg, anim_t, null);
             curr_deg = new_deg;
         };
-        if (req_i == curr_req_i - 1) {
-            $( "#perc_text" ).css("color", "#fff");
-            $( ".orb_load_ring" ).css("visibility", "hidden")
-        }
+        // if (req_i == curr_req_i - 1) {
+        $( "#perc_text" ).css("color", "#fff");
+        $( ".j_perc" ).css("color", "#fff");
+        $( ".orb_load_ring" ).css("visibility", "hidden")
+        // }
+        // curr_req_disp = req_i;
     };
-    // Methods to request/receive a prediction for any given data
-    // var request_pred = function(d, reg, elo, callback) {
-    //     return [70, -1, -1];
-    // };
-    // var receive_pred = function(data, status) {
 
-    // };
+    var errored = false;
+    var refresh_ts = 0;
+    $( "#status_area" ).css('visibility', 'visible');
+    $( "#perc_warning_symb" ).css('visibility', 'visible');
+    $( "#share_area" ).css('visibility', 'visible');
+    $( "#champions_perc_area" ).css('visibility', 'visible');
+    $( "#summoners_perc_area" ).css('visibility', 'visible');
+    $( "#recc_cont" ).css('visibility', 'visible');
+    $( "#timestamp_area" ).css('visibility', 'visible');
+    // $( ".recc_button" ).css('visibility', 'visible');
+    var receive_curr_pred = function(res, status) { // reccurr
+
+        // If we're currently loading reccomendations, ignore response
+        if (recc_pl_i !== -1) {
+            return;
+        }
+
+        // res = JSON.parse(res); // Already parsed because content type = application/json
+        var req_i = -1;
+        if (status === "success") {
+            req_i = res[3];
+            // if (req_i >= curr_req_disp) {
+            // if (req_i >= curr_req_i - 5) {
+            if (req_i >= curr_req_i - 1) {
+                // curr_req_disp = req_i;
+            } else {
+                return;
+            }
+        } else {
+            console.log("Request failed with status: " + status);
+            console.log(res);
+        }
+
+        // If request was for a shortlinked game, load composition
+        const shortlink_comp = res[9];
+        if (shortlink_comp != -1) {
+            if (!load_comp(shortlink_comp)) {
+                console.log("Error loading shortlinked composition...");
+                return;
+            }
+            const shortlink_ts = res[10];
+            var sl_date = new Date(shortlink_ts * 1000);
+            const d = sl_date.toLocaleDateString(undefined, date_form);
+            const t = sl_date.toLocaleTimeString(undefined, time_form).toLowerCase().replace(' ', '');
+            $( "#timestamp_text" ).html(t + ',<br />' + d);
+            if (!ts_area_vis) {
+                ts_area_vis = true;
+                $( "#timestamp_area" ).fadeIn();
+            }
+        } else {
+            if (ts_area_vis) {
+                ts_area_vis = false;
+                $( "#timestamp_area" ).fadeOut();
+            }
+        }
+
+        // Handle whole request error code
+        var err_code = res[5];
+        if (err_code !== 200) {
+            if (!handle_error(res, err_code)) {
+                $( ".orb_load_ring" ).css("visibility", "hidden");
+                handle_summoner_codes(res);
+                return;
+            }
+        }
+
+        // if (err_code === 200) {
+        if ((errored || $( "#status_area" ).css("opacity") == 1) && err_code === 200) {
+            errored = false;
+            $( "#status_area" ).fadeOut(status_fade_duration);
+        }
+
+        // Send another request in a few seconds if we are refreshing summoners
+        var is_refreshing = false;
+        if (res[6] != -1) {
+            refreshes = res[6];
+            for (var i = 0; i < req_data.length; i++) {
+                var rq_i = pl_indices_inv[i];
+                if (refreshes[rq_i] === true) {
+                    is_refreshing = true;
+                    var d = new Date();
+                    refresh_ts = d.getTime();
+                    waiting_for_refresh = curr_req_i;
+                    setTimeout(refresh_request, refresh_sleep_time);
+                    break;
+                }
+            }
+        }
+
+        if (!is_refreshing) {
+            // Response is valid, store in local cache
+            // const hash = get_request_hash(last_preq);
+            const hash = last_preq_hash;
+            // if (!(hash in request_cache)) {
+            cache_store(hash, res);
+            // }
+
+        }
+
+        receive_res(res);
+
+        curr_req_disp = req_i;
+    };
 
     var refresh_request = function() {
+        if (recc_pl_i !== -1) {
+            setTimeout(refresh_request, 5000);
+        }
         if (curr_req_i - waiting_for_refresh > 10) {
             return;
         }
         var d = new Date();
-        t = d.getTime();
+        const t = d.getTime();
         if (t - refresh_ts >= refresh_sleep_time - 100) {
-            setTimeout(request_curr_pred, Math.max(0, 7500 - (t - last_req_t)))
+            setTimeout(request_curr_pred, Math.max(0, 7500 - (t - last_req_t)));
         }
     }
 
     var handle_summoner_codes = function(res) {
-        for (i = 0; i < req_data.length; i++) {
+        for (var i = 0; i < req_data.length; i++) {
+            var pl = $( "#pl_" + i );
             if (!(i in pl_indices_inv)) {
-                $( "#pl_" + i ).find( ".pl_status_text" ).html("");
+                pl.find( ".pl_status_text" ).html("");
+                pl.find( ".recc_button" ).css('opacity', 1.0);
+                pl.find( ".recc_button" ).attr('disabled', false);
                 continue;
             }
             code = res[4][pl_indices_inv[i]];
             if (code == -1) {
-                $( "#pl_" + i ).find( ".pl_status_text" ).html("");
+                pl.find( ".pl_status_text" ).html("");
+                pl.find( ".recc_button" ).css('opacity', 1.0);
+                pl.find( ".recc_button" ).attr('disabled', false);
             } else if (code == 404) {
-                $( "#pl_" + i ).find( ".pl_status_text" ).html("Summoner not found");
+                pl.find( ".pl_status_text" ).html("summoner not found");
             } else if(code == 200) {
-                $( "#pl_" + i ).find( ".pl_status_text" ).html("&#10004; " + get_pl_perc_str(pl_percs[i]));
+                pl.find( ".pl_status_text" ).html("&#10004; " + get_pl_perc_str(pl_percs[i]));
+                pl.find( ".recc_button" ).css('opacity', 1.0);
+                pl.find( ".recc_button" ).attr('disabled', false);
             } else if(code == 201) {
-                $( "#pl_" + i ).find( ".pl_status_text" ).html("&#8635; " + get_pl_perc_str(pl_percs[i]));
+                pl.find( ".pl_status_text" ).html("&#8635; " + get_pl_perc_str(pl_percs[i]) +
+                    '<span style="color:#ccc">' + " refreshing..." + '</span>');
+                pl.find( ".recc_button" ).css('opacity', 1.0);
+                pl.find( ".recc_button" ).attr('disabled', false);
             } else {
-                $( "#pl_" + i ).find( ".pl_status_text" ).html("Unknown error");
+                pl.find( ".pl_status_text" ).html("unknown error");
             }
         }
     };
@@ -1049,32 +1320,35 @@ $( function() {
         return '<span style="color:' + (p > 50.0 ? '#0f0' : (p < 40.0 ? '#ff9933' : '#ff0')) + '">' + p + '%</span>';
     }
 
-    var handle_error = function(res, error_code) {
-        res = false;
-        if (err_code == 1) {
+    var handle_error = function(res, err_code) {
+        var res = false;
+        if (err_code == 500) {
             $( "#warning_text" ).html("Server error");
             $( "#warning_subtext" ).html("");
-        } else if (err_code == 2) {
+        } else if (err_code == 404) {
+            $( "#warning_text" ).html("Error 404");
+            $( "#warning_subtext" ).html("shortlink not found");
+        } else if (err_code == 201) {
             $( "#warning_text" ).html("More data needed");
-            $( "#warning_subtext" ).html("Low accuracy model");
+            $( "#warning_subtext" ).html("low accuracy model");
             res = true;
-        } else if (err_code == 3) {
+        } else if (err_code == 300) {
             $( "#warning_text" ).html("More data needed");
-            prof_count = 0;
-            for (i = 0; i < req_data.length; i++) {
+            var prof_count = 0;
+            for (var i = 0; i < req_data.length; i++) {
                 if (req_data[i][name_li] != -1) {
                     prof_count++;
                 }
             }
             if (prof_count == 0) {
-                $( "#warning_subtext" ).html("Summoner(s) not found");
+                $( "#warning_subtext" ).html("summoner(s) not found");
             } else if (prof_count == 1) {
-                $( "#warning_subtext" ).html("Summoner not found");
+                $( "#warning_subtext" ).html("summoner not found");
             } else {
-                $( "#warning_subtext" ).html("Summoners not found");
+                $( "#warning_subtext" ).html("summoners not found");
             }
         } else {
-            $( "#warning_text" ).html("Unknown error");
+            $( "#warning_text" ).html("unknown error " + err_code);
             $( "#warning_subtext" ).html("");
         }
         $( "#status_area" ).fadeIn(status_fade_duration);
@@ -1092,6 +1366,216 @@ $( function() {
     $( "#refresh_button" ).click(function () {
         setTimeout(request_curr_pred, 0);
     });
+
+    // Pick recommendation button
+    const bottom_role_index = roles_opts_lower.indexOf('bottom') - 1;
+    const support_role_index = roles_opts_lower.indexOf('support') - 1;
+    var recc_pl_i = -1;
+    var recc_pl_vis = false;
+    $( ".recc_button" ).click(function () {
+        if (recc_pl_i !== -1 || curr_req_disp < curr_req_i - 1) {
+            return;
+        }
+        var pl = $( this ).parent();
+        var pl_id = pl.attr("id");
+        var pl_i = parseInt(pl_id[pl_id.length - 1]);
+        recc_pl_i = pl_i;
+
+        // Prepare and send recommendations request
+        var rq = clone_2d_arr(req_data);
+        rq[pl_i][cid_li] = -2;
+
+        // Set div position, visibility and label text
+        var recc_cont = $( "#recc_cont" );
+        recc_cont.css("left", parseInt(pl.css('left')));
+        recc_cont.css("top", parseInt(pl.css('top')) + pl_height - 2);
+        $( "#recc_outer_area" ).css('visibility', 'hidden');
+        $( ".recc_champion_ch" ).css('visibility', 'hidden');
+        $( ".recc_champion_pl" ).css('visibility', 'hidden');
+        $( "#recc_loader" ).css('visibility', 'visible');
+
+        // Set left label text
+        var role_i = rq[pl_i][role_li];
+        var role_is_bottom = role_i === bottom_role_index;
+        var role_is_support = role_i === support_role_index;
+        var bot_lane_role = role_is_bottom || role_is_support;
+        var left_label_text = 'for ' + roles_opts_lower[role_i + 1];
+        // If lane opponent exists for role
+        const team_i = 1 - rq[pl_i][team_li];
+        var opp_bottom = -1;
+        var opp_support = -1;
+        for (var i = 0; i < 10; i++) {
+            if (!bot_lane_role) {
+                if (rq[i][team_li] === team_i && rq[i][role_li] === role_i) {
+                    var cid = rq[i][cid_li];
+                    if (cid !== -1) {
+                        left_label_text += '<br />vs. ' + champ_list[champ_ind_dict[cid]][ch_name_li].toLowerCase();
+                    }
+                    break;
+                }
+            } else {
+                if (rq[i][team_li] === team_i) {
+                    if (rq[i][role_li] === bottom_role_index) {
+                        opp_bottom = rq[i][cid_li];
+                    } else if (rq[i][role_li] === support_role_index) {
+                        opp_support = rq[i][cid_li];
+                    }
+                }
+            }
+        }
+        if (bot_lane_role) {
+            if(opp_bottom !== -1 || opp_support !== -1) {
+                left_label_text += ' vs.<br />';
+                var left_label_suffix = '';
+                if(opp_bottom !== -1) {
+                    left_label_suffix += champ_list[champ_ind_dict[opp_bottom]][ch_name_li].toLowerCase();
+                    if (opp_support !== -1) {
+                        left_label_suffix += '/';
+                    }
+                }
+                if (opp_support !== -1) {
+                    left_label_suffix += champ_list[champ_ind_dict[opp_support]][ch_name_li].toLowerCase();
+                }
+                if (left_label_suffix.length > 23) {
+                    left_label_suffix = left_label_suffix.slice(0, 24) + '...';
+                }
+                left_label_text += left_label_suffix;
+            }
+        }
+        $( "#recc_left_label" ).html(left_label_text);
+
+        // Set right label
+        var right_label_text = 'for ';
+        const pl_name = rq[pl_i][name_li];
+        if (pl_name !== -1) {
+            right_label_text += pl_name;
+            recc_pl_vis = true;
+        } else {
+            right_label_text += "summoner";
+            recc_pl_vis = false;
+        }
+        $( "#recc_right_label" ).html(right_label_text);
+
+        recc_cont.fadeIn();
+
+        var rq_data = prep_req_data(rq)[0];
+        const hash = get_request_hash(rq_data);
+        last_preq_recc_hash = hash;
+        if (hash in request_cache) {
+            cache_load(hash, receive_recc_res);
+            return;
+        }
+
+        send_pred_req(rq_data, -1, -1, receive_recc_response);
+    });
+
+    $( ".recc_champion" ).click(function() {
+        var sel_ind = $( this ).attr('cid_i');
+        set_new_champion(recc_pl_i, sel_ind);
+
+        $( "#recc_cont" ).fadeOut();
+        curr_req_disp = curr_req_i - 1;
+        setTimeout(function() {
+            recc_pl_i = -1;
+        }, 1);
+    });
+    $( "#recc_cont" ).click( function (e) {
+        e.stopPropagation(); // Stop click event from propagating to the container
+    });
+    $( '#recc_cont' ).mousedown( function (e) {
+        e.stopPropagation(); // Stop click event from propagating to the container
+    });
+    $( '#recc_cont' ).mouseup( function (e) {
+        e.stopPropagation(); // Stop click event from propagating to the container
+    });
+
+    var receive_recc_response = function(res, status) { // reccurr
+        // res = JSON.parse(res); // Already parsed because content type = application/json
+        if (status === "success") {
+            var req_i = res[3];
+            // if (req_i >= curr_req_disp) {
+            // if (req_i >= curr_req_i - 5) {
+            if (req_i >= curr_req_i - 1) {
+                if (res[0] == -1 || res[0][0] == -1) {
+                    console.log("Recommendations request failed (-1)");
+                }
+                // Success!
+                // curr_req_disp = req_i;
+            } else {
+                return;
+            }
+        } else {
+            console.log("Recommendations request failed with status: " + status);
+            console.log(res);
+        }
+
+        // Handle request error code
+        var err_code = res[5];
+        if (err_code < 200 || err_code >= 300) {
+            console.log("Recommendations request failed with server error " + err_code);
+            console.log(res);
+            return;
+        }
+
+        const hash = last_preq_recc_hash;
+        cache_store(hash, res);
+
+        receive_recc_res(res);
+    };
+
+    var receive_recc_res = function(res) {
+
+        // var pl = $( "#pl_" + recc_pl_i );
+
+        // Set results
+        var recc_res = res[0];
+        var recc_res_ch = res[1];
+        if (recc_res_ch !== -1) {
+            recc_pl_vis = true;
+        }
+        var inv = (req_data[recc_pl_i][team_li] === 1);
+        var i_ = -1;
+        for (var i = 0; i < recc_res.length; i++) {
+            var j = i;
+            if (!inv) {
+                j = recc_res.length - 1 - i;
+            }
+            var perc = recc_res[j][0];
+            var cid = recc_res[j][1];
+            if (perc === -1) {
+                $( "#recc_pl_" + cid ).css('display', 'none');
+                $( "#recc_ch_" + cid ).css('display', 'none');
+                continue;
+            } else if (inv) {
+                perc = 100 - perc;
+            }
+            i_++;
+            $( "#recc_pl_" + cid ).css('display', 'block');
+            $( "#recc_ch_" + cid ).css('display', 'block');
+            var typ = 'ch';
+            if (recc_pl_vis) {
+                typ = 'pl';
+                var perc_ch = recc_res_ch[j][0];
+                var cid_ch = recc_res_ch[j][1];
+                if (inv) {
+                    perc_ch = 100 - perc_ch;
+                }
+                $( "#recc_ch_" + cid_ch ).css('top', (i_ * 18) + 'px');
+                $( "#recc_ch_" + cid_ch + "_perc" ).html(perc_ch.toFixed(1) + '%');
+                // $( "#recc_pl_" + cid ).css('visibility', 'visible');
+            }
+            // } else {
+            //     typ = 'ch';
+            //     // $( "#recc_pl_" + cid ).css('visibility', 'hidden');
+            // }
+            $( "#recc_" + typ + '_' + cid ).css('top', (i_ * 18) + 'px');
+            $( "#recc_" + typ + '_' + cid + "_perc" ).html(perc.toFixed(1) + '%');
+        }
+        $( "#recc_loader" ).css('visibility', 'hidden');
+        $( "#recc_outer_area" ).css('visibility', 'visible');
+        $( ".recc_champion_ch" ).css('visibility', 'visible');
+        $( ".recc_champion_pl" ).css('visibility', recc_pl_vis ? 'visible' : 'hidden');
+    };
 
     // Define procedure for changing a role
     $( ".role_select" ).change(function() {
@@ -1140,7 +1624,7 @@ $( function() {
                         pl_ropts[prev_pl_i] = 0; // Else set previously taken slot to auto assign
                         rdict[side][prev_role] = -1;
                     }
-                    prev_new_ropt = pl_ropts[prev_pl_i]
+                    prev_new_ropt = pl_ropts[prev_pl_i];
                     $( "#pl_" + prev_pl_i ).find(".role_cont").find(".role_select")[0].selectedIndex = prev_new_ropt;
                     if (prev_new_ropt !== 0 && ropt === 0) {
                         $( "#pl_" + prev_pl_i ).find(".role_cont").find(".role_select").css('color', '#fff');
@@ -1167,8 +1651,7 @@ $( function() {
         ch_pl_i = parseInt(pl_id[pl_id.length - 1]);
 
         // Highlight the currently selected champion in the grid
-        current_i = selected_ch_indices[ch_pl_i];
-        curr_img_id = 'grid_img_' + current_i;
+        const curr_img_id = 'grid_img_' + selected_ch_indices[ch_pl_i];
         $( "#" + curr_img_id ).addClass("grid_img_selected");
     });
 
@@ -1177,8 +1660,7 @@ $( function() {
         // $(this).toggleClass("hide");
         $(this).css("visibility", "hidden");
 
-        var current_i = selected_ch_indices[ch_pl_i];
-        var curr_img_id = 'grid_img_' + current_i;
+        const curr_img_id = 'grid_img_' + selected_ch_indices[ch_pl_i];
         $( "#" + curr_img_id ).removeClass("grid_img_selected");
     });
 
@@ -1188,20 +1670,38 @@ $( function() {
         // $("#champion_grid_cont").toggleClass("hide");
         $("#champion_grid_cont").css("visibility", "hidden");
 
-        var current_i = selected_ch_indices[ch_pl_i];
+        const current_i = selected_ch_indices[ch_pl_i];
 
         var sel_ind = $(this).attr("id").split('_');
         sel_ind = parseInt(sel_ind[sel_ind.length - 1]);
-        selected_ch_indices[ch_pl_i] = sel_ind;
-        var new_cid = champ_list[sel_ind][ch_cid_li];
-        var old_cid = req_data[ch_pl_i][cid_li];
+        const new_cid = champ_list[sel_ind][ch_cid_li];
+        const old_cid = req_data[ch_pl_i][cid_li];
 
         if (new_cid != old_cid) {
-            req_data[ch_pl_i][cid_li] = new_cid;
+            const curr_img_id = 'grid_img_' + current_i;
+            $( "#" + curr_img_id ).removeClass("grid_img_selected");
+        }
+
+        set_new_champion(ch_pl_i, sel_ind);
+    });
+
+    var set_new_champion = function(pl_i, sel_ind) {
+        const current_i = selected_ch_indices[pl_i];
+        selected_ch_indices[pl_i] = sel_ind;
+        const new_cid = champ_list[sel_ind][ch_cid_li];
+        const old_cid = req_data[pl_i][cid_li];
+
+        if (new_cid != old_cid) {
+            const curr_img_id = 'grid_img_' + current_i;
+            $( "#" + curr_img_id ).removeClass("grid_img_selected");
+        }
+
+        if (new_cid != old_cid) {
+            req_data[pl_i][cid_li] = new_cid;
             if (sel_ind > 0) {
                 // If there is another entry with the same champion, switch champions with that player
-                for (i = 0; i < 10; i++) {
-                    if (i == ch_pl_i) {
+                for (var i = 0; i < 10; i++) {
+                    if (i == pl_i) {
                         continue;
                     }
                     if (req_data[i][cid_li] == new_cid) {
@@ -1219,25 +1719,31 @@ $( function() {
                         break;
                     }
                 }
-                $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
+                $( '#pl_' + pl_i ).find( '.champion_box' ).css(
                     "background-image", 'url(' + ddrag_url + champ_list[sel_ind][ch_id_li] + '.png)');
             } else {
-                $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
+                $( '#pl_' + pl_i ).find( '.champion_box' ).css(
                     "background-image", 'url(' + none_champ_img + ')');
             }
 
-            var curr_img_id = 'grid_img_' + current_i;
-            $( "#" + curr_img_id ).removeClass("grid_img_selected");
-
             auto_assign_roles();
             setTimeout(request_curr_pred, 0);
+        }
+    };
+
+    $( "#undo_button" ).click(function () {
+        var comp_cookie = Cookies.getJSON('match_composition_previous');
+        if (typeof comp_cookie != 'undefined') {
+            if(load_comp(comp_cookie)) {
+                setTimeout(request_curr_pred, 0);
+            }
         }
     });
 
     $( "#clear_button_all" ).click(function() {
         initialise_vars();
-        for (i = 0; i < 10; i++) {
-            pl = $( "#pl_" + i );
+        for (var i = 0; i < 10; i++) {
+            var pl = $( "#pl_" + i );
 
             // Reset role
             var r_sel = pl.find( ".role_cont" ).find( ".role_select" )
@@ -1254,6 +1760,7 @@ $( function() {
                     "background-image", 'url(' + none_champ_img + ')');
         }
         $( "#perc_text" ).css("color", "#999");
+        $( ".j_perc" ).css("color", "#999");
         $( "#perc_warning_symb" ).fadeOut();
         $( "#status_area" ).fadeOut(status_fade_duration);
         reset_everything();
@@ -1275,11 +1782,11 @@ $( function() {
         waiting_for_refresh = -1;
         selected_ch_indices = [...Array(10).keys()].map(i => 0);
 
-        for (i = 0; i < 10; i++) {
-            pl = $( "#pl_" + i );
+        for (var i = 0; i < 10; i++) {
+            var pl = $( "#pl_" + i );
 
-            l_team = (req_data[i][team_li] === 0 && left_col == "blue") ||
-                     (req_data[i][team_li] === 1 && left_col == "red");
+            const l_team = (req_data[i][team_li] === 0 && left_col == "blue") ||
+                           (req_data[i][team_li] === 1 && left_col == "red");
 
             if (team_i === 0 ? l_team : !l_team ) {
 
@@ -1310,11 +1817,11 @@ $( function() {
         }
         auto_assign_roles();
 
-        for (i = 0; i < 10; i++) {
-            pl = $( "#pl_" + i );
+        for (var i = 0; i < 10; i++) {
+            var pl = $( "#pl_" + i );
 
-            l_team = (req_data[i][team_li] === 0 && left_col == "blue") ||
-                     (req_data[i][team_li] === 1 && left_col == "red");
+            const l_team = (req_data[i][team_li] === 0 && left_col == "blue") ||
+                           (req_data[i][team_li] === 1 && left_col == "red");
 
             if (team_i === 0 ? l_team : !l_team ) {
                 pl.find( ".role_cont" ).find( ".role_select" ).find(".role_option_0").html("auto assign");
@@ -1340,11 +1847,11 @@ $( function() {
         waiting_for_refresh = -1;
         selected_ch_indices = [...Array(10).keys()].map(i => 0);
 
-        for (i = 0; i < 10; i++) {
-            pl = $( "#pl_" + i );
+        for (var i = 0; i < 10; i++) {
+            var pl = $( "#pl_" + i );
 
-            l_team = (req_data[i][team_li] === 0 && left_col == "blue") ||
-                     (req_data[i][team_li] === 1 && left_col == "red");
+            const l_team = (req_data[i][team_li] === 0 && left_col == "blue") ||
+                           (req_data[i][team_li] === 1 && left_col == "red");
 
             if (team_i === 0 ? l_team : !l_team ) {
 
@@ -1375,11 +1882,11 @@ $( function() {
         pl_indices_inv = {};
         waiting_for_refresh = -1;
 
-        for (i = 0; i < 10; i++) {
-            pl = $( "#pl_" + i );
+        for (var i = 0; i < 10; i++) {
+            var pl = $( "#pl_" + i );
 
-            l_team = (req_data[i][team_li] === 0 && left_col == "blue") ||
-                     (req_data[i][team_li] === 1 && left_col == "red");
+            const l_team = (req_data[i][team_li] === 0 && left_col == "blue") ||
+                           (req_data[i][team_li] === 1 && left_col == "red");
 
             if (team_i === 0 ? l_team : !l_team ) {
 
@@ -1414,10 +1921,8 @@ $( function() {
             ch_pl_i = pl_i;
             $( ".search_select" )[0].selectedIndex = selected_ch_indices[ch_pl_i];
             $( ".search_select" ).trigger('chosen:updated');
-            pos_x = parseInt($( '#' + pl_id ).css('left')) + 30;
-            pos_y = parseInt($( '#' + pl_id ).css('top')) + pl_height - 5;
-            dropdown_elem.css("left", pos_x);
-            dropdown_elem.css("top", pos_y);
+            dropdown_elem.css("left", parseInt($( '#' + pl_id ).css('left')) + 30);
+            dropdown_elem.css("top", parseInt($( '#' + pl_id ).css('top')) + pl_height - 5);
             // $( ".search_select" ).trigger("chosen:open"); // Should work but doesn't
             // $( ".search_select" ).trigger("chosen:activate");
             setTimeout(function() {
@@ -1439,49 +1944,13 @@ $( function() {
 
         // At this point, set the new champion id & image
         var sel_ind = $(this)[0].selectedIndex;
-        selected_ch_indices[ch_pl_i] = sel_ind;
-        var new_cid = champ_list[sel_ind][ch_cid_li];
-        var old_cid = req_data[ch_pl_i][cid_li];
+        set_new_champion(ch_pl_i, sel_ind);
 
-        if (new_cid != old_cid) {
-            req_data[ch_pl_i][cid_li] = new_cid;
-            if (sel_ind > 0) {
-                // If there is another entry with the same champion, switch champions with that player
-                for (i = 0; i < 10; i++) {
-                    if (i == ch_pl_i) {
-                        continue;
-                    }
-                    if (req_data[i][cid_li] == new_cid) {
-                        req_data[i][cid_li] = old_cid;
-                        old_sel_ind = champ_ind_dict[old_cid];
-                        selected_ch_indices[i] = old_sel_ind;
-                        if (old_cid != -1) {
-                            $( '#pl_' + i ).find( '.champion_box' ).css(
-                                "background-image", 'url(' + ddrag_url +
-                                    champ_list[old_sel_ind][ch_id_li] + '.png)');
-                        } else {
-                            $( '#pl_' + i ).find( '.champion_box' ).css(
-                                "background-image", 'url(' + none_champ_img + ')');
-                        }
-                        break;
-                    }
-                }
-                $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
-                    "background-image", 'url(' + ddrag_url + champ_list[sel_ind][ch_id_li] + '.png)');
-            } else {
-                $( '#pl_' + ch_pl_i ).find( '.champion_box' ).css(
-                    "background-image", 'url(' + none_champ_img + ')');
-            }
-
-            auto_assign_roles();
-            setTimeout(request_curr_pred, 0);
-        }
-
-        next_pl_i = get_next_pl_i(ch_pl_i);
+        const next_pl_i = get_next_pl_i(ch_pl_i);
         if (next_pl_i !== -1) {
             setTimeout(function () {
                 var d = new Date();
-                var t = d.getTime();
+                const t = d.getTime();
                 if (t - last_doc_click > 10) {
                     $( '#pl_' + next_pl_i ).find( ".champion_buttons" ).find( ".search_button" ).click();
                 }
@@ -1518,13 +1987,20 @@ $( function() {
     $( document ).mouseup( function (e) {
         var d = new Date();
         last_doc_click = d.getTime();
+        if (recc_pl_i !== -1) {
+            $( "#recc_cont" ).fadeOut();
+            curr_req_disp = curr_req_i - 1;
+            setTimeout(function() {
+                recc_pl_i = -1;
+            }, 1);
+        }
     });
 
     // Get the next on-screen pl_i (top-down, left-right, looping), given the current pl_i
     const get_next_pl_i = function (pl_i) {
         var plph_id = null;
         var plph_i = 0;
-        for (i = 0; i < 5; i++) {
+        for (var i = 0; i < 5; i++) {
             var k = "plph_l_" + i;
             if (plph_occupancy[k] == pl_i) {
                 // plph_id = k;
@@ -1532,7 +2008,7 @@ $( function() {
             }
         }
         if (plph_id == null) {
-            for (i = 0; i < 5; i++) {
+            for (var i = 0; i < 5; i++) {
                 var k = "plph_r_" + i;
                 if (plph_occupancy[k] == pl_i) {
                     // plph_id = k;
@@ -1540,17 +2016,17 @@ $( function() {
                 }
             }
         }
-        next_plph_i = plph_i + 1;
+        var next_plph_i = plph_i + 1;
         if (next_plph_i == 10) {
             // next_plph_i = 0;
             return -1;
         }
-        next_plph_col = 'l';
+        var next_plph_col = 'l';
         if (next_plph_i >= 5) {
             next_plph_col = 'r';
             next_plph_i -= 5;
         }
-        next_plph_id = "plph_" + next_plph_col + '_' + next_plph_i;
+        const next_plph_id = "plph_" + next_plph_col + '_' + next_plph_i;
         return plph_occupancy[next_plph_id];
     }
 
@@ -1576,7 +2052,7 @@ $( function() {
                 setTimeout(request_curr_pred, 0);
             }
             // Set focus to next name input based on placeholder occupancy
-            next_pl_i = get_next_pl_i(pl_i);
+            const next_pl_i = get_next_pl_i(pl_i);
             if (next_pl_i !== -1) {
                 $( '#pl_' + next_pl_i ).find( ".name_cont" ).find( ".name_input" ).focus()
             }
@@ -1640,21 +2116,31 @@ $( function() {
 
     var set_region = function (reg_i) {
         if (reg_i !== null) {
-            region = $( "#region_select" )[0].selectedIndex = reg_i;
+            $( "#region_select" )[0].selectedIndex = reg_i;
             region = reg_i;
         } else {
             region = $( "#region_select" )[0].selectedIndex;
         }
         reg_str = $( "#region_select :selected" ).val();
-        for (i = 0; i < 10; i++) {
+        for (var i = 0; i < 10; i++) {
             set_opgg_link($( '#pl_' + i ), conv_name(req_data[i][name_li]));
         }
         Cookies.set("region_index", region);
     };
 
+    var set_avg_elo = function (elo_i) {
+        if (elo_i !== null) {
+            $( "#elo_select" )[0].selectedIndex = elo_i;
+            avg_elo = elo_i;
+        } else {
+            avg_elo = $( "#elo_select" )[0].selectedIndex;
+        }
+        Cookies.set("elo_index", avg_elo);
+    };
+
     // Define procedure for average elo change, update prediction
     $( "#elo_select" ).change(function() {
-        avg_elo = $( this )[0].selectedIndex;
+        set_avg_elo(null);
         setTimeout(request_curr_pred, 0);
     });
 
@@ -1678,7 +2164,7 @@ $( function() {
     // });
 
     var import_chat_log = function() {
-        box = $( '#chat_import_input' );
+        var box = $( '#chat_import_input' );
         var inp = box.val();
         box.val('');
         $( "#chat_import_text" ).html("!");
@@ -1689,7 +2175,7 @@ $( function() {
         var jtr = joined_lobby_strs[region];
         if (inp.indexOf(jtr) === -1) {
 
-            for (i = 0; i < region_strs.length; i++) {
+            for (var i = 0; i < region_strs.length; i++) {
                 jtr = joined_lobby_strs[i];
                 if (inp.indexOf(jtr) !== -1) {
                     set_region(i);
@@ -1701,12 +2187,12 @@ $( function() {
             }
         }
         var success = false;
-        lines = inp.split('\n').slice(0, 5);
-        for (i = 0; i < Math.min(5, lines.length); i++) {
-            line = lines[i];
+        const lines = inp.split('\n').slice(0, 5);
+        for (var i = 0; i < Math.min(5, lines.length); i++) {
+            const line = lines[i];
             if (line.slice(line.length - jtr.length, line.length) === jtr) {
-                name = line.slice(0, line.length - jtr.length);
-                pl_i = plph_occupancy["plph_l_" + i];
+                const name = line.slice(0, line.length - jtr.length);
+                const pl_i = plph_occupancy["plph_l_" + i];
                 if (req_data[pl_i][name_li] != name) {
                     req_data[pl_i][name_li] = name;
                     pl_percs[pl_i] = -1;
@@ -1734,37 +2220,52 @@ $( function() {
     // Player draggable definition
     $( ".pl" ).draggable({ snap: ".plph", snapMode: "inner", snapTolerance: 15,
         start: function( event, ui ) {
-
             // Set z-index to 1000 for the element we're dragging
             ui.helper.css("zIndex", 1000);
-
         },
         drag: function( event, ui ) {
-
-            // If we're on the y grid and x is close enough to
-            // the nearest placeholder, snap to that placeholder position
-            if (ui.position.top % pl_height == 0) {
-                if (Math.abs(ui.position.left) < (pl_width / 10)) {
-                    ui.position.left = 0;
-                } else if (Math.abs(ui.position.left - r_pl_x) < (pl_width / 10)) {
-                    ui.position.left = r_pl_x;
-                }
-            }
-        },
-        stop: function( event, ui ) {
-
             // Get i of dragged player
             var pl_id = ui.helper.attr("id");
             var pl_i = parseInt(pl_id[pl_id.length - 1]);
 
+            // If we're on the y grid and x is close enough to
+            // the nearest placeholder, snap to that placeholder position
+            if (ui.position.top % pl_height == 0) {
+                if (Math.abs(ui.position.left) < (pl_width / 35)) {
+                    ui.position.left = 0;
+                    $( "#pl_" + pl_i ).css('left', 0);
+                } else if (Math.abs(ui.position.left - r_pl_x) < (pl_width / 35)) {
+                    ui.position.left = r_pl_x;
+                    $( "#pl_" + pl_i ).css('left', r_pl_x);
+                }
+            }
+        },
+        stop: function( event, ui ) {
+            // Get i of dragged player
+            var pl_id = ui.helper.attr("id");
+            var pl_i = parseInt(pl_id[pl_id.length - 1]);
+
+            // If we're on the y grid and x is close enough to
+            // the nearest placeholder, snap to that placeholder position
+            if (ui.position.top % pl_height == 0) {
+                if (Math.abs(ui.position.left) < (pl_width / 3.0)) {
+                    ui.position.left = 0;
+                    $( "#pl_" + pl_i ).css('left', 0);
+                } else if (Math.abs(ui.position.left - r_pl_x) < (pl_width / 3.0)) {
+                    ui.position.left = r_pl_x;
+                    $( "#pl_" + pl_i ).css('left', r_pl_x);
+                }
+            }
             // Figure out which side & placeholder we've snapped to, if any
             var new_side_char = -1;
             var new_side = -1;
-            if (ui.position.top % pl_height == 0) {
-                if (ui.position.left == 0) {
+            const top_pos = ui.position.top;
+            const left_pos = ui.position.left;
+            if (top_pos % pl_height == 0 && top_pos >= 0 && top_pos <= pl_height * 4) {
+                if (left_pos == 0) {
                     new_side_char = 'l';
                     new_side = 0;
-                } else if (ui.position.left == r_pl_x) {
+                } else if (left_pos == r_pl_x) {
                     new_side_char = 'r';
                     new_side = 1;
                 }
@@ -1777,38 +2278,44 @@ $( function() {
                 ui.helper.css("zIndex", 0);
 
                 // Get current plph_id of dragged player
-                plph_id = ui.helper.attr("plph_id");
+                const plph_id = ui.helper.attr("plph_id");
 
                 // Figure out what the new plph_id is
-                new_team_pl_i = ui.position.top / pl_height;
-                new_plph_id = "plph_" + new_side_char + '_' + new_team_pl_i;
+                const new_team_plph_i = ui.position.top / pl_height;
+                const new_plph_id = "plph_" + new_side_char + '_' + parseInt(Math.round(new_team_plph_i));
 
                 // If the new one is different
+                var switched_side = false;
                 if (new_plph_id != plph_id) {
 
-                    // Get side_char and team_pl_i of current plph_i
-                    side_char = plph_id[5];
-                    side = (side_char === 'l' ? 0 : 1);
-                    team_pl_i = parseInt(plph_id[plph_id.length - 1]);
+                    // Get side_char and team_plph_i of current plph_i
+                    const side_char = plph_id[5];
+                    const side = (side_char === 'l' ? 0 : 1);
+                    const team_plph_i = parseInt(plph_id[plph_id.length - 1]);
 
                     // Get the pl_i of the player currently at new_plph_id
-                    old_pl_i = plph_occupancy[new_plph_id];
+                    const old_pl_i = plph_occupancy[new_plph_id];
 
                     // If we swapped with the other team
                     if (side_char != new_side_char) {
+                        switched_side = true;
 
                         // Set new colours
-                        new_col = req_data[old_pl_i][team_li];
-                        req_data[old_pl_i][team_li] = req_data[pl_i][team_li];
-                        req_data[pl_i][team_li] = new_col;
+                        req_data[old_pl_i][team_li] = side;
+                        req_data[pl_i][team_li] = new_side;
+
+                        // var new_col = req_data[old_pl_i][team_li];
+                        // req_data[old_pl_i][team_li] = req_data[pl_i][team_li];
+                        // req_data[pl_i][team_li] = new_col;
+
 
                         // Set role variables
                         // role = req_data[pl_i][role_li];
                         // old_role = req_data[old_pl_i][role_li];
-                        ropt = pl_ropts[pl_i];
-                        old_ropt = pl_ropts[old_pl_i];
-                        role = ropt - 1;
-                        old_role = old_ropt - 1;
+                        const ropt = pl_ropts[pl_i];
+                        const old_ropt = pl_ropts[old_pl_i];
+                        const role = ropt - 1;
+                        const old_role = old_ropt - 1;
                         if (ropt != old_ropt) { // If roles differ
                             
                             // Set source team roles
@@ -1818,8 +2325,9 @@ $( function() {
                                 const occ_pl_i = rdict[side][old_role];
                                 if (occ_pl_i !== -1) {
                                     pl_ropts[occ_pl_i] = 0;
-                                    $( "#pl_" + occ_pl_i ).find(
-                                        ".role_cont").find(".role_select")[0].selectedIndex = 0;
+                                    var r_sel = $( "#pl_" + occ_pl_i ).find(".role_cont").find(".role_select")
+                                    r_sel[0].selectedIndex = 0;
+                                    r_sel.css('color', '#888');
                                 }
                                 rdict[side][old_role] = old_pl_i;
                             }
@@ -1831,8 +2339,9 @@ $( function() {
                                 const occ_pl_i = rdict[new_side][role];
                                 if (occ_pl_i !== -1) {
                                     pl_ropts[occ_pl_i] = 0;
-                                    $( "#pl_" + occ_pl_i ).find(
-                                        ".role_cont").find(".role_select")[0].selectedIndex = 0;
+                                    var r_sel = $( "#pl_" + occ_pl_i ).find(".role_cont").find(".role_select")
+                                    r_sel[0].selectedIndex = 0;
+                                    r_sel.css('color', '#888');
                                 }
                                 rdict[new_side][role] = pl_i;
                             }
@@ -1848,22 +2357,50 @@ $( function() {
                     ui.helper.attr("plph_id", new_plph_id);
                     $( "#pl_" + old_pl_i ).attr("plph_id", plph_id);
 
-                    if (new_plph_id != plph_id) {
+                    if (switched_side) {
                         auto_assign_roles();
                         setTimeout(request_curr_pred, 0);
                     }
 
                     // Set position of old_pl_i
-                    new_x = (side_char == 'l') ? 0 : r_pl_x;
+                    const new_x = (side_char == 'l') ? 0 : r_pl_x;
                     // $( "#pl_" + old_pl_i ).css('left', new_x);
-                    // $( "#pl_" + old_pl_i ).css('top', team_pl_i * pl_height);
+                    // $( "#pl_" + old_pl_i ).css('top', team_plph_i * pl_height);
                     $( "#pl_" + old_pl_i ).css("zIndex", 1000);
-                    $( "#pl_" + old_pl_i ).animate({'left': new_x, 'top': team_pl_i * pl_height});
+                    $( "#pl_" + old_pl_i ).animate({'left': new_x, 'top': team_plph_i * pl_height});
                     $( "#pl_" + old_pl_i ).css("zIndex", 0);
                 }
             }
         }
     });
+    
+
+    // Try to load match composition from current URL or cookie
+    const comp_str = window.location.href.split('?c=');
+    var sl_succ = false;
+    if (comp_str.length > 1) {
+        try {
+            const shortlink = comp_str[1];
+            send_pred_req(-1, shortlink, -1, receive_curr_pred);
+            sl_succ = true;
+        } catch (err) {
+            console.log("Error importing from shortlink URL: ", err);
+        }
+    }
+    if (!sl_succ) {
+        var comp_cookie = Cookies.getJSON('match_composition');
+        // if (!(typeof comp_cookie != 'undefined') && load_comp(comp_cookie)) {
+        //     comp_cookie = Cookies.getJSON('match_composition_previous');
+        //     if (typeof comp_cookie != 'undefined') {
+        //         load_comp(comp_cookie);
+        //     }
+        // }
+        if (typeof comp_cookie != 'undefined') {
+            load_comp(comp_cookie);
+        }
+    }
+
+
 });
 // });
 

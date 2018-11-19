@@ -164,9 +164,9 @@ const send_result = function(res, result) {
 const validate_req = function(req) {
     if (!(req instanceof Array)) {
         return "request not array";
-    } else if (req.length !== 4) {
+    } else if (req.length !== 7) {
         return "request array length";
-    } else if (!(req[0] instanceof Array)) {
+    } else if ((!(req[0] instanceof Array)) && req[5] === -1) {
         return "request data not array";
     } else if (!Number.isInteger(req[1])) {
         console.log(req[1])
@@ -180,56 +180,60 @@ const validate_req = function(req) {
     } else if (!Number.isInteger(req[3])) {
         return "request current request index is not an integer";
     }
+    // TODO: Validate session id, shortlink and composition
+
     req_d = req[0];
-    if(req_d.length < 1 || req_d.length > 10) {
-        return "request data array length error";
-    }
-    for (var i = 0; i < req_d.length; i++) {
-        req_d_i = req_d[i];
-        if (!(req_d_i instanceof Array)) {
-            return "request data " + i + " not array";
-        } else if(req_d_i.length !== 4) {
-            return "request data " + i + " array length";
-        } else if(!Number.isInteger(req_d_i[0])) {
-            return "request data " + i + " team index is not an integer";
-        } else if(!(req_d_i[0] == 0 || req_d_i[0] == 1)) {
-            return "request data " + i + " team index is not 0 or 1";
-        } else if(!Number.isInteger(req_d_i[1])) {
-            return "request data " + i + " role index is not an integer";
-        } else if(req_d_i[1] < 0 || req_d_i[1] > 4) {
-            return "request data " + i + " role index is not between 0 and 4 (inclusive)";
-        } else if(!Number.isInteger(req_d_i[2])) {
-            return "request data " + i + " champion id is not an integer";
-        } else if((!(req_d_i[2] in champ_dict)) && (!(req_d_i[2] == -2))) {
-            return "request data " + i + " champion id is not valid: " + req_d_i[2];
-        } else if(!((typeof req_d_i[3] == "string") || (Number.isInteger(req_d_i[3]) && req_d_i[3] == -1))) {
-            return "request data " + i + " name is not a string or -1: " + req_d_i[3];
-        } else if(req_d_i[2] === -1 && req_d_i[3] === -1) {
-            return "request data " + i + " is empty";
-        } else if(req_d_i[3] == '') {
-            return "request data " + i + " name is empty";
-        } else if(req_d_i[3].length > 16) {
-            return "request data " + i + " name length has too many characters";
+    if (req_d !== -1) {
+        if(req_d.length < 1 || req_d.length > 10) {
+            return "request data array length error";
         }
-    }
-    var roles = {};
-    var blue_count = 0;
-    var red_count = 0;
-    for (i = 0; i < req_d.length; i++) {
-        t = req_d[i][0]
-        r = t + '_' + req_d[i][1];
-        if (r in roles) {
-            return "request data " + i + " duplicate role: " + r;
+        for (var i = 0; i < req_d.length; i++) {
+            req_d_i = req_d[i];
+            if (!(req_d_i instanceof Array)) {
+                return "request data " + i + " not array";
+            } else if(req_d_i.length !== 4) {
+                return "request data " + i + " array length";
+            } else if(!Number.isInteger(req_d_i[0])) {
+                return "request data " + i + " team index is not an integer";
+            } else if(!(req_d_i[0] == 0 || req_d_i[0] == 1)) {
+                return "request data " + i + " team index is not 0 or 1";
+            } else if(!Number.isInteger(req_d_i[1])) {
+                return "request data " + i + " role index is not an integer";
+            } else if(req_d_i[1] < 0 || req_d_i[1] > 4) {
+                return "request data " + i + " role index is not between 0 and 4 (inclusive)";
+            } else if(!Number.isInteger(req_d_i[2])) {
+                return "request data " + i + " champion id is not an integer";
+            } else if((!(req_d_i[2] in champ_dict)) && (!(req_d_i[2] == -2))) {
+                return "request data " + i + " champion id is not valid: " + req_d_i[2];
+            } else if(!((typeof req_d_i[3] == "string") || (Number.isInteger(req_d_i[3]) && req_d_i[3] == -1))) {
+                return "request data " + i + " name is not a string or -1: " + req_d_i[3];
+            } else if(req_d_i[2] === -1 && req_d_i[3] === -1) {
+                return "request data " + i + " is empty";
+            } else if(req_d_i[3] == '') {
+                return "request data " + i + " name is empty";
+            } else if(req_d_i[3].length > 16) {
+                return "request data " + i + " name length has too many characters";
+            }
         }
-        blue_count += 1 - t
-        if (blue_count > 5) {
-            return "more than 5 players on blue team";
+        var roles = {};
+        var blue_count = 0;
+        var red_count = 0;
+        for (i = 0; i < req_d.length; i++) {
+            t = req_d[i][0]
+            r = t + '_' + req_d[i][1];
+            if (r in roles) {
+                return "request data " + i + " duplicate role: " + r;
+            }
+            blue_count += 1 - t
+            if (blue_count > 5) {
+                return "more than 5 players on blue team";
+            }
+            red_count += t
+            if (red_count > 5) {
+                return "more than 5 players on red team";
+            }
+            roles[r] = 1;
         }
-        red_count += t
-        if (red_count > 5) {
-            return "more than 5 players on red team";
-        }
-        roles[r] = 1;
     }
     return 200;
 };

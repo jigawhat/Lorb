@@ -5,7 +5,7 @@ var app = express();
 // client side webapp before generating all static site files using hexo
 
 app.use(express.static(__dirname + '/site/source')); //__dir and not _dir
-var port = 8080; // you can use any port
+var port = 80; // you can use any port
 app.listen(port);
 console.log('server on ' + port);
 

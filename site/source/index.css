@@ -48,7 +48,7 @@ label {
     /*overflow: hidden;*/
     vertical-align: center;
     /*line-height: 25px;*/
-    font-size: 14px;
+    font-size: 12px;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
     color: #fff;
@@ -85,16 +85,41 @@ label {
     border: 0;
 }
 #home_button {
-    width: 90px;
+    width: 105px;
     /*font-size: 14px;*/
     /*font-weight: 500;*/
     font-style: italic;
+    /*padding-top: -3px;*/
+    /*line-height: -13px;*/
+    padding-left: 18px;
+    padding-bottom: 3px;
+    text-align: left;
+    font-size: 12px;
+    margin: 0;
+    /*padding: 0;*/
+    padding-top: 4px
+    /*padding-bottom: -5px;*/
+}
+#beta_label {
+    /*font-variant: normal;*/
+    font-style: normal;
+    color: #bb99ff;
+    word-spacing: -1px;
+    /*letter-spacing: 1px;*/
 }
 #blog_button {
     width: 70px;
+    padding-bottom: 3px;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
 }
 #clog_button {
     width: 100px;
+    padding-bottom: 3px;
+    font-size: 12px;
+    margin: 0;
+    padding: 0;
 }
 #nav_r_cont {
     float: right;
@@ -116,13 +141,15 @@ label {
     /*border-style: solid;*/
 }
 #region_text {
-    font-size: 12px;
     display: block;
     position: absolute;
     width: 50px;
     top: 0px;
     float: left;
     text-shadow: 0px 0px 2px #000, 0px 0px 4px #000;
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
     /*border-width: 1px;*/
     /*border-style: solid;*/
 }
@@ -153,7 +180,6 @@ label {
     /*border-style: solid;*/
 }
 #elo_text {
-    font-size: 12px;
     display: block;
     position: absolute;
     width: 75px;
@@ -161,6 +187,9 @@ label {
     padding-left: 2px;
     float: left;
     text-shadow: 0px 0px 2px #000, 0px 0px 4px #000;
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
     /*border-width: 1px;*/
     /*border-style: solid;*/
 }
@@ -233,6 +262,21 @@ label {
     /*border-style: solid;*/
     position: relative;
 }
+#timestamp_area {
+    position: absolute;
+    float: left;
+    /*display: block;*/
+    left: -200px;
+    top: 15px;
+    width: 350px;
+    height: 35px;
+    /*z-index: 1;*/
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    /*font-variant: small-caps;*/
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.7);
+    visibility: hidden;
+}
 #share_area {
     position: absolute;
     float: left;
@@ -257,7 +301,7 @@ label {
     visibility: hidden;
 }
 #share_input {
-    width: 50px;
+    width: 53px;
     height: 100%;
     padding: 0;
     margin: 0;
@@ -265,17 +309,18 @@ label {
     color: #ccc;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-size: 10px;
-    background-color: #303050;
+    /*background-color: #303050;*/
+    background-color: rgba(0, 0, 0, 0);
     display: block;   
     position: absolute;
-    border-right-width: 1px;
-    border-style: solid;
+    /*border-right-width: 1px;*/
+    /*border-style: solid;*/
     border-color: #bbb;
 }
 #share_copy_button {
     display: block;
     position: absolute;
-    padding: 0;
+    /*padding: 0;*/
     margin: 0;
     /*padding-left: 1px;*/
     /*position: relative;*/
@@ -283,21 +328,26 @@ label {
     /*margin-right: auto;*/
     /*background-color: rgba(0, 0, 0, 0.8);*/
     background-color: #303050;
+    /*background-color: rgba(0,0,0,0);*/
     border: none;
     cursor: pointer;
     color: #fff;
-    width: 105px;
+    width: 95px;
     height: 100%;
     border-radius: 0 8px 8px 0;
     /*top: 105px;*/
-    left: 51px;
+    left: 60px;
     /*padding: 0;*/
     vertical-align: middle;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-    font-variant: small-caps;
-    font-size: 12px;
+    /*font-variant: small-caps;*/
+    font-size: 8px;
     /*padding-bottom: 3px;*/
-    padding-top: -3px;
+    /*padding-top: -3px;*/
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 1px;
     /*line-height: 17px;*/
     /*text-align: center;*/
     /*vertical-align: center;*/
@@ -324,7 +374,7 @@ label {
     right: -15px;
     /*padding: 0;*/
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-    font-variant: small-caps;
+    /*font-variant: small-caps;*/
     font-size: 12px;
     /*padding-bottom: 3px;*/
     /*padding-right: -7px;*/
@@ -338,6 +388,7 @@ label {
 }
 #share_copy_button:hover {
     background-color: #353565;
+    box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.9), 0px 0px 3px rgba(255, 255, 255, 0.9);
 }
 #share_copy_button:active {
     background-color: #202040;
@@ -430,7 +481,7 @@ label {
     /*vertical-align: bottom;*/
     margin-left: auto;
     margin-right: auto;
-    width: 184px;
+    width: 181px;
     height: 50px;
     font-size: 27px;
     font-weight: bold;
@@ -443,16 +494,17 @@ label {
     position: relative;
     display: inline-block;
     vertical-align: bottom;
-    line-height: 25px;
-    font-size: 13px;
+    line-height: 23px;
+    font-size: 11px;
     z-index: -500;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-    font-variant: small-caps;
+    /*font-variant: small-caps;*/
     /*text-shadow: 0px 0px 5px #004, 0px 0px 10px #004, 0px 0px 20px #004, 0px 0px 20px #004;*/
     /*text-shadow: 0px 0px 5px #400, 0px 0px 10px #400,0px 0px 20px #400;*/
     text-shadow: 0px 0px 5px #004, 0px 0px 10px #004,0px 0px 20px #004;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     /*color: rgba(255, 255, 255, 0.94);*/
+    padding-left: 2px;
 }
 #res_team_col {
     color: #ddddff;
@@ -476,6 +528,7 @@ label {
 }
 #perc_symb {
     z-index: 1000;
+    position: relative;
     font-size: 17px;
     display: inline-block;
     vertical-align: bottom;
@@ -483,6 +536,8 @@ label {
     /*text-shadow: 0px 0px 5px #004, 0px 0px 5px #004, 0px 0px 10px #004,*/
         /*0px 0px 10px #004;*/
     text-shadow: 0px 0px 5px #004, 0px 0px 10px #004;
+    /*color: rgba(255, 255, 255, 0);*/
+    letter-spacing: -3.5px;
 }
 .perc_arrow {
     z-index: 500;
@@ -593,46 +648,42 @@ label {
     display: block;
     position: absolute;
     /*top: 200px;*/
-    left: 40.3%;
-    width: 141px;
+    left: 39.7%;
+    width: 148px;
     height: 80px;
     background-color: rgba(0, 0, 0, 0.25);
-    border-radius: 5px;
-    box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.3);
+    /*border-radius: 5px;*/
+    /*box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.3);*/
     /*box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.7), 0px 0px 3px rgba(255, 255, 255, 0.7);*/
 }
 #summoners_perc_area {
-    top: 266px;
+    /*top: 266px;*/
+    bottom: 4px;
     visibility: hidden;
 }
 #champions_perc_area {
-    top: 181px;
+    /*top: 183px;*/
+    bottom: 87px;
     visibility: hidden;
 }
-.j_perc_above_text {
-    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-    font-variant: small-caps;
-    text-shadow: 0px 0px 2px #000, 0px 0px 5px #000;
-    display: block;
-    top: 1px;
-    width: 100%;
-    /*margin-left: auto;*/
-    /*margin-right: auto;*/
+.j_perc_label {
     /*position: relative; */
     position: absolute;
     text-align: center;
-    font-size: 12px;
+    font-size: 11px;
+    width: 100%;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    /*font-variant: small-caps;*/
+    text-shadow: 0px 0px 2px #000, 0px 0px 5px #000;
+    display: block;
+}
+.j_perc_above_text {
+    top: 2px;
+    color: #f0f0f0;
 }
 .j_perc_below_text {
-    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
-    font-variant: small-caps;
-    text-shadow: 0px 0px 2px #000, 0px 0px 5px #000;
-    top: 60px;
-    width: 100%;
-    position: relative;
-    position: absolute;
-    text-align: center;
-    font-size: 12px;
+    top: 62px;
+    color: #fff;
 }
 .j_perc_cont {
     position: absolute;
@@ -647,11 +698,11 @@ label {
 }
 .j_perc_marker_lshift {
     position: absolute;
-    left: 5px;
+    left: 10px;
 }
 .j_perc_marker_rshift {
     position: absolute;
-    right: 5px;
+    right: 10px;
 }
 .j_perc_meter {
     /*right: 105px;*/
@@ -692,7 +743,7 @@ label {
     /*vertical-align: bottom;*/
     margin-left: auto;
     margin-right: auto;
-    width: 98px;
+    width: 96px;
     height: 50px;
     font-size: 25px;
     font-weight: bold;
@@ -715,6 +766,7 @@ label {
 }
 .j_perc_symbol {
     z-index: 1000;
+    position: relative;
     font-size: 15px;
     display: inline-block;
     vertical-align: bottom;
@@ -722,6 +774,7 @@ label {
     /*text-shadow: 0px 0px 5px #005, 0px 0px 5px #005, 0px 0px 10px #005,*/
         /*0px 0px 10px #005;*/
     text-shadow: 0px 0px 5px #005, 0px 0px 10px #005;
+    letter-spacing: -3.5px;
 }
 
 .orb_shift {
@@ -964,7 +1017,7 @@ label {
 }
 
 .role_option {
-    /*font-size: 5px;*/
+    font-size: 9px;
     color: #fff;
 }
 .role_option_0 {
@@ -986,7 +1039,7 @@ label {
     font-variant: normal;
     font-size: 9px;
     height: 22px;
-    width: 100px;
+    width: 125px;
     border-top-width: 0px;
     border-bottom-width: 0px;
     border-left-width: 0px;
@@ -996,6 +1049,188 @@ label {
     /*border-width: 1px;*/
     border-color: #777;
     padding-left: 2px;
+}
+
+.recc_button {
+    /*visibility: hidden;*/
+    position: absolute;
+    display: block;
+    right: 6px;
+    top: 6px;
+    height: 20px;
+    width: 20px;
+    background-color: #303030;
+    border: none;
+    cursor: pointer;
+    color: #ff0;
+    /*color: #fff;*/
+    /*padding: 0;*/
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    /*font-variant: small-caps;*/
+    border-radius: 50%;
+    box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.7);
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    text-align: right;
+    /*word-spacing: 0px;*/
+}
+.recc_button:hover {
+    background-color: #444;
+}
+.recc_button:active {
+    background-color: #222;
+}
+#recc_cont {
+    visibility: hidden;
+    position: absolute;
+    z-index: 50;
+    background: url('imgs/recc_tile.png') 0 0 repeat;
+    /*background-color: #fff;*/
+    width: 280px;
+    height: 250px;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-variant: small-caps;
+    font-size: 12px;
+    border-radius: 4px;
+    /*padding-left: 5px;*/
+    /*padding-right: 5px;*/
+    /*padding-top: 3px;*/
+    box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.7);
+    letter-spacing: 2px;
+}
+#recc_labels {
+    position: relative;
+    /*top: 6px;*/
+}
+.recc_label {
+    /*font-size: 8px;*/
+    position: relative;
+    display: inline-block;
+    width: 47.8%;
+    letter-spacing: normal;
+    text-align: center;
+    line-height: 10px;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+}
+#recc_left_label {
+    height: 25px;
+    /*border-right-style: solid;*/
+    /*border-right-width: 1px;*/
+    /*border: 0;*/
+}
+#recc_right_label {
+    height: 15px;
+    left: -4px;
+}
+#recc_loader {
+    /*left: 133px;*/
+    display: block;
+    position: relative;
+    width: 64px;
+    height: 64px;
+    margin-left: auto;
+    margin-right: auto;
+    right: 3px;
+    top: 57px;
+}
+#recc_outer_area {
+    visibility: hidden;
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 205px;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+    /*float: bottom;*/
+    bottom: 0px;
+    overflow-y: scroll;
+    text-align: left;
+    font-variant: normal;
+    font-size: 10px;
+    letter-spacing: normal;
+    /*border-radius: 4px;*/
+    /*line-height: 5px;*/
+}
+#recc_inner_area {
+    /*background-color: rgba(255, 255, 255, 0.2);*/
+    width: 100%;
+    height: 2538px;
+    /*border-radius: 4px;*/
+}
+.recc_champion {
+    height: 18px;
+    width: 135px;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+    position: absolute;
+    display: block;
+    /*right: 0px;*/
+    background-color: rgba(50, 50, 50, 0.5);
+    cursor: pointer;
+}
+.recc_champion:hover {
+    background-color: rgba(100, 100, 100, 0.5);
+}
+.recc_champion:active {
+    background-color: rgba(50, 50, 50, 0.0);
+}
+.recc_champion_pl {
+    right: 0px;
+}
+.recc_thumb {
+    position: absolute;
+    display: block;
+    width: 18px;
+    height: 18px;
+    /*background-color: #fff;*/
+    /*background-image: url('https://ddragon.leagueoflegends.com/cdn/8.20.1/img/champion/Rumble.png');*/
+    background-size: 18px;
+    /*float: left;*/
+}
+.recc_name {
+    display: block;
+    position: absolute;
+    height: 100%;
+    left: 21px;
+    padding-top: 2px;
+    /*width: 30px;*/
+    /*right: 0px;*/
+    /*float: left;*/
+}
+.recc_perc {
+    padding-top: 2px;
+    display: block;
+    position: absolute;
+    height: 100%;
+    /*width: 10px;*/
+    right: 0px;
+    /*float: right;*/
+    /*right: 0px;*/
+}
+
+/* recc scrollbar */
+/* width */
+::-webkit-scrollbar {
+    width: 9px;
+}
+/* Track */
+::-webkit-scrollbar-track {
+    background: #101010;
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.3);
+    /*box-shadow: inset 0 0 5px #777, inset 0 0 7px #777;*/
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+    /*background: #3a3a3a;*/
+}
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #ddd; 
+    /*background: #444; */
 }
 
 .name_cont {
@@ -1009,7 +1244,8 @@ label {
 
 }
 .name_input {
-    width: 131px;
+    width: 148px;
+    /*width: 131px;*/
     height: 20px;
     background-color: #222;
     color: #fff;
@@ -1024,10 +1260,11 @@ label {
     height: 16px;
     width: 16px;
     top: 3px;
-    right: 23px;
+    right: 5px;
+    /*right: 23px;*/
     border: none;
     cursor: pointer;
-    background-color: rgba(120, 120, 120, 0.7);
+    background-color: rgba(110, 110, 110, 0.7);
     /*border-width: 1px;*/
     /*border-style: solid;*/
     /*border-color: #000;*/
@@ -1039,11 +1276,11 @@ label {
 }
 .name_clear:hover {
     /*border-style: solid;*/
-    background-color: rgba(180, 180, 180, 0.9);
+    background-color: rgba(160, 160, 160, 0.9);
 }
 .name_clear:active {
     /*border-style: solid;*/
-    background-color: rgba(100, 100, 100, 0.7);
+    background-color: rgba(90, 90, 90, 0.7);
 }
 .cross {
     /*z-index: 150;*/
@@ -1109,9 +1346,9 @@ label {
     float: left;
     width: 145px;
     height: 16px;
-    display: block;
-    left: 125px;
-    top: 51px;
+    left: 3px;
+    /*left: 125px;*/
+    /*top: 51px;*/
     /*border-width: 1px;*/
     /*border-style: solid;*/
 }
@@ -1124,9 +1361,9 @@ label {
     float: left;
     width: 145px;
     height: 16px;
-    display: block;
-    left: 125px;
-    top: 50px;
+    /*left: 125px;*/
+    /*top: 50px;*/
+    right: 7px;
     text-align: right;
     /*border-width: 1px;*/
     /*border-style: solid;*/
@@ -1188,7 +1425,6 @@ label {
     /*font-weight: bold;*/
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
-    font-size: 17px;
     /*background-color: #222;*/
     text-shadow: 0px 0px 2px #000, 0px 0px 5px #000, 0px 0px 15px #000;
 }
@@ -1212,7 +1448,7 @@ label {
     border-radius: 3px;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
-    font-size: 16px;
+    font-size: 14px;
 }
 #switch_cols_button {
     display: block;
@@ -1229,6 +1465,7 @@ label {
     padding: 0;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
+    font-size: 13px;
     border-radius: 8px;
     padding-bottom: 5px;
     box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.7);
@@ -1331,6 +1568,7 @@ label {
     top: 0px;
     /*float: left;*/
     clear: both;
+    -webkit-backface-visibility: hidden;
 }
 .clear_buttons_side_cont {
     height: 30px;
@@ -1375,8 +1613,10 @@ label {
     padding: 0;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
+    font-size: 12px;
     border-radius: 8px;
-    padding-bottom: 5px;
+    padding-bottom: 1px;
+    /*padding-top: 0px;*/
     box-shadow: 0px 0px 3px rgba(255, 255, 255, 0.7);
 
 }
@@ -1400,7 +1640,7 @@ label {
 .clear_horz_line {
     display: block;
     position: absolute;
-    width: 84px;
+    width: 54px;
     height: 1px;
     top: 10px;
     border: 0;
@@ -1441,9 +1681,16 @@ label {
 
 #clear_button_all {
     z-index: 100;
-    width: 40px;
+    width: 41px;
     /*right: -22px;*/
-    left: 47%;
+    left: 51.3%;
+    top: 31px;
+}
+#undo_button {
+    z-index: 100;
+    width: 54px;
+    /*right: -22px;*/
+    left: 42.9%;
     top: 31px;
 }
 
@@ -1517,4 +1764,91 @@ label {
     background-size: cover;
     /*border-width: 1px;*/
     /*border-style: solid;*/
+}
+
+
+/* recc_loader */
+.lds-roller {
+  display: inline-block;
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+.lds-roller div {
+  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 32px 32px;
+}
+.lds-roller div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  margin: -3px 0 0 -3px;
+}
+.lds-roller div:nth-child(1) {
+  animation-delay: -0.036s;
+}
+.lds-roller div:nth-child(1):after {
+  top: 50px;
+  left: 50px;
+}
+.lds-roller div:nth-child(2) {
+  animation-delay: -0.072s;
+}
+.lds-roller div:nth-child(2):after {
+  top: 54px;
+  left: 45px;
+}
+.lds-roller div:nth-child(3) {
+  animation-delay: -0.108s;
+}
+.lds-roller div:nth-child(3):after {
+  top: 57px;
+  left: 39px;
+}
+.lds-roller div:nth-child(4) {
+  animation-delay: -0.144s;
+}
+.lds-roller div:nth-child(4):after {
+  top: 58px;
+  left: 32px;
+}
+.lds-roller div:nth-child(5) {
+  animation-delay: -0.18s;
+}
+.lds-roller div:nth-child(5):after {
+  top: 57px;
+  left: 25px;
+}
+.lds-roller div:nth-child(6) {
+  animation-delay: -0.216s;
+}
+.lds-roller div:nth-child(6):after {
+  top: 54px;
+  left: 19px;
+}
+.lds-roller div:nth-child(7) {
+  animation-delay: -0.252s;
+}
+.lds-roller div:nth-child(7):after {
+  top: 50px;
+  left: 14px;
+}
+.lds-roller div:nth-child(8) {
+  animation-delay: -0.288s;
+}
+.lds-roller div:nth-child(8):after {
+  top: 45px;
+  left: 10px;
+}
+@keyframes lds-roller {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }

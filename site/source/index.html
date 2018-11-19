@@ -30,7 +30,8 @@
 </head>
 <body>
 <div id="top_banner"><div id="nav_cont">
-    <button id="home_button" class="nav_button">The Lorb</button>
+    <!-- <button id="home_button" class="nav_button">The Lorb</button> -->
+    <button id="home_button" class="nav_button">The Lorb<span id="beta_label"><sup> beta</sup></span></button>
     <div class="nav_sep">|</div>
     <button id="blog_button" class="nav_button">Blog</button>
     <!-- <div class="nav_sep">|</div> -->
@@ -39,17 +40,17 @@
         <div id="region_cont">
             <div id="region_text">&nbsp;region: </div>
             <select id="region_select">
-                <option value="EUW">EUW &nbsp;(Europe West)</option>
-                <option value="EUNE">EUNE (Europe Nordic & East)</option>
-                <option value="NA">NA &nbsp;&nbsp;&nbsp;&nbsp;(North America)</option>
-                <option value="KR">KR &nbsp;&nbsp;&nbsp;&nbsp;(Korea)</option>
-                <option value="OCE">OCE &nbsp;&nbsp;(Oceania)</option>
-                <option value="BR">BR &nbsp;&nbsp;&nbsp;&nbsp;(Brazil)</option>
-                <option value="RU">RU &nbsp;&nbsp;&nbsp;&nbsp;(Russia)</option>
-                <option value="LAN">LAN &nbsp;&nbsp;(Latin America North)</option>
-                <option value="LAS">LAS &nbsp;&nbsp;(Latin America South)</option>
-                <option value="JP">JP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Japan)</option>
-                <option value="TR">TR &nbsp;&nbsp;&nbsp;&nbsp;(Turkey)</option>
+                <option value="EUW">EUW &nbsp;&nbsp;(Europe West)</option>
+                <option value="EUNE">EUNE &nbsp;(Europe Nordic & East)</option>
+                <option value="NA">NA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(North America)</option>
+                <option value="KR">KR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Korea)</option>
+                <option value="OCE">OCE &nbsp;&nbsp;&nbsp;(Oceania)</option>
+                <option value="BR">BR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Brazil)</option>
+                <option value="RU">RU &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Russia)</option>
+                <option value="LAN">LAN &nbsp;&nbsp;&nbsp;(Latin America North)</option>
+                <option value="LAS">LAS &nbsp;&nbsp;&nbsp;(Latin America South)</option>
+                <option value="JP">JP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Japan)</option>
+                <option value="TR">TR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Turkey)</option>
             </select>
         </div>
         <div id="elo_cont">
@@ -95,9 +96,13 @@
 
 <div id="app_area">
     <div id="result_area">
+        <div id="timestamp_area">
+            Match as it appeared at <span id="timestamp_text">3:02pm,<br />Saturday 15th July 2033</span>
+        </div>
         <div id="share_area">
-            <textarea id="share_input" value=""></textarea>
-            <button id="share_copy_button"><span id="share_copy_button_text">&#128203; copy share link</span></button>
+            <input type="text" id="share_input" value=""></input>
+            <button id="share_copy_button"><span id="share_copy_button_text">&#128203; COPY SHARE LINK</span></button>
+            <!-- <button id="share_copy_button"><span id="share_copy_button_text">&#128203; copy share link</span></button> -->
             <div id="share_suff_text"></div>
         </div>
         <div id="status_area">
@@ -107,7 +112,7 @@
             <!-- <div id="warning_subtext">Summoner(s) not found</div> -->
         </div>
         <div id="perc_area">
-            <div id="result_perc"><span id="perc_text">50</span><span id="perc_symb">%</span></div>
+            <div id="result_perc"><span id="perc_text">50</span><span id="perc_symb">&nbsp;%</span></div>
             <span id="win_text">&nbsp;<span id="res_team_col">blue</span> team wins</span>
             <div class="orb_load_ring"></div>
             <div id="perc_meter"><div class="perc_arrow"></div></div>
@@ -118,16 +123,38 @@
         </div>
     </div>
     <div id="pl_area">
+        <div id="recc_cont">
+            <!-- &nbsp;&nbsp;PICK RECOMMENDATIONS<br /> -->
+            <!-- <center>pick recommendations</center> -->
+            <center>&nbsp;&nbsp;&nbsp;pick recommendations<sup style="color: #bb99ff; letter-spacing: normal;">beta</sup></center>
+            <div id="recc_labels">
+                <div id="recc_left_label" class="recc_label">for support vs.<br />nunu & willump/aurelion</div>|
+                <!-- <div id="recc_left_label" class="recc_label">for support</div>| -->
+                <div id="recc_right_label" class="recc_label">for grumbling</div>
+            </div>
+            <div id="recc_loader">
+                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            </div>
+            <div id="recc_outer_area">
+                <div id="recc_inner_area">
+                    <!-- div id="recc_ch_rumble" class="recc_champion">
+                        <div id="recc_ch_rumble_img" class="recc_thumb"></div>
+                        <div id="recc_ch_rumble_name" class="recc_name">Nunu & Willump</div>
+                        <div id="recc_ch_rumble_perc" class="recc_perc">55.7%</div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
         <div id="l_team_area" class="team_area pl_w_obj"></div>
         <div id="r_team_area" class="team_area pl_w_obj"></div>
         <button id="refresh_button"></button>
         <div id="champions_perc_area" class="j_perc_area">
-            <div class="j_perc_above_text">by champions alone:</div>
-            <div class="j_perc_below_text"><span id="champions_perc_team_col">red</span> team wins</div>
+            <div class="j_perc_above_text j_perc_label">by champions alone:</div>
+            <div class="j_perc_below_text j_perc_label"><span id="champions_perc_team_col">red</span> team wins</div>
             <div id="champions_perc_warning_symb" class="p_warning_symb"></div>
             <div id="champions_perc_meter" class="j_perc_meter"><div class="perc_arrow"></div></div>
             <div class="j_res_perc">
-                <div id="champions_perc" class="j_perc">50</div><div id="champions_perc_symb" class="j_perc_symbol">%</div>
+                <div id="champions_perc" class="j_perc">50</div><div id="champions_perc_symb" class="j_perc_symbol">&nbsp;%</div>
             </div>
             <div class="j_perc_cont">
                 <div class="orb_shift"><div class="orb_load_ring"></div></div>
@@ -140,12 +167,12 @@
             </div>
         </div>
         <div id="summoners_perc_area" class="j_perc_area">
-            <div class="j_perc_above_text">by players alone:</div>
-            <div class="j_perc_below_text"><span id="summoners_perc_team_col">blue</span> team wins</div>
+            <div class="j_perc_above_text j_perc_label">by players alone:</div>
+            <div class="j_perc_below_text j_perc_label"><span id="summoners_perc_team_col">blue</span> team wins</div>
             <div id="summoners_perc_warning_symb" class="p_warning_symb"></div>
             <div id="summoners_perc_meter" class="j_perc_meter"><div class="perc_arrow"></div></div>
             <div class="j_res_perc">
-                <div id="summoners_perc" class="j_perc">50</div><div id="summoners_perc_symb" class="j_perc_symbol">%</div>
+                <div id="summoners_perc" class="j_perc">50</div><div id="summoners_perc_symb" class="j_perc_symbol">&nbsp;%</div>
             </div>
             <div class="j_perc_cont">
                 <div class="orb_shift"><div class="orb_load_ring"></div></div>
@@ -166,6 +193,7 @@
             <button id="switch_cols_button">
                 <div id="swb_larr"></div>&nbsp;&nbsp;&nbsp;swap sides&nbsp;&nbsp;&nbsp;<div id="swb_rarr"></div>
             </button>
+            <button id="undo_button" class="clear_button">&#8634; undo</button>
             <button id="clear_button_all" class="clear_button">&#128465; all</button>
             <div id="clear_buttons_l_cont" class="clear_buttons_side_cont">
                 <div id="clear_ch_line_l" class="clear_line"></div>
