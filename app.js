@@ -4,7 +4,7 @@ var app = express();
 // This is essentially a shortcut node.js app for previewing changes to the
 // client side webapp before generating all static site files using hexo
 
-app.use(express.static(__dirname + '/site/source')); //__dir and not _dir
+app.use(express.static(__dirname + '/site/public')); //__dir and not _dir
 var port = 80; // you can use any port
 app.listen(port);
 console.log('server on ' + port);

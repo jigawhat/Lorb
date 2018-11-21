@@ -27,10 +27,21 @@ category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
 skip_render:
-  - index.html
-  - thankyou.html
-  - chosen*/*
+  - chosen_v1.8.7/*
+  - chosen-dark/*
   - jquery-animateNumber-0.0.14/*
+  - jquery-onenter/*
+  - jquery/*
+  - index.html
+  - test.html
+  - thankyou.html
+  - thankyou/*
+  - contact.html
+  - contact/*
+  - changelog.html
+  - changelog/*
+  - index.js
+  - obfuscated.js
 
 # Writing
 new_post_name: :title.md # File name of new posts

@@ -1946,3 +1946,100 @@ label {
     transform: rotate(360deg);
   }
 }
+
+#footer_links {
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 12px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+#footer_links a:link {
+    color: #eee;
+}
+#footer_links a:visited {
+    color: #ccc;
+}
+#footer_links a:active {
+    color: #ccc;
+}
+
+#thankyou_cont {
+    position: relative;
+    display: block;
+    top: 0px;
+    /*float: center;*/
+    width: 500px;
+    height: 135px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 15px;
+    background-color: rgba(0, 0, 0, 0.7);
+    top: 150px;
+    padding-top: 65px;
+    border-style: ridge;
+    border-color: #bb99ff;
+    box-shadow: 0px 0px 7px #bb99ff;
+}
+.thankyou_text {
+    font-size: 12px;
+    /*background-color: #fff;*/
+}
+#thankyou_iframe {
+    position: absolute;
+    display: block;
+    float: left;
+    top: 10px;
+    width: 400% !important;
+    height: 260% !important;
+    transform: scale(0.25);
+    transform-origin: 0 0;
+    width: 400px;
+    height: 150px;
+    border: none;
+    margin:0;
+    padding:0;
+    overflow: hidden;
+}
+
+
+#changelog_cont {
+    position: relative;
+    display: block;
+    width: 600px;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    /*text-align: center;*/
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 13px;
+    background-color: rgba(0, 0, 0, 0.7);
+    top: 44px;
+    padding-top: 5px;
+    /*border-style: ridge;*/
+    /*border-color: #bb99ff;*/
+    /*box-shadow: 0px 0px 7px #fff;*/
+}
+
+
+#contact_cont {
+    position: relative;
+    display: block;
+    width: 600px;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 13px;
+    background-color: rgba(0, 0, 0, 0.7);
+    top: 44px;
+    padding-top: 23px;
+    /*border-style: ridge;*/
+    /*border-color: #bb99ff;*/
+    /*box-shadow: 0px 0px 7px #fff;*/
+}
+
+

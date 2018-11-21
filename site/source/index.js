@@ -124,16 +124,6 @@ $( function() {
     //     // using: function(position, feedback) { $( this ).css(position); } }
     // });
 
-    $( "#home_button" ).click(function() { // Home button
-        window.location.href = "";
-    });
-    $( "#blog_button" ).click(function() { // Blog button
-        window.location.href = "blog";
-    });
-    // $( "#clog_button" ).click(function() { // Changelog button
-        // window.location.href = "changelog"
-    // });
-
     // Set region from cookie
     var region = 0;
     var reg_ind_ck = Cookies.get('region_index');
@@ -600,7 +590,7 @@ $( function() {
                     plph_str += '}';
                     alert('Fatal error! Heisenbug code-' + 420 +
                         ', please send a report with details on what you were doing when' + 
-                        ' this box appeared to the monkeys at contact@lorg.gg and give them this information: \n' +
+                        ' this box appeared to contact@lorb.gg and give copy this information: \n' +
                         'PLPH: ' + plph_str + '\nRD: ' + rd + "\n" + 
                         'The page will now refresh. Click undo to restore previous composition.\n' +
                         'Apologies for any inconvenience caused.');
