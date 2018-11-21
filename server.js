@@ -13,7 +13,8 @@ const amqp = require('amqplib/callback_api');
 
 
 // Script options
-const port = 32077;
+const port = 8080;
+// const port = 32077;
 const n_workers = os.cpus().length;
 
 
