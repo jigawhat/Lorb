@@ -1,0 +1,26 @@
+{
+  "name": "lorb",
+  "version": "0.1.0",
+  "description": "Lorb Front End",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jigawhat/Lorb.git"
+  },
+  "author": "Alfonso White",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jigawhat/Lorb/issues"
+  },
+  "homepage": "https://github.com/jigawhat/Lorb#readme",
+  "dependencies": {
+    "amqplib": "^0.5.2",
+    "cluster": "^0.7.7",
+    "express": "^4.16.4",
+    "hexo": "^3.8.0",
+    "jquery": "^3.3.1"
+  }
+}
