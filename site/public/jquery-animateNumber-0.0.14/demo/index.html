@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>The Lorb</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Fun level 0 %.                       var decimal_places = 1;   var decimal_factor = decimal_places === 0 ? 1 : decimal_places * 10;    $(&apos;#target&apos;).animateNumber(     {       number: 100 * decimal_fac">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Lorb">
+<meta property="og:url" content="http://lorb.gg/jquery-animateNumber-0.0.14/demo/index.html">
+<meta property="og:site_name" content="The Lorb">
+<meta property="og:description" content="Fun level 0 %.                       var decimal_places = 1;   var decimal_factor = decimal_places === 0 ? 1 : decimal_places * 10;    $(&apos;#target&apos;).animateNumber(     {       number: 100 * decimal_fac">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2016-12-07T09:11:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="The Lorb">
+<meta name="twitter:description" content="Fun level 0 %.                       var decimal_places = 1;   var decimal_factor = decimal_places === 0 ? 1 : decimal_places * 10;    $(&apos;#target&apos;).animateNumber(     {       number: 100 * decimal_fac">
+  
+    <link rel="alternate" href="/atom.xml" title="The Lorb" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">The Lorb</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://lorb.gg"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="page-" class="article article-type-page" itemscope="" itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/jquery-animateNumber-0.0.14/demo/index.html" class="article-date">
+  <time datetime="2018-10-21T02:35:18.522Z" itemprop="datePublished">2018-10-21</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Fun level <span id="target" style="font-size: 10px; color: red;">0 %</span>.</p>
+
+<!--script src="http://code.jquery.com/jquery-2.0.3.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-2.0.2.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-2.0.1.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-2.0.0.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.10.2.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.10.1.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.10.0.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.9.1.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.9.0.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.8.3.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.8.2.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.8.1.min.js"></script-->
+<!--script src="http://code.jquery.com/jquery-1.8.0.min.js"></script-->
+<script src="http://code.jquery.com/jquery-1.7.0.min.js"></script>
+
+<script src="jquery.color.min.js"></script>
+<script src="../jquery.animateNumber.min.js"></script>
+
+<script>
+  var decimal_places = 1;
+  var decimal_factor = decimal_places === 0 ? 1 : decimal_places * 10;
+
+  $('#target').animateNumber(
+    {
+      number: 100 * decimal_factor,
+      color: 'green',
+      'font-size': '30px',
+
+      numberStep: function(now, tween) {
+        var floored_number = Math.floor(now) / decimal_factor,
+            target = $(tween.elem);
+        if (decimal_places > 0) {
+          floored_number = floored_number.toFixed(decimal_places);
+        }
+
+        target.text(floored_number + ' %');
+      }
+    },
+    15000
+  )
+</script>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://lorb.gg/jquery-animateNumber-0.0.14/demo/index.html" data-id="cjorekoo60008qg93d8yknmrm" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">October 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2018/10/20/hello-world/">Behold The Lorb</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2018 Lorb.gg<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

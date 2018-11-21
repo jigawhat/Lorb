@@ -1,0 +1,311 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>The Lorb</title>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" type="text/css" href="index.css">
+
+<link rel="icon" type="image/png" href="favicon.png">
+
+<script src="jquery/jquery-3.3.1.min.js"></script>
+<script src="jquery/jquery-ui.js"></script>
+
+<link rel="stylesheet" type="text/css" href="chosen_v1.8.7/chosen.min.css">
+<link rel="stylesheet" type="text/css" href="chosen-dark/chosen-dark.css">
+<script src="chosen_v1.8.7/chosen.jquery.min.js"></script>
+<!-- <script src="jquery-onenter/jquery.OnEnter.js"></script> -->
+<script src="jquery-animateNumber-0.0.14/jquery.animateNumber.js"></script>
+<script src="jquery/js.cookie.min.js"></script>
+
+<!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script> -->
+
+<script src="navbar.js"></script>
+<script src="champ_list.js"></script>
+<script src="index.js"></script>
+
+</head>
+<body>
+
+<div id="top_banner"><div id="nav_cont">
+    <!-- <div id="home_button" class="nav_button">The Lorb</div> -->
+    <div id="home_button" class="nav_button"><div class="navbutton_text" class="home_button_text">The Lorb<span id="beta_label"><sup> beta</sup></span></div></div>
+    <div class="nav_sep">|</div>
+    <div id="blog_button" class="nav_button"><div class="navbutton_text" id="blog_button_text">Blog</div></div>
+    <!-- <div class="nav_sep">|</div> -->
+    <!-- <div id="clog_button" class="nav_button">Changelog</div> -->
+    <div id="nav_r_cont">
+        <div id="region_cont">
+            <div id="region_text">&nbsp;region: </div>
+            <select id="region_select">
+                <option value="EUW">EUW &nbsp;&nbsp;(Europe West)</option>
+                <option value="EUNE">EUNE &nbsp;(Europe Nordic & East)</option>
+                <option value="NA">NA &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(North America)</option>
+                <option value="KR">KR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Korea)</option>
+                <option value="OCE">OCE &nbsp;&nbsp;&nbsp;(Oceania)</option>
+                <option value="BR">BR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Brazil)</option>
+                <option value="RU">RU &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Russia)</option>
+                <option value="LAN">LAN &nbsp;&nbsp;&nbsp;(Latin America North)</option>
+                <option value="LAS">LAS &nbsp;&nbsp;&nbsp;(Latin America South)</option>
+                <option value="JP">JP &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Japan)</option>
+                <option value="TR">TR &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Turkey)</option>
+            </select>
+        </div>
+        <div id="elo_cont">
+            <div id="elo_text">&nbsp;avg. league: </div>
+            <select id="elo_select">
+                <option value="Auto">Auto</option>
+                <option value="Challenger">Challenger</option>
+                <option value="Master">Master</option>
+                <option value="D1">Diamond I</option>
+                <option value="D2">Diamond II</option>
+                <option value="D3">Diamond III</option>
+                <option value="D4">Diamond IV</option>
+                <option value="D5">Diamond V</option>
+                <option value="P1">Platinum I</option>
+                <option value="P2">Platinum II</option>
+                <option value="P3">Platinum III</option>
+                <option value="P4">Platinum IV</option>
+                <option value="P5">Platinum V</option>
+                <option value="G1">Gold I</option>
+                <option value="G2">Gold II</option>
+                <option value="G3">Gold III</option>
+                <option value="G4">Gold IV</option>
+                <option value="G5">Gold V</option>
+                <option value="S1">Silver I</option>
+                <option value="S2">Silver II</option>
+                <option value="S3">Silver III</option>
+                <option value="S4">Silver IV</option>
+                <option value="S5">Silver V</option>
+                <option value="B1">Bronze I</option>
+                <option value="B2">Bronze II</option>
+                <option value="B3">Bronze III</option>
+                <option value="B4">Bronze IV</option>
+                <option value="B5">Bronze V</option>
+            </select>
+            <!-- <div id="elo_info">&#8505;</div> -->
+            <span class="elo_info_tooltip">
+                League ranking used when player data is missing.
+                'Auto' uses average of other players. If no data, 'Auto' = Challenger.
+            </span>
+        </div>
+    </div>
+</div></div>
+
+<div id="app_area">
+    <div id="result_area">
+        <div id="timestamp_area">
+            Match as it appeared at <span id="timestamp_text">3:02pm,<br />Saturday 15th July 2033</span>
+        </div>
+        <div id="share_area">
+            <input type="text" id="share_input" value="" />
+            <button id="share_copy_button"><span id="share_copy_button_text">&#x1F517; COPY SHARE LINK</span></button>
+            <!-- <button id="share_copy_button"><span id="share_copy_button_text">&#128203; copy share link</span></button> -->
+            <div id="share_suff_text"></div>
+        </div>
+        <div id="status_area">
+            <div id="warning_symb"></div>
+            <div id="warning_text">More data needed</div>
+            <div id="warning_subtext">Low accuracy model</div>
+            <!-- <div id="warning_subtext">Summoner(s) not found</div> -->
+        </div>
+        <div id="perc_area">
+            <div id="result_perc"><span id="perc_text">50</span><span id="perc_symb">&nbsp;%</span></div>
+            <span id="win_text">&nbsp;<span id="res_team_col">blue</span> team wins</span>
+            <div class="orb_load_ring"></div>
+            <div id="perc_meter"><div class="perc_arrow"></div></div>
+            <div class="perc_meter_left_marker"></div>
+            <div class="perc_meter_center_marker"></div>
+            <div class="perc_meter_right_marker"></div>
+            <div id="perc_warning_symb" class="p_warning_symb"></div>
+        </div>
+    </div>
+    <div id="pl_area">
+        <div id="recc_cont">
+            <!-- &nbsp;&nbsp;PICK RECOMMENDATIONS<br /> -->
+            <!-- <center>pick recommendations</center> -->
+            <center>&nbsp;&nbsp;&nbsp;pick recommendations<sup style="color: #bb99ff; letter-spacing: normal;">beta</sup></center>
+            <div id="recc_labels">
+                <div id="recc_left_label" class="recc_label">for support vs.<br />nunu & willump/aurelion</div>|
+                <!-- <div id="recc_left_label" class="recc_label">for support</div>| -->
+                <div id="recc_right_label" class="recc_label">for grumbling</div>
+            </div>
+            <div id="recc_loader">
+                <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            </div>
+            <div id="recc_outer_area">
+                <div id="recc_inner_area">
+                    <!-- div id="recc_ch_rumble" class="recc_champion">
+                        <div id="recc_ch_rumble_img" class="recc_thumb"></div>
+                        <div id="recc_ch_rumble_name" class="recc_name">Nunu & Willump</div>
+                        <div id="recc_ch_rumble_perc" class="recc_perc">55.7%</div>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+        <div id="l_team_area" class="team_area pl_w_obj"></div>
+        <div id="r_team_area" class="team_area pl_w_obj"></div>
+        <button id="refresh_button"></button>
+        <div id="champions_perc_area" class="j_perc_area">
+            <div class="j_perc_above_text j_perc_label">by champions alone:</div>
+            <div class="j_perc_below_text j_perc_label"><span id="champions_perc_team_col">red</span> team wins</div>
+            <div id="champions_perc_warning_symb" class="p_warning_symb"></div>
+            <div id="champions_perc_meter" class="j_perc_meter"><div class="perc_arrow"></div></div>
+            <div class="j_res_perc">
+                <div id="champions_perc" class="j_perc">50</div><div id="champions_perc_symb" class="j_perc_symbol">&nbsp;%</div>
+            </div>
+            <div class="j_perc_cont">
+                <div class="orb_shift"><div class="orb_load_ring"></div></div>
+                <div class="j_perc_marker_lshift">
+                    <div class="perc_meter_left_marker j_perc_marker"></div>
+                </div>
+                <div class="j_perc_marker_rshift">
+                    <div class="perc_meter_right_marker j_perc_marker"></div>
+                </div>
+            </div>
+        </div>
+        <div id="summoners_perc_area" class="j_perc_area">
+            <div class="j_perc_above_text j_perc_label">by players alone:</div>
+            <div class="j_perc_below_text j_perc_label"><span id="summoners_perc_team_col">blue</span> team wins</div>
+            <div id="summoners_perc_warning_symb" class="p_warning_symb"></div>
+            <div id="summoners_perc_meter" class="j_perc_meter"><div class="perc_arrow"></div></div>
+            <div class="j_res_perc">
+                <div id="summoners_perc" class="j_perc">50</div><div id="summoners_perc_symb" class="j_perc_symbol">&nbsp;%</div>
+            </div>
+            <div class="j_perc_cont">
+                <div class="orb_shift"><div class="orb_load_ring"></div></div>
+                <div class="perc_meter_center_marker j_perc_marker"></div>
+                <div class="j_perc_marker_lshift">
+                    <div class="perc_meter_left_marker j_perc_marker"></div>
+                </div>
+                <div class="j_perc_marker_rshift">
+                    <div class="perc_meter_right_marker j_perc_marker"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="below_pl_area">
+        <div id="below_inner_area">
+            <div id="l_team_col" class="team_col pl_w_obj"><div id="l_team_col_text" class="team_col_text"></div></div>
+            <div id="r_team_col" class="team_col pl_w_obj"><div id="r_team_col_text" class="team_col_text"></div></div>
+            <button id="switch_cols_button">
+                <div id="swb_larr"></div>&nbsp;&nbsp;&nbsp;swap sides&nbsp;&nbsp;&nbsp;<div id="swb_rarr"></div>
+            </button>
+            <button id="undo_button" class="clear_button">&#8634; undo</button>
+            <button id="clear_button_all" class="clear_button">&#128465; all</button>
+            <div id="clear_buttons_l_cont" class="clear_buttons_side_cont">
+                <div id="clear_ch_line_l" class="clear_line"></div>
+                <div id="clear_pl_line_l" class="clear_line"></div>
+                <div id="clear_horz_line_l" class="clear_horz_line"></div>
+                <button id="clear_ch_button_l" class="clear_button">&#128465;</button>
+                <button id="clear_button_l" class="clear_button">&#128465; both</button>
+                <button id="clear_pl_button_l" class="clear_button">&#128465;</button>
+            </div>
+            <div id="clear_buttons_l_cont" class="clear_buttons_side_cont">
+                <div id="clear_ch_line_r" class="clear_line"></div>
+                <div id="clear_pl_line_r" class="clear_line"></div>
+                <div id="clear_horz_line_r" class="clear_horz_line"></div>
+                <button id="clear_ch_button_r" class="clear_button">&#128465;</button>
+                <button id="clear_button_r" class="clear_button">&#128465; both</button>
+                <button id="clear_pl_button_r" class="clear_button">&#128465;</button>
+            </div>
+            <div id="chat_import_cont">
+                <textarea id="chat_import_input" placeholder="paste full chat log here &#x2702;" value=""></textarea>
+                <!-- <button id="chat_import_button">paste chat log</button> -->
+                <div id="chat_import_text"></div>
+            </div>
+            <div id="lp_calculator_area">
+                <div id="lp_win" class="lp_receiving">WIN LP</div>
+                <div id="lp_loss" class="lp_receiving">LOSS LP</div>
+                Expected LP gain: ( 0.<span id="lp_w_perc">50</span> &times; <input id="win_lp_input" class="lp_input" type="text" value="15" /> ) + ( 0.<span id="lp_l_perc">50</span> &times; -<input id="loss_lp_input" class="lp_input" type="text" value="15" /> ) = <span id="lp_expected">0</span> LP
+            </div>
+            <div id="options_area">
+                <div id="options_inner_area">
+                    <div id="options_title"><u>Options</u></div>
+                    <div id="options_options">
+                        <label><input type="checkbox" id="winning_perc_box" checked /><span id="winning_perc_text">
+                            Display winning %
+                        </span></label>
+                    </div>
+                </div>
+            </div>
+            <div id="donate_button_cont">
+
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <input type="hidden" name="cmd" value="_s-xclick" />
+                <input type="hidden" name="hosted_button_id" value="DA5585GF448D2" />
+                <input type="image" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                <img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
+                </form>
+
+                Lorb.gg is currently supported by donations. Please feed us!
+            </div>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <div id="footer_links">
+                <a href="/changelog/">Changelog</a> • <a href="/contact/">Contact </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="bottom_ad">
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- lorb_bottom -->
+<ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-6092971386403783"
+     data-ad-slot="8099558161"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+
+
+<!-- Default Statcounter code for Lorb.gg http://lorb.gg -->
+<script type="text/javascript">
+var sc_project=11878348; 
+var sc_invisible=1; 
+var sc_security="71a2f054"; 
+</script>
+<script type="text/javascript"
+src="https://www.statcounter.com/counter/counter.js"
+async></script>
+<noscript><div class="statcounter"><a title="Web Analytics"
+href="http://statcounter.com/" target="_blank"><img
+class="statcounter"
+src="//c.statcounter.com/11878348/0/71a2f054/1/" alt="Web
+Analytics"></a></div></noscript>
+<!-- End of Statcounter Code -->
+
+</body>
+</html>
+
+
