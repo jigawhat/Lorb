@@ -43,7 +43,7 @@ if(cluster.isMaster) {  // Cluster master
     }
 
     // amqp.connect('amqp://localhost', function(err, conn) {});
-    amqp.connect('amqp://localhost/match', function(err, conn) {
+    amqp.connect('amqp://localhost', function(err, conn) {
                 
         // var app = require('express')();
         // app.all('/*', function(req, res) {res.send('process ' + process.pid + ' says hello!').end();})
@@ -55,7 +55,7 @@ if(cluster.isMaster) {  // Cluster master
         // Only accept requests under a certain size
         app.use(bodyParser.text({limit: '0.001MB', type: "application/x-www-form-urlencoded"}));
         // app.use(bodyParser.text({limit: '0.0005MB', type: "gzip"}));
-        app.post('/', function(req, res) {
+        app.post('/match/', function(req, res) {
 
             // console.log("here");
             if (req.method == 'POST') {
