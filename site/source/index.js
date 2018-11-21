@@ -41,7 +41,7 @@ function conv_name(name) {
 
 // const hostn = "http://lorb.gg";
 // const hostn = "http://192.168.0.18:8080";
-const hostn = "http://" + document.location.hostname;
+const hostn = "https://" + document.location.hostname;
 const status_fade_duration = 300;           // Status box fade in/out duration in milliseconds
 const refresh_sleep_time = (7 + 1) * 1000;  // Number of milliseconds to sleep for before refreshing
 const cached_lifespan = 60 * 5 * 1000;      // Cached request lifespan in milliseconds
@@ -738,7 +738,7 @@ $( function() {
 
     function send_pred_req(rq_data, shortlink, comp, callback) {
         var d = [rq_data, region, avg_elo, curr_req_i, session_id, shortlink, comp];
-        var server_url = hostn + ":32077";
+        var server_url = hostn + "/match";
         // var server_url = "http://" + document.location.hostname + ":32077";
 
         $.post(server_url, JSON.stringify(d), callback, "json");
