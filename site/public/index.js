@@ -738,7 +738,7 @@ $( function() {
 
     function send_pred_req(rq_data, shortlink, comp, callback) {
         var d = [rq_data, region, avg_elo, curr_req_i, session_id, shortlink, comp];
-        var server_url = hostn + "/match/";
+        var server_url = hostn + "/match/:8080";
         // var server_url = "http://" + document.location.hostname + ":32077";
         console.log(server_url);
         $.post(server_url, JSON.stringify(d), callback, "json");
