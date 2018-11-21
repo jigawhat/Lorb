@@ -7,9 +7,9 @@ body {
     color: white;
     font-family: Arial, Helvetica, sans-serif;
 
-    /*padding: 0;*/
+    padding: 0;
     margin: 0;
-    /*border: 0;*/
+    border: 0;
 
     z-index: -1;
 }
@@ -54,7 +54,7 @@ label {
     color: #fff;
 }
 .nav_button {
-    display: inline;
+    display: inline-block;
     position: relative;
     /*float: left;*/
     background-color: rgba(255, 255, 255, 0.0);
@@ -65,7 +65,8 @@ label {
     font-variant: inherit;
     color: inherit;
     margin: 0;
-    padding: 0;
+    /*padding-top: 5px;*/
+    /*padding: 0;*/
     text-shadow: 0px 0px 2px #000, 0px 0px 4px #000;
 }
 .nav_button:hover {
@@ -76,13 +77,13 @@ label {
 }
 .nav_sep {
     font-size: 12px;
-    display: inline;
+    display: inline-block;
     position: relative;
     height: 100%;
-    width: 1px;
-    padding: 0;
+    width: 5px;
     margin: 0;
     border: 0;
+    top: 6px;
 }
 #home_button {
     width: 105px;
@@ -91,14 +92,28 @@ label {
     font-style: italic;
     /*padding-top: -3px;*/
     /*line-height: -13px;*/
-    padding-left: 18px;
-    padding-bottom: 3px;
+    /*padding-left: 18px;*/
+    /*padding-bottom: 3px;*/
     text-align: left;
     font-size: 12px;
     margin: 0;
     /*padding: 0;*/
-    padding-top: 4px
+    /*padding-top: 7px;*/
     /*padding-bottom: -5px;*/
+}
+.navbutton_text {
+    position: relative;
+    /*border-style: solid;*/
+    /*border-width: 1px;*/
+    width: 100%;
+    /*height: 100%;*/
+    /*height: 30px;*/
+    text-align: center;
+    /*padding-top: 8px;*/
+    top: 7px;
+}
+#blog_button_text {
+    top: 9px;
 }
 #beta_label {
     /*font-variant: normal;*/
@@ -109,10 +124,14 @@ label {
 }
 #blog_button {
     width: 70px;
-    padding-bottom: 3px;
+    /*padding-bottom: 3px;*/
     font-size: 12px;
     margin: 0;
-    padding: 0;
+    /*padding: 0;*/
+    /*padding-top: 5px;*/
+    /*padding-top: 7px;*/
+    top: -3px;
+    /*baseline-shift: 20px;*/
 }
 #clog_button {
     width: 100px;
@@ -135,7 +154,7 @@ label {
     position: relative;
     width: 105px;
     height: 20px;
-    top: 8px;
+    top: 10px;
     /*background-color: rgba(50, 50, 50, 0.5);*/
     /*border-width: 1px;*/
     /*border-style: solid;*/
@@ -174,7 +193,7 @@ label {
     position: relative;
     width: 165px;
     height: 20px;
-    top: 8px;
+    top: 10px;
     /*background-color: rgba(50, 50, 50, 0.5);*/
     /*border-width: 1px;*/
     /*border-style: solid;*/
@@ -648,7 +667,7 @@ label {
     display: block;
     position: absolute;
     /*top: 200px;*/
-    left: 39.7%;
+    left: 39.8%;
     width: 148px;
     height: 80px;
     background-color: rgba(0, 0, 0, 0.25);
@@ -960,7 +979,7 @@ label {
 #champion_grid {
     /*float: left;*/
     top: 50px;
-    left: 3px;
+    left: 21px;
     margin-left: auto;
     margin-right: auto;
     width: 550px;
@@ -1449,13 +1468,15 @@ label {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     font-variant: small-caps;
     font-size: 14px;
+    cursor: pointer;
 }
 #switch_cols_button {
     display: block;
     position: relative;
     margin-left: auto;
     margin-right: auto;
-    background-color: #303030;
+    /*background-color: #303030;*/
+    background-color: rgba(48, 48, 48, 0.4);
     border: none;
     cursor: pointer;
     color: #fff;
@@ -1472,11 +1493,17 @@ label {
 
 }
 #switch_cols_button:hover {
-    background-color: #353535;
+    background-color: rgba(53, 53, 53, 0.7);
 }
 #switch_cols_button:active {
-    background-color: #222;
+    background-color: rgba(34, 34, 34, 0.7);
 }
+/*#switch_cols_button:hover {*/
+    /*background-color: #353535;*/
+/*}*/
+/*#switch_cols_button:active {*/
+    /*background-color: #222;*/
+/*}*/
 #swb_larr {
     /*z-index: 500;*/
     display: inline-block;
@@ -1511,7 +1538,7 @@ label {
     margin-left: auto;
     margin-right: auto;
     font-size: 13px;
-    width: 170px;
+    width: 178px;
     height: 40px;
     top: -9px;
     left:  7px;
@@ -1521,13 +1548,14 @@ label {
 #chat_import_input {
     display: inline-block;
     height: 18px;
-    width: 140px;
+    width: 148px;
     background-color: #222;
     color: #fff;
     font-family: helvetica;
     font-size: 12px;
     padding-top: 3px;
-    padding-left: 4px;
+    padding-left: 3px;
+    border-width: 2px;
 }
 /*#chat_import_button {*/
     /*display: block;*/
@@ -1706,10 +1734,56 @@ label {
 }
 
 
+#lp_calculator_area {
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 12px;
+    width: 380px;
+    height: 40px;
+    top: 0px;
+    /*left:  7px;*/
+    /*text-align: center;*/
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    text-shadow: 0px 0px 2px #000, 0px 0px 4px #000;
+    background-color: rgba(0, 0, 0, 0.3);
+    line-height: 29px;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+    padding-left: 35px
+}
+.lp_input {
+    width: 17px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #fff;
+    font-family: helvetica;
+    font-size: 12px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.4);
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+.lp_receiving {
+    position: absolute;
+    display: block;
+    font-size: 8px;
+    top: 15px;
+    width: 40px;
+    height: 0px;
+}
+#lp_win {
+    left: 189px;
+}
+#lp_loss {
+    left: 290px;
+}
+
 #options_area {
     display: block;
     position: relative;
-    top: 50px;
+    top: 20px;
     width: 100%;
     height: 20px;
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
@@ -1722,6 +1796,7 @@ label {
     height: 100%;
     margin-left: auto;
     margin-right: auto;
+    text-align: center;
     /*border-width: 1px;*/
     /*border-style: solid;*/
 }
@@ -1745,6 +1820,25 @@ label {
     display: inline;
 }
 
+
+#donate_button_cont {
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    /*font-size: 12px;*/
+    width: 440px;
+    height: 80px;
+    text-align: center;
+    top: 80px;
+    padding-top: 12px;
+    /*border-width: 1px;*/
+    /*border-style: solid;*/
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 12px;
+    background-color: rgba(35, 35, 35, 0);
+    box-shadow: 0px 0px 7px rgba(187, 153, 255, 0.7), 0px 0px 7px rgba(187, 153, 255, 0.7);
+}
 
 /* Show/hide classes*/
 .hide {display: none;}

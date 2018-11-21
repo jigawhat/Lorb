@@ -20,7 +20,7 @@ function generateUuid() {
     return randomString(32, '0123456789abcdefghijklmnopqrstuvwxyz');
 }
 
-var clone_2d_arr = function(arr) {
+function clone_2d_arr(arr) {
     var res = [];
     for (var i = 0; i < arr.length; i++) {
         res[i] = arr[i].slice();
@@ -29,7 +29,7 @@ var clone_2d_arr = function(arr) {
     // return JSON.parse(JSON.stringify(arr));
 };
 
-const conv_name = function(name) {
+function conv_name(name) {
     if (name === -1) {
         return '';
     }
@@ -42,9 +42,9 @@ const conv_name = function(name) {
 // const hostn = "http://lorb.gg";
 // const hostn = "http://192.168.0.18:8080";
 const hostn = "http://" + document.location.hostname;
-const status_fade_duration = 300;
-const refresh_sleep_time = (7 + 1) * 1000;
-const cached_lifespan = 60 * 5 * 1000;
+const status_fade_duration = 300;           // Status box fade in/out duration in milliseconds
+const refresh_sleep_time = (7 + 1) * 1000;  // Number of milliseconds to sleep for before refreshing
+const cached_lifespan = 60 * 5 * 1000;      // Cached request lifespan in milliseconds
 
 const session_id = generateUuid();
 
@@ -63,17 +63,18 @@ const region_strs = [
     'TR',
 ]
 const joined_lobby_strs = [
+    // [" joined the lobby", " ist der Lobby beigetreten", " se ha unido a la sala."]
     " joined the lobby",
     " joined the lobby",
     " joined the lobby",
     " joined the lobby",
     " joined the lobby",
-    " joined the lobby",
-    " joined the lobby",
-    " joined the lobby",
-    " joined the lobby",
+    " entrou no saguão",
+    " присоединился к лобби",
+    "  se unió a la sala",
+    "  se unió a la sala",
     "がロビーに参加しました",
-    " joined the lobby",
+    " lobiye katıldı",
 ]
 
 const date_form = { 'weekday': 'long', 'year': 'numeric', 'month': 'long', 'day': 'numeric' };
@@ -114,6 +115,8 @@ $( function() {
     var showing_share = false;
     var ts_area_vis = false;
 
+    var saved_shortlink = false;
+
     // $( "#elo_info" ).tooltip({ // Setup tooltip(s)
     //     position: { my: "right top", at: "left bottom", collision: "none", },
     //     relative: true,
@@ -153,6 +156,23 @@ $( function() {
             elo_ind_ck = parseInt(elo_ind_ck);
             avg_elo = elo_ind_ck;
             $( "#elo_select" )[0].selectedIndex = avg_elo;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    // Set expected win/loss lp from cookie
+    var win_lp = 15;
+    var loss_lp = 15;
+    var wl_lp_ck = Cookies.get('wl_lp');
+    if (typeof wl_lp_ck != 'undefined') {
+        try {
+            const wl_lp = JSON.parse(wl_lp_ck)
+            win_lp = wl_lp[0];
+            loss_lp = wl_lp[1];
+            $( "#win_lp_input" ).val(win_lp);
+            $( "#loss_lp_input" ).val(loss_lp);
+            update_expected_lp();
         } catch (err) {
             console.log(err);
         }
@@ -286,7 +306,7 @@ $( function() {
     var rq_data = [];
     var pl_ropts = [];
     var rdict = [];
-    var initialise_vars = function() {
+    function initialise_vars() {
         // req_data = clone_2d_arr(req_data_init);
         pl_ropts = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         rdict = [[], []];
@@ -300,6 +320,7 @@ $( function() {
         }
         curr_req_i += 1000;
         curr_perc = 50;
+        update_expected_lp();
         curr_perc_ch = 50;
         curr_perc_pl = 50;
         curr_deg = 270;
@@ -308,8 +329,8 @@ $( function() {
         pl_indices = {};
         pl_indices_inv = {};
         waiting_for_refresh = -1;
-        selected_ch_indices = [...Array(10).keys()].map(i => 0);
-    };
+        selected_ch_indices = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    }
     initialise_vars();
 
     var last_doc_click = 0;
@@ -412,7 +433,7 @@ $( function() {
     $( "#perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
     $( "#champions_perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
     $( "#summoners_perc_symb" ).css('text-shadow', left_ptxt_shadow_col)
-    var swap_sides = function() {
+    function swap_sides() {
         left_col = [right_col, right_col = left_col][0]; // Swap variable values (pre-ES6 compatible)
         left_text_col = [right_text_col, right_text_col = left_text_col][0];
         left_text_col_l = [right_text_col_l, right_text_col_l = left_text_col_l][0];
@@ -439,7 +460,7 @@ $( function() {
 
         // Change result percentage for opposite team
         inv_perc = !inv_perc;
-    };
+    }
     $( "#switch_cols_button" ).click(function() {
         swap_sides();
         // Change request data values
@@ -448,8 +469,16 @@ $( function() {
         }
         setTimeout(request_curr_pred, 0);
     });
+    $( ".team_col_text" ).click(function() {
+        swap_sides();
+        // Change request data values
+        for (var i = 0; i < 10; i++) {
+            req_data[i][team_li] = 1 - req_data[i][team_li];
+        }
+        setTimeout(request_curr_pred, 0);
+    });
 
-    var set_opgg_link = function (pl, name) {
+    function set_opgg_link(pl, name) {
         if (name === '') {
             pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).html('');
             return;
@@ -457,10 +486,10 @@ $( function() {
         const opgg_link = "http://" + reg_str + ".op.gg/summoner/userName=" + name;
         pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).attr('href', opgg_link);
         pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).html('op.gg');
-    };
+    }
 
     // Auto assign roles
-    var auto_assign_roles = function() {
+    function auto_assign_roles() {
         for (side = 0; side < 2; side++) { // For each team
             var side_char = side === 0 ? 'l' : 'r';
             // var side_char = side === 0 ? (inv_perc ? 'r' : 'l') : (inv_perc ? 'l' : 'r');
@@ -530,9 +559,9 @@ $( function() {
                     ".role_option_0").html(roles_opts[role + 1] + " &nbsp(auto assign)");
             }
         }
-    };
+    }
 
-    var reset_everything = function() {
+    function reset_everything() {
         var prev_comp = Cookies.get('match_composition')
         if (typeof prev_comp != 'undefined') {
             Cookies.set('match_composition_previous', prev_comp);
@@ -547,9 +576,9 @@ $( function() {
         if (showing_share) {
             $( "#share_area" ).fadeOut();
         }
-    };
+    }
 
-    var prep_req_data = function (rd) {
+    function prep_req_data(rd) {
 
         for (var team_i = 0; team_i < 2; team_i++) {
             // var side = team_i === 0 ? (inv_p ? 'r' : 'l') : (inv_p ? 'l' : 'r');
@@ -657,9 +686,9 @@ $( function() {
             }
         }
         return [rq_data, rq_i];
-    };
+    }
 
-    var get_current_comp = function() {
+    function get_current_comp() {
         return {
             "data": req_data,
             "pl_ropts": pl_ropts,
@@ -670,10 +699,10 @@ $( function() {
             "region_i": region,
             "avg_elo_i": avg_elo,
         };
-    };
+    }
 
     // Request the prediction for the current data & update the displayed result reqcurr
-    var request_curr_pred = function() {
+    function request_curr_pred() {
         var d = new Date();
         last_req_t = d.getTime();
 
@@ -706,7 +735,7 @@ $( function() {
 
         const hash = get_request_hash(rq_data);
         last_preq_hash = hash;
-        if (hash in request_cache && false) {  // If request cached locally
+        if (hash in request_cache) {  // If request cached locally
             cache_load(hash, receive_res);  // Load from cache
             curr_req_disp = curr_req_i;
         } else {
@@ -715,9 +744,9 @@ $( function() {
         }
 
         curr_req_i++;
-    };
+    }
 
-    var send_pred_req = function(rq_data, shortlink, comp, callback) {
+    function send_pred_req(rq_data, shortlink, comp, callback) {
         var d = [rq_data, region, avg_elo, curr_req_i, session_id, shortlink, comp];
         var server_url = hostn + ":32077";
         // var server_url = "http://" + document.location.hostname + ":32077";
@@ -738,15 +767,15 @@ $( function() {
         //             // "Accept-Encoding": "gzip"
         //         // }
 
-        //         // beforeSend: function (xhr) {
+        //         // beforeSend: function(xhr) {
         //         //     xhr.setRequestHeader("Content-Encoding", "gzip");
         //         // },
         //     }
         // );
         // setTimeout(function() {receive_curr_pred(res, "success");}, 200); // Simulate processing time
-    };
+    }
 
-    var load_comp = function(comp) {
+    function load_comp(comp) {
         var ph_occ = comp["placeholders"];
         var inv_p = comp["inv_perc"];
         var rdata = comp["data"];
@@ -847,9 +876,9 @@ $( function() {
         auto_assign_roles();
         // setTimeout(request_curr_pred, 0);
         return true;
-    };
+    }
 
-    var reset_pl_statuses = function() {
+    function reset_pl_statuses() {
         for (var i = 0; i < req_data.length; i++) {
             var txt = $( "#pl_" + i ).find( ".pl_status_text" );
             if (req_data[i][name_li] == -1) {
@@ -889,28 +918,28 @@ $( function() {
                     }
                 }
             }
-        }
-    )};
+        });
+    }
 
-    var get_request_hash = function(prep_req) {
+    function get_request_hash(prep_req) {
         var d = new Date();
         const hash_ts = Math.floor(d.getTime() / cached_lifespan);
         return JSON.stringify([prep_req, region, avg_elo, hash_ts]);
-    };
+    }
 
-    var cache_store = function(hash, res) {
+    function cache_store(hash, res) {
         request_cache[hash] = JSON.stringify(res);
-        setTimeout(function () {
+        setTimeout(function() {
             delete request_cache[hash];
         }, cached_lifespan * 1.2);
-    };
+    }
 
-    var cache_load = function(hash, callback) {
+    function cache_load(hash, callback) {
         res = JSON.parse(request_cache[hash]);
         callback(res);
-    };
+    }
 
-    var receive_res = function(res) {
+    function receive_res(res) {
     
         var perc = curr_perc;
         var perc_ch = curr_perc_ch;
@@ -983,6 +1012,7 @@ $( function() {
         const prev_perc_ch = curr_perc_ch;
         const prev_perc_pl = curr_perc_pl;
         curr_perc = perc;
+        update_expected_lp();
         curr_perc_ch = perc_ch;
         curr_perc_pl = perc_pl;
         const perc_delta = curr_perc - prev_perc;
@@ -1047,7 +1077,9 @@ $( function() {
                 // if (perc_ch < warning_threshold && (prev_perc_ch >= warning_threshold)) {
                 if (perc_ch < warning_threshold) {
                     $( "#champions_perc_warning_symb" ).fadeIn();
-                } else if(perc_ch >= warning_threshold && prev_perc_ch < warning_threshold) {
+                // } else if(perc_ch >= warning_threshold && prev_perc_ch < warning_threshold) {
+                // } else if(perc_ch >= warning_threshold) {
+                } else {
                     $( "#champions_perc_warning_symb" ).fadeOut();
                 }
                 if (switching_sides_ch) {
@@ -1077,6 +1109,8 @@ $( function() {
                 const new_deg_ch = 270 + ((180 * ((100 - perc_ch) / 100)) - 90);
                 animateRotate($( "#champions_perc_meter" ), curr_deg_ch, new_deg_ch, anim_t, null);
                 curr_deg_ch = new_deg_ch;
+            } else {
+                $( "#champions_perc_warning_symb" ).fadeOut();
             }
 
             if (got_perc_pl) {
@@ -1090,7 +1124,9 @@ $( function() {
                 // if (perc_pl < warning_threshold && prev_perc_pl >= warning_threshold) {
                 if (perc_pl < warning_threshold) {
                     $( "#summoners_perc_warning_symb" ).fadeIn();
-                } else if(perc_pl >= warning_threshold && prev_perc_pl < warning_threshold) {
+                // } else if(perc_pl >= warning_threshold && prev_perc_pl < warning_threshold) {
+                // } else if(perc_pl >= warning_threshold) {
+                } else {
                     $( "#summoners_perc_warning_symb" ).fadeOut();
                 }
                 if (switching_sides_pl) {
@@ -1120,6 +1156,8 @@ $( function() {
                 const new_deg_pl = 270 + ((180 * ((100 - perc_pl) / 100)) - 90);
                 animateRotate($( "#summoners_perc_meter" ), curr_deg_pl, new_deg_pl, anim_t, null);
                 curr_deg_pl = new_deg_pl;
+            } else {
+                $( "#summoners_perc_warning_symb" ).fadeOut();
             }
 
             // if (perc < warning_threshold && prev_perc >= warning_threshold) {
@@ -1165,7 +1203,7 @@ $( function() {
         $( ".orb_load_ring" ).css("visibility", "hidden")
         // }
         // curr_req_disp = req_i;
-    };
+    }
 
     var errored = false;
     var refresh_ts = 0;
@@ -1177,7 +1215,7 @@ $( function() {
     $( "#recc_cont" ).css('visibility', 'visible');
     $( "#timestamp_area" ).css('visibility', 'visible');
     // $( ".recc_button" ).css('visibility', 'visible');
-    var receive_curr_pred = function(res, status) { // reccurr
+    function receive_curr_pred(res, status) { // reccurr
 
         // If we're currently loading reccomendations, ignore response
         if (recc_pl_i !== -1) {
@@ -1207,6 +1245,7 @@ $( function() {
                 console.log("Error loading shortlinked composition...");
                 return;
             }
+            saved_shortlink = true;
             const shortlink_ts = res[10];
             var sl_date = new Date(shortlink_ts * 1000);
             const d = sl_date.toLocaleDateString(undefined, date_form);
@@ -1221,6 +1260,7 @@ $( function() {
                 ts_area_vis = false;
                 $( "#timestamp_area" ).fadeOut();
             }
+            saved_shortlink = false;
         }
 
         // Handle whole request error code
@@ -1269,9 +1309,9 @@ $( function() {
         receive_res(res);
 
         curr_req_disp = req_i;
-    };
+    }
 
-    var refresh_request = function() {
+    function refresh_request() {
         if (recc_pl_i !== -1) {
             setTimeout(refresh_request, 5000);
         }
@@ -1285,7 +1325,7 @@ $( function() {
         }
     }
 
-    var handle_summoner_codes = function(res) {
+    function handle_summoner_codes(res) {
         for (var i = 0; i < req_data.length; i++) {
             var pl = $( "#pl_" + i );
             if (!(i in pl_indices_inv)) {
@@ -1314,13 +1354,13 @@ $( function() {
                 pl.find( ".pl_status_text" ).html("unknown error");
             }
         }
-    };
+    }
 
-    var get_pl_perc_str = function (p) {
+    function get_pl_perc_str(p) {
         return '<span style="color:' + (p > 50.0 ? '#0f0' : (p < 40.0 ? '#ff9933' : '#ff0')) + '">' + p + '%</span>';
     }
 
-    var handle_error = function(res, err_code) {
+    function handle_error(res, err_code) {
         var res = false;
         if (err_code == 500) {
             $( "#warning_text" ).html("Server error");
@@ -1354,16 +1394,20 @@ $( function() {
         $( "#status_area" ).fadeIn(status_fade_duration);
         errored = true;
         return res;
-    };
+    }
 
     $( "#share_copy_button" ).click(function() {
         $( "#share_input" ).select();
         document.execCommand("copy");
         $( "#share_suff_text" ).html("&#10004;");
+        if (!saved_shortlink) {
+            saved_shortlink = true;
+
+        }
     });
 
     // Refresh prediction button
-    $( "#refresh_button" ).click(function () {
+    $( "#refresh_button" ).click(function() {
         setTimeout(request_curr_pred, 0);
     });
 
@@ -1372,7 +1416,7 @@ $( function() {
     const support_role_index = roles_opts_lower.indexOf('support') - 1;
     var recc_pl_i = -1;
     var recc_pl_vis = false;
-    $( ".recc_button" ).click(function () {
+    $( ".recc_button" ).click(function() {
         if (recc_pl_i !== -1 || curr_req_disp < curr_req_i - 1) {
             return;
         }
@@ -1479,17 +1523,17 @@ $( function() {
             recc_pl_i = -1;
         }, 1);
     });
-    $( "#recc_cont" ).click( function (e) {
+    $( "#recc_cont" ).click( function(e) {
         e.stopPropagation(); // Stop click event from propagating to the container
     });
-    $( '#recc_cont' ).mousedown( function (e) {
+    $( '#recc_cont' ).mousedown( function(e) {
         e.stopPropagation(); // Stop click event from propagating to the container
     });
-    $( '#recc_cont' ).mouseup( function (e) {
+    $( '#recc_cont' ).mouseup( function(e) {
         e.stopPropagation(); // Stop click event from propagating to the container
     });
 
-    var receive_recc_response = function(res, status) { // reccurr
+    function receive_recc_response(res, status) { // reccurr
         // res = JSON.parse(res); // Already parsed because content type = application/json
         if (status === "success") {
             var req_i = res[3];
@@ -1521,9 +1565,9 @@ $( function() {
         cache_store(hash, res);
 
         receive_recc_res(res);
-    };
+    }
 
-    var receive_recc_res = function(res) {
+    function receive_recc_res(res) {
 
         // var pl = $( "#pl_" + recc_pl_i );
 
@@ -1575,7 +1619,7 @@ $( function() {
         $( "#recc_outer_area" ).css('visibility', 'visible');
         $( ".recc_champion_ch" ).css('visibility', 'visible');
         $( ".recc_champion_pl" ).css('visibility', recc_pl_vis ? 'visible' : 'hidden');
-    };
+    }
 
     // Define procedure for changing a role
     $( ".role_select" ).change(function() {
@@ -1685,7 +1729,7 @@ $( function() {
         set_new_champion(ch_pl_i, sel_ind);
     });
 
-    var set_new_champion = function(pl_i, sel_ind) {
+    function set_new_champion(pl_i, sel_ind) {
         const current_i = selected_ch_indices[pl_i];
         selected_ch_indices[pl_i] = sel_ind;
         const new_cid = champ_list[sel_ind][ch_cid_li];
@@ -1729,9 +1773,46 @@ $( function() {
             auto_assign_roles();
             setTimeout(request_curr_pred, 0);
         }
-    };
+    }
 
-    $( "#undo_button" ).click(function () {
+    function update_expected_lp() {
+        $( "#lp_w_perc" ).html(Math.round(curr_perc));
+        $( "#lp_l_perc" ).html(100 - Math.round(curr_perc));
+        const frac = curr_perc / 100.0;
+        const exp_lp = Math.round(((frac * win_lp) - ((1.0 - frac) * loss_lp)) * 10) / 10;
+        const col = exp_lp < 0 ? '#ff9933' : (exp_lp > 0 ? '#0f0' : "#fff");
+        const prefix = exp_lp > 0 ? '+' : '';
+        $( "#lp_expected" ).html('<span style="color:' + col + ';">' + prefix + exp_lp + '</span>');
+    }
+
+    $( "#win_lp_input" ).on('input', function() {
+        var w_lp = null;
+        try {
+            w_lp = parseInt($( this ).val());
+            if (!isNaN(w_lp)) {
+                win_lp = w_lp;
+                Cookies.set("wl_lp", [win_lp, loss_lp]);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        update_expected_lp();
+    });
+    $( "#loss_lp_input" ).on('input', function() {
+        var l_lp = null;
+        try {
+            l_lp = parseInt($( this ).val());
+            if (!isNaN(l_lp)) {
+                loss_lp = l_lp;
+                Cookies.set("wl_lp", [win_lp, loss_lp]);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        update_expected_lp();
+    });
+
+    $( "#undo_button" ).click(function() {
         var comp_cookie = Cookies.getJSON('match_composition_previous');
         if (typeof comp_cookie != 'undefined') {
             if(load_comp(comp_cookie)) {
@@ -1774,7 +1855,7 @@ $( function() {
         clear_team(1);
     });
 
-    var clear_team = function(team_i) {
+    function clear_team(team_i) {
 
         curr_req_i += 1000;
         pl_indices = {};
@@ -1829,7 +1910,7 @@ $( function() {
 
         }
         setTimeout(request_curr_pred, 0);
-    };
+    }
 
     $( "#clear_ch_button_l" ).click(function() {
         clear_champions(0);
@@ -1839,7 +1920,7 @@ $( function() {
         clear_champions(1);
     });
 
-    var clear_champions = function(team_i) {
+    function clear_champions(team_i) {
 
         curr_req_i += 1000;
         pl_indices = {};
@@ -1865,7 +1946,7 @@ $( function() {
         }
         auto_assign_roles();
         setTimeout(request_curr_pred, 0);
-    };
+    }
 
     $( "#clear_pl_button_l" ).click(function() {
         clear_summoners(0);
@@ -1875,7 +1956,7 @@ $( function() {
         clear_summoners(1);
     });
 
-    var clear_summoners = function(team_i) {
+    function clear_summoners(team_i) {
 
         curr_req_i += 1000;
         pl_indices = {};
@@ -1901,7 +1982,7 @@ $( function() {
         }
         auto_assign_roles();
         setTimeout(request_curr_pred, 0);
-    };
+    }
 
     // Define champion search show/hide trigger & positioning
     $( ".search_button" ).click(function() {
@@ -1948,7 +2029,7 @@ $( function() {
 
         const next_pl_i = get_next_pl_i(ch_pl_i);
         if (next_pl_i !== -1) {
-            setTimeout(function () {
+            setTimeout(function() {
                 var d = new Date();
                 const t = d.getTime();
                 if (t - last_doc_click > 10) {
@@ -1959,32 +2040,32 @@ $( function() {
         
     });
     // Search dropdown and document click triggers for deciding to open next player's dropdown
-    $( '.search_dropdown' ).click( function (e) {
+    $( '.search_dropdown' ).click( function(e) {
         e.stopPropagation(); // Stop click event from propagating to the container
         // last_sd_click = true;
         // setTimeout(function() {
         //     last_sd_click = false;
         // }, 200);
     });
-    $( '.search_dropdown' ).mousedown( function (e) {
+    $( '.search_dropdown' ).mousedown( function(e) {
         e.stopPropagation(); // Stop click event from propagating to the container
         // last_sd_click = true;
         // setTimeout(function() {
         //     last_sd_click = false;
         // }, 200);
     });
-    $( '.search_dropdown' ).mouseup( function (e) {
+    $( '.search_dropdown' ).mouseup( function(e) {
         e.stopPropagation(); // Stop click event from propagating to the container
         // last_sd_click = true;
         // setTimeout(function() {
         //     last_sd_click = false;
         // }, 200);
     });
-    $( document ).mousedown( function (e) {
+    $( document ).mousedown( function(e) {
         var d = new Date();
         last_doc_click = d.getTime();
     });
-    $( document ).mouseup( function (e) {
+    $( document ).mouseup( function(e) {
         var d = new Date();
         last_doc_click = d.getTime();
         if (recc_pl_i !== -1) {
@@ -1997,7 +2078,7 @@ $( function() {
     });
 
     // Get the next on-screen pl_i (top-down, left-right, looping), given the current pl_i
-    const get_next_pl_i = function (pl_i) {
+    function get_next_pl_i(pl_i) {
         var plph_id = null;
         var plph_i = 0;
         for (var i = 0; i < 5; i++) {
@@ -2031,11 +2112,11 @@ $( function() {
     }
 
     // Define player name input text box enter key action
-    $( '.name_input' ).on('keyup', function (e) {
+    $( '.name_input' ).on('keyup', function(e) {
         var name = $( this ).val();
         set_opgg_link($( this ).parent().parent(), name);
     });
-    $( '.name_input' ).on('keypress', function (e) {
+    $( '.name_input' ).on('keypress', function(e) {
         var name = $( this ).val();
         // set_opgg_link($( this ).parent().parent(), name);
         if (e.which === 13) { // 13 = the enter key
@@ -2114,7 +2195,7 @@ $( function() {
         setTimeout(request_curr_pred, 0);
     });
 
-    var set_region = function (reg_i) {
+    function set_region(reg_i) {
         if (reg_i !== null) {
             $( "#region_select" )[0].selectedIndex = reg_i;
             region = reg_i;
@@ -2126,9 +2207,9 @@ $( function() {
             set_opgg_link($( '#pl_' + i ), conv_name(req_data[i][name_li]));
         }
         Cookies.set("region_index", region);
-    };
+    }
 
-    var set_avg_elo = function (elo_i) {
+    function set_avg_elo(elo_i) {
         if (elo_i !== null) {
             $( "#elo_select" )[0].selectedIndex = elo_i;
             avg_elo = elo_i;
@@ -2136,7 +2217,7 @@ $( function() {
             avg_elo = $( "#elo_select" )[0].selectedIndex;
         }
         Cookies.set("elo_index", avg_elo);
-    };
+    }
 
     // Define procedure for average elo change, update prediction
     $( "#elo_select" ).change(function() {
@@ -2149,21 +2230,43 @@ $( function() {
         disp_winning_p = $( this ).prop('checked');
         Cookies.set("disp_winning_p", disp_winning_p);
 
-        var disp_enemy_p = disp_winning_p && curr_perc < 50.0;
-        var number = disp_enemy_p ? 100.0 - curr_perc : curr_perc;
+        const disp_enemy_p = disp_winning_p && curr_perc < 50.0;
+        const disp_enemy_p_ch = disp_winning_p && curr_perc_ch < 50.0;
+        const disp_enemy_p_pl = disp_winning_p && curr_perc_pl < 50.0;
+        const number = disp_enemy_p ? 100.0 - curr_perc : curr_perc;
+        const number_ch = disp_enemy_p_ch ? 100.0 - curr_perc_ch : curr_perc_ch;
+        const number_pl = disp_enemy_p_pl ? 100.0 - curr_perc_pl : curr_perc_pl;
+
+        $( "#perc_text" ).html('' + Math.round(number));
+        $( "#champions_perc" ).html('' + Math.round(number_ch));
+        $( "#summoners_perc" ).html('' + Math.round(number_pl));
         
         $( "#res_team_col" ).html(disp_enemy_p ? right_col : left_col);
         $( "#res_team_col" ).css('color', disp_enemy_p ? right_text_col : left_text_col);
-        $( "#perc_text" ).html('' + Math.round(number));
+        $( "#perc_text" ).css('text-shadow', disp_enemy_p ? right_ptxt_shadow_col : left_ptxt_shadow_col)
+        $( "#win_text" ).css('text-shadow', disp_enemy_p ? right_ptxt_shadow_col : left_ptxt_shadow_col)
+        $( "#perc_symb" ).css('text-shadow', disp_enemy_p ? right_ptxt_shadow_col : left_ptxt_shadow_col)
+
+        $( "#champions_perc_team_col" ).html(disp_enemy_p_ch ? right_col : left_col);
+        $( "#champions_perc_team_col" ).css('color', disp_enemy_p_ch ? right_text_col : left_text_col);
+        $( "#champions_perc_team_col" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+        $( "#champions_perc" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+        $( "#champions_perc_symb" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+
+        $( "#summoners_perc_team_col" ).html(disp_enemy_p_ch ? right_col : left_col);
+        $( "#summoners_perc_team_col" ).css('color', disp_enemy_p_ch ? right_text_col : left_text_col);
+        $( "#summoners_perc_team_col" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+        $( "#summoners_perc" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
+        $( "#summoners_perc_symb" ).css('text-shadow', disp_enemy_p_ch ? right_ptxt_shadow_col : left_ptxt_shadow_col);
     });
 
     // Chat log import methods
     // var jtr = ;
-    // $( "#chat_import_button" ).click(function () {
+    // $( "#chat_import_button" ).click(function() {
 
     // });
 
-    var import_chat_log = function() {
+    function import_chat_log() {
         var box = $( '#chat_import_input' );
         var inp = box.val();
         box.val('');
@@ -2187,12 +2290,13 @@ $( function() {
             }
         }
         var success = false;
+        var j = 0;
         const lines = inp.split('\n').slice(0, 5);
-        for (var i = 0; i < Math.min(5, lines.length); i++) {
+        for (var i = 0; i < lines.length; i++) {
             const line = lines[i];
             if (line.slice(line.length - jtr.length, line.length) === jtr) {
                 const name = line.slice(0, line.length - jtr.length);
-                const pl_i = plph_occupancy["plph_l_" + i];
+                const pl_i = plph_occupancy["plph_l_" + j];
                 if (req_data[pl_i][name_li] != name) {
                     req_data[pl_i][name_li] = name;
                     pl_percs[pl_i] = -1;
@@ -2200,14 +2304,18 @@ $( function() {
                     set_opgg_link($( '#pl_' + pl_i ), conv_name(name));
                 }
                 success = true;
+                j++;
+                if (j == 5) {
+                    break;
+                }
             }
         }
         if (success) {
             $( "#chat_import_text" ).html("&#10004;");
             setTimeout(request_curr_pred, 0);
         }
-    };
-    $( '#chat_import_input' ).on('keypress', function (e) {
+    }
+    $( '#chat_import_input' ).on('keypress', function(e) {
         if (e.which === 13) { // 13 = the enter key
             setTimeout(import_chat_log, 0);
         }

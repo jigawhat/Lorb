@@ -19,6 +19,8 @@
   "dependencies": {
     "amqplib": "^0.5.2",
     "express": "^4.16.4",
-    "jquery": "^3.3.1"
+    "jquery": "^3.3.1",
+    "hexo": "^3.8.0",
+    "cluster": "^0.7.7"
   }
 }
