@@ -61,7 +61,7 @@ if(cluster.isMaster) {  // Cluster master
             if (req.method == 'POST') {
                 // console.log("here-1");
                 // console.log(typeof req.body);
-                // console.log(req.body);
+                console.log(req.body);
 
                 // var body = '';
                 // req.on('data', function (data) {
