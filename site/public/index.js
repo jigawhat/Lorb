@@ -63,7 +63,7 @@ const region_strs = [
     'TR',
 ]
 const joined_lobby_strs = [
-    // [" joined the lobby", " ist der Lobby beigetreten", " se ha unido a la sala."]
+    // [" joined the lobby", " ist der Lobby beigetreten", " se ha unido a la sala.", " a rejoint le salon"]
     " joined the lobby",
     " joined the lobby",
     " joined the lobby",
@@ -739,8 +739,6 @@ $( function() {
     function send_pred_req(rq_data, shortlink, comp, callback) {
         var d = [rq_data, region, avg_elo, curr_req_i, session_id, shortlink, comp];
         var server_url = hostn + "/match/";
-        // var server_url = "http://" + document.location.hostname + ":32077";
-        console.log(server_url);
         $.post(server_url, JSON.stringify(d), callback, "json");
         // $.ajax({
         //         url: server_url,
