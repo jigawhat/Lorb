@@ -53,7 +53,7 @@ if(cluster.isMaster) {  // Cluster master
 
         var app = express();
         // Only accept requests under a certain size
-        app.use(bodyParser.text({limit: '0.001MB', type: "application/x-www-form-urlencoded"}));
+        app.use(bodyParser.text({limit: '0.01MB', type: "application/x-www-form-urlencoded"}));
         // app.use(bodyParser.text({limit: '0.0005MB', type: "gzip"}));
         app.post('/match/', function(req, res) {
 
@@ -122,7 +122,7 @@ if(cluster.isMaster) {  // Cluster master
                                     }
                                 }, {noAck: true});
 
-                                ch.sendToQueue('match_pred_rpc_queue', Buffer.from(body),
+                                ch.sendToQueue('match_pred_rpc_queue', new Buffer(body),
                                     { correlationId: corr, replyTo: q.queue });
                             });
                         });
