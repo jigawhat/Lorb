@@ -43,7 +43,7 @@ if(cluster.isMaster) {  // Cluster master
     }
 
     // amqp.connect('amqp://localhost', function(err, conn) {});
-    amqp.connect('amqp://localhost', function(err, conn) {
+    amqp.connect('amqp://localhost/match', function(err, conn) {
                 
         // var app = require('express')();
         // app.all('/*', function(req, res) {res.send('process ' + process.pid + ' says hello!').end();})
