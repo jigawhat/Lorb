@@ -69,7 +69,7 @@ index_generator:
   order_by: -date
   
 # Category & Tag
-default_category: uncategorized
+default_category: League of Legends
 category_map:
 tag_map:
 

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>The Lorb</title>
+  
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://lorb.gg/"/>
+  <updated>2018-11-22T10:40:56.183Z</updated>
+  <id>http://lorb.gg/</id>
+  
+  <author>
+    <name>Lorb.gg</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Behold The Lorb</title>
+    <link href="http://lorb.gg/2018/11/22/behold-the-lorb/"/>
+    <id>http://lorb.gg/2018/11/22/behold-the-lorb/</id>
+    <published>2018-11-22T16:20:00.000Z</published>
+    <updated>2018-11-22T10:40:56.183Z</updated>
+    
+    <content type="html"><![CDATA[<title>Behold the Lorb</title><p><img src="/imgs/lorb.jpg" alt=""></p><h2 id="Behold-The-Lorb"><a href="#Behold-The-Lorb" class="headerlink" title="Behold The Lorb"></a>Behold The Lorb</h2><p>Forged in the depths of crystal crusted caverns close to core of the Runeterra, this newly discovered energetic glowing orb can apparently tap into the invisible life-force energy occupying space around living organisms in order to foresee the outcome of immenant battles taking place between powerful factions, in the general proximity. Some speculate that it was originally created many millenia ago, by a race of ancient aliens, and that contained deep within the ethereal and mesmerizing flitters of energy is a magical superintelligence.</p><p>But one question still eludes illumination regarding the discovery. Why had this relic appeared now? Was there some sort of arcane conflict of balance occuring somewhere on Runeterra, to which the orb has a directive to respond to?</p><p>Stay tuned.</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;title&gt;Behold the Lorb&lt;/title&gt;
+
+&lt;p&gt;&lt;img src=&quot;/imgs/lorb.jpg&quot; alt=&quot;&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;Behold-The-Lorb&quot;&gt;&lt;a href=&quot;#Behold-The-Lorb&quot; class=&quot;headerli
+      
+    
+    </summary>
+    
+      <category term="League of Legends" scheme="http://lorb.gg/categories/League-of-Legends/"/>
+    
+    
+      <category term="launch" scheme="http://lorb.gg/tags/launch/"/>
+    
+  </entry>
+  
+</feed>
