@@ -13,9 +13,14 @@ const amqp = require('amqplib/callback_api');
 
 
 // Script options
-const port = 8080;
-// const port = 32077;
+const port = 8080 // Port to listen on for match prediction POST requests
+// const rabbit_host = 'localhost' // RabbitMQ host IP
+const rabbit_host = '172.31.1.148' // RabbitMQ host IP
+const rmq_user = "alfy"
+const rmq_pass = "doctorStationTurbo"
+
 const n_workers = os.cpus().length;
+// const n_workers = 1;
 
 
 var request_counter = 0;
@@ -42,8 +47,8 @@ if(cluster.isMaster) {  // Cluster master
         champ_dict[ch_json["list"][i][0]] = ch_json["list"][i][2];
     }
 
-    // amqp.connect('amqp://localhost', function(err, conn) {});
-    amqp.connect('amqp://localhost', function(err, conn) {
+    // amqp.connect('amqp://' + rabbit_host, function(err, conn) {});
+    amqp.connect('amqp://' + rmq_user + ':' + rmq_pass + '@' + rabbit_host, function(err, conn) {
                 
         // var app = require('express')();
         // app.all('/*', function(req, res) {res.send('process ' + process.pid + ' says hello!').end();})
