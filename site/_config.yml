@@ -36,6 +36,8 @@ skip_render:
   - test.html
   - thankyou.html
   - thankyou/*
+  - thankyoutext/*
+  - thankyoutext/index.html
   - contact.html
   - contact/*
   - changelog.html

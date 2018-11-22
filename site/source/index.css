@@ -42,6 +42,8 @@ label {
     padding: 0;
     /*margin: 0;*/
     border: 0;
+    left: 0;
+    right: 0;
     /*top: 0;*/
     /*left: 0;*/
     /*list-style-type: none;*/
@@ -68,6 +70,7 @@ label {
     /*padding-top: 5px;*/
     /*padding: 0;*/
     text-shadow: 0px 0px 2px #000, 0px 0px 4px #000;
+    text-decoration: none; /* Prevent link underlining */
 }
 .nav_button:hover {
     background-color: rgba(255, 255, 255, 0.07);
@@ -140,6 +143,120 @@ label {
     margin: 0;
     padding: 0;
 }
+
+#sm_nav_cont {
+    /*float: left;*/
+    display: inline;
+    position: relative;
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    height: 100%;
+    width: 400px;
+    left: 190px;
+    padding: 0;
+    /*margin: 0;*/
+    border: 0;
+    /*top: 0;*/
+    /*left: 0;*/
+    /*list-style-type: none;*/
+    /*overflow: hidden;*/
+    vertical-align: center;
+    /*line-height: 25px;*/
+    font-size: 12px;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-variant: small-caps;
+    color: #fff;
+}
+.sm_button {
+    /*float: left;*/
+    top: 0px;
+    display: block;
+    position: absolute;
+    /*float: left;*/
+    background-color: rgba(255, 255, 255, 0.0);
+    border: 0;
+    cursor: pointer;
+    height: 37px;
+    width: 35px;
+    font-family: inherit;
+    font-variant: inherit;
+    color: inherit;
+    margin: 0;
+    /*padding-top: 5px;*/
+    padding: 0;
+    text-shadow: 0px 0px 2px #000, 0px 0px 4px #000;
+}
+/*.sm_button:hover {*/
+    /*background-color: rgba(255, 255, 255, 0.07);*/
+/*}*/
+/*.sm_button:active {*/
+    /*background-color: rgba(255, 255, 255, 0.02);*/
+/*}*/
+.social_media_button {
+    display: block;
+    /*position: relative;*/
+    /*float: left;*/
+    /*background-color: rgba(255, 255, 255, 0.0);*/
+    border: 0;
+    cursor: pointer;
+    height: 100%;
+    font-family: inherit;
+    font-variant: inherit;
+    color: inherit;
+    margin: 0;
+    /*padding-top: 5px;*/
+    padding: 0;
+    text-shadow: 0px 0px 2px #000, 0px 0px 4px #000;
+    width: 35px;
+    background-size: 37px;
+    /*background-position: center top;*/
+    background-repeat: no-repeat;
+    /*background-color: rgba(0, 0, 0, 0);*/
+}
+#fb_bcont {
+    /*position: relative;*/
+    /*left: 290px;*/
+    left: 0px;
+    width: 35px;
+}
+#tw_bcont {
+    /*position: relative;*/
+    /*left: 335px;*/
+    left: 35px;
+    width: 35px;
+}
+#fb_button {
+    position: relative;
+    /*left: 290px;*/
+    /*left: 0px;*/
+    width: 35px;
+    background: url("imgs/fb_icon.png") 0 0 no-repeat;
+    background-size: 13px;
+    background-position: center;
+}
+#tw_button {
+    position: relative;
+    /*left: 335px;*/
+    /*left: 35px;*/
+    width: 35px;
+    background: url("imgs/tw_icon.png") 0 0 no-repeat;
+    background-size: 13px;
+    background-position: center;
+}
+#fb_button:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+#fb_button:active {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+#tw_button:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+#tw_button:active {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
 #nav_r_cont {
     float: right;
     display: block;

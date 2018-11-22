@@ -65,8 +65,8 @@ const region_strs = [
 const joined_lobby_strs = [
 // euw: english, german, spanish, french, italian
     // [" joined the lobby", " ist der Lobby beigetreten", " se ha unido a la sala.", " a rejoint le salon", " si è unito alla lobby"]
-    // eune: english, (Czech/polish/), greek, hungarian
-    // [" joined the lobby", " vstoupil do lobby", "Ο παίκτης gRumbling μπήκε στο λόμπι"]
+    // eune: english, czech, polish, greek, hungarian
+    // [" joined the lobby", " vstoupil do lobby", " dołącza do pokoju", "Ο παίκτης gRumbling μπήκε στο λόμπι", " csatlakozott az előszobához", ""]
     " joined the lobby",
     " joined the lobby",
     " joined the lobby",
