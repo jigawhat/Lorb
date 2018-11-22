@@ -1,13 +1,10 @@
 ---
 title: Behold The Lorb
 tags: [launch]
-date: 2018/11/22 16:20:00
+date: 2018/11/23 16:20:00
 categories:
 - League of Legends
 ---
-
-<title>Behold the Lorb</title>
-
 ![](/imgs/lorb.jpg)
 ## Behold The Lorb
 
