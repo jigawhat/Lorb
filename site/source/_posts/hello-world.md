@@ -1,3 +1,5 @@
+![](imgs/lorb.jpg)
+
 ---
 title: Behold The Lorb
 ---
