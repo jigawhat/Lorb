@@ -14,8 +14,8 @@ const amqp = require('amqplib/callback_api');
 
 // Script options
 const port = 8080 // Port to listen on for match prediction POST requests
-// const rabbit_host = 'localhost' // RabbitMQ host IP
-const rabbit_host = '18.130.123.231' // RabbitMQ host IP
+const rabbit_host = 'localhost' // RabbitMQ host IP
+// const rabbit_host = '18.130.123.231' // RabbitMQ host IP
 const rmq_user = "alfy"
 const rmq_pass = "doctorStationTurbo"
 
@@ -58,6 +58,7 @@ if(cluster.isMaster) {  // Cluster master
         //     console.log('Process ' + process.pid + ' is listening to all incoming requests');
         // });
 
+        console.log("HERE")
         var app = express();
         // Only accept requests under a certain size
         app.use(bodyParser.text({limit: '0.01MB', type: "application/x-www-form-urlencoded"}));
