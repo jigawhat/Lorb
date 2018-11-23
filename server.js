@@ -58,7 +58,6 @@ if(cluster.isMaster) {  // Cluster master
         //     console.log('Process ' + process.pid + ' is listening to all incoming requests');
         // });
 
-        console.log("HERE")
         var app = express();
         // Only accept requests under a certain size
         app.use(bodyParser.text({limit: '0.01MB', type: "application/x-www-form-urlencoded"}));
@@ -82,7 +81,6 @@ if(cluster.isMaster) {  // Cluster master
                 //     // console.log("Body: " + body);
 
                 const body = req.body;
-                const region_i = body[1];
 
                 const headers = {
                     'Access-Control-Allow-Origin': '*',
@@ -110,7 +108,8 @@ if(cluster.isMaster) {  // Cluster master
                     return;
                 }
 
-                var req_i = req_d[3];
+                const region_i = req_d[1];
+                const req_i = req_d[3];
                 var res_prom = new Promise(function(resolve, reject) {
                     request_counter++;
                     // var result = [req_i * 1, -1, -1, req_i];
