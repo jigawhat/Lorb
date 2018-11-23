@@ -15,12 +15,14 @@ const amqp = require('amqplib/callback_api');
 // Script options
 const port = 8080 // Port to listen on for match prediction POST requests
 // const rabbit_host = 'localhost' // RabbitMQ host IP
-const rabbit_host = '172.31.1.148' // RabbitMQ host IP
+const rabbit_host = '18.130.123.231' // RabbitMQ host IP
 const rmq_user = "alfy"
 const rmq_pass = "doctorStationTurbo"
 
 const n_workers = os.cpus().length;
 // const n_workers = 1;
+
+const opgg_regions = ['euw','eune','na','kr','oce','br','ru','lan','las','jp','tr']
 
 
 var request_counter = 0;
@@ -66,7 +68,7 @@ if(cluster.isMaster) {  // Cluster master
             if (req.method == 'POST') {
                 // console.log("here-1");
                 // console.log(typeof req.body);
-                console.log(req.body);
+                // console.log(req.body);
 
                 // var body = '';
                 // req.on('data', function (data) {
@@ -79,6 +81,7 @@ if(cluster.isMaster) {  // Cluster master
                 //     // console.log("Body: " + body);
 
                 const body = req.body;
+                const region_i = body[1];
 
                 const headers = {
                     'Access-Control-Allow-Origin': '*',
@@ -127,7 +130,7 @@ if(cluster.isMaster) {  // Cluster master
                                     }
                                 }, {noAck: true});
 
-                                ch.sendToQueue('match_pred_rpc_queue', new Buffer(body),
+                                ch.sendToQueue('match_pred_rpc_queue_' + opgg_regions[region_i], new Buffer(body),
                                     { correlationId: corr, replyTo: q.queue });
                             });
                         });
