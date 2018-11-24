@@ -115,10 +115,9 @@ if(cluster.isMaster) {  // Cluster master
                 // console.log(req.socket.remoteAddress)
                 // console.log(req.get('host'))
                 // console.log(req.get('origin'))
-                // console.log(req.get('X-Remote-IP'))
-                // console.log(req.get('X-Originating-IP'))
-                console.log(req.headers)
-                // req_d[7] = 
+                console.log(req.get('x-forwarded-for'))
+                // console.log(req.headers)
+                req_d[7] = req.get('x-forwarded-for')
 
                 var res_prom = new Promise(function(resolve, reject) {
                     request_counter++;
