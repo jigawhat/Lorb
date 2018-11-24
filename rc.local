@@ -11,6 +11,7 @@
 #
 # By default this script does nothing.
 
+#/usr/bin/sudo -u ubuntu nvm /usr/bin/install 10.13.0
 cd /home/ubuntu/Lorb/
 /usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start server.js
 cd /home/ubuntu/opggapi/
