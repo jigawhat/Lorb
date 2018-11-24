@@ -110,6 +110,13 @@ if(cluster.isMaster) {  // Cluster master
 
                 const region_i = req_d[1];
                 const req_i = req_d[3];
+
+                console.log(req.connection.remoteAddress)
+                console.log(req.socket.remoteAddress)
+                console.log(req.get('host'))
+                console.log(req.get('origin'))
+                // req_d[7] = 
+
                 var res_prom = new Promise(function(resolve, reject) {
                     request_counter++;
                     // var result = [req_i * 1, -1, -1, req_i];

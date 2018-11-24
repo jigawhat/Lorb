@@ -39,9 +39,9 @@ function conv_name(name) {
 
 // Constants
 
-// const hostn = "http://lorb.gg";
+const hostn = "https://lorb.gg";
 // const hostn = "http://192.168.0.18:8080";
-const hostn = "https://" + document.location.hostname;
+// const hostn = "https://" + document.location.hostname;
 const status_fade_duration = 300;           // Status box fade in/out duration in milliseconds
 const refresh_sleep_time = (7 + 1) * 1000;  // Number of milliseconds to sleep for before refreshing
 const cached_lifespan = 60 * 5 * 1000;      // Cached request lifespan in milliseconds
