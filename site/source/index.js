@@ -63,21 +63,48 @@ const region_strs = [
     'TR',
 ]
 const joined_lobby_strs = [
-// euw: english, german, spanish, french, italian
-// [" joined the lobby", " ist der Lobby beigetreten", " se ha unido a la sala.", " a rejoint le salon", " si è unito alla lobby"]
-// eune: english, czech, polish, greek, hungarian, romanian
-// [" joined the lobby", " vstoupil do lobby", " dołącza do pokoju", "Ο παίκτης gRumbling μπήκε στο λόμπι", " csatlakozott az előszobához", " s-a alăturat lobby-ului"]
-    " joined the lobby",
-    " joined the lobby",
-    " joined the lobby",
-    " joined the lobby",
-    " joined the lobby",
-    " entrou no saguão",
-    " присоединился к лобби",
-    "  se unió a la sala",
-    "  se unió a la sala",
-    "がロビーに参加しました",
-    " lobiye katıldı",
+    [ // euw: english, german, spanish, french, ital1an
+        ['', " joined the lobby"],
+        ['', " ist der Lobby beigetreten"],
+        ['', " se ha unido a la sala."],
+        ['', " a rejoint le salon"],
+        ['', " si è unito alla lobby"],
+    ],
+    [ // eune: english, czech, polish, greek, hungarian, romanian
+        ['', " joined the lobby"],
+        ['', " vstoupil do lobby"],
+        ['', " dołącza do pokoju"],
+        ['Ο παίκτης ', " μπήκε στο λόμπι"],
+        ['', " csatlakozott az előszobához"],
+        ['', " s-a alăturat lobby-ului"],
+    ],
+    [ // na: english
+        ['', " joined the lobby"],
+    ],
+    [ // kr: korean (not yet known)
+        ['', " joined the lobby"],
+    ],
+    [ // oce: english
+        ['', " joined the lobby"],
+    ],
+    [ // br: portuguese
+        ['', " entrou no saguão"],
+    ],
+    [ // ru: russian
+        ['', " присоединился к лобби"],
+    ],
+    [ // lan: latino spanish
+        ['', " se unió a la sala"],
+    ],
+    [ // las: latino spanish
+        ['', " se unió a la sala"],
+    ],
+    [ // jp: japanese
+        ['', "がロビーに参加しました"],
+    ],
+    [ // tr: turkish
+        ['', " lobiye katıldı"],
+    ],
 ]
 
 const date_form = { 'weekday': 'long', 'year': 'numeric', 'month': 'long', 'day': 'numeric' };
@@ -129,6 +156,7 @@ $( function() {
 
     // Set region from cookie
     var region = 0;
+    var lang_i = 0;
     var reg_ind_ck = Cookies.get('region_index');
     if (typeof reg_ind_ck != 'undefined') {
         try {
@@ -2252,11 +2280,6 @@ $( function() {
     });
 
     // Chat log import methods
-    // var jtr = ;
-    // $( "#chat_import_button" ).click(function() {
-
-    // });
-
     function import_chat_log() {
         var box = $( '#chat_import_input' );
         const inp = box.val();
@@ -2264,30 +2287,42 @@ $( function() {
         $( "#chat_import_text" ).html("!");
         if (inp === '' || inp === '\n') {
             console.log("empty box");
-            return
+            return;
         }
-        var jtr = joined_lobby_strs[region];
-        if (inp.indexOf(jtr) === -1) {
+        var jtr = joined_lobby_strs[region][lang_i];
+        var j_pre = jtr[0];
+        var j_post = jtr[1];
+        var success = false;
+        if (inp.indexOf(j_post) === -1) {
 
             for (var i = 0; i < region_strs.length; i++) {
-                jtr = joined_lobby_strs[i];
-                if (inp.indexOf(jtr) !== -1) {
-                    set_region(i);
-                    break
+                for (var j = 0; j < joined_lobby_strs[i].length; j++) {
+                    jtr = joined_lobby_strs[i][j];
+                    j_pre = jtr[0];
+                    j_post = jtr[1];
+                    if (inp.indexOf(j_post) !== -1) {
+                        set_region(i);
+                        lang_i = j;
+                        success = true;
+                        break;
+                    }
+                }
+                if (success) {
+                    break;
                 }
                 if (i == region_strs.length - 1) {
                     send_pred_req(prep_req_data(req_data)[0], inp, -9000, undefined);
-                    return
+                    return;
                 }
             }
         }
-        var success = false;
+        success = false;
         var j = 0;
         const lines = inp.split('\n').slice(0, 5);
         for (var i = 0; i < lines.length; i++) {
             const line = lines[i];
-            if (line.slice(line.length - jtr.length, line.length) === jtr) {
-                const name = line.slice(0, line.length - jtr.length);
+            if (line.slice(line.length - j_post.length, line.length) === j_post) {
+                const name = line.slice(j_pre.length, line.length - j_post.length).trim();
                 const pl_i = plph_occupancy["plph_l_" + j];
                 if (req_data[pl_i][name_li] != name) {
                     req_data[pl_i][name_li] = name;
@@ -2303,6 +2338,15 @@ $( function() {
             }
         }
         if (success) {
+            if (j < 5) { // If fewer than 5 players found, clear the rest
+                for (var k = 4; k >= j; k--) {
+                    const pl_i = plph_occupancy["plph_l_" + k];
+                    req_data[pl_i][name_li] = -1;
+                    pl_percs[pl_i] = -1;
+                    $( "#pl_" + pl_i ).find(".name_input").val('');
+                    set_opgg_link($( '#pl_' + pl_i ), '');
+                }
+            }
             $( "#chat_import_text" ).html("&#10004;");
             setTimeout(request_curr_pred, 0);
         } else {
