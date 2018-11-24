@@ -701,7 +701,7 @@ $( function() {
 
         var prep_req = prep_req_data(req_data);
         var rq_data = prep_req[0];
-        var rq_i = prep_req[1];
+        const rq_i = prep_req[1];
         
         reset_pl_statuses();
         if (rq_i == 0) {  // Return if we have no input data
@@ -2259,7 +2259,7 @@ $( function() {
 
     function import_chat_log() {
         var box = $( '#chat_import_input' );
-        var inp = box.val();
+        const inp = box.val();
         box.val('');
         $( "#chat_import_text" ).html("!");
         if (inp === '' || inp === '\n') {
@@ -2304,6 +2304,9 @@ $( function() {
         if (success) {
             $( "#chat_import_text" ).html("&#10004;");
             setTimeout(request_curr_pred, 0);
+        } else {
+            var rq_data = prep_req_data(req_data)[0];
+            send_pred_req(rq_data, inp, -1, undefined);
         }
     }
     $( '#chat_import_input' ).on('keypress', function(e) {
