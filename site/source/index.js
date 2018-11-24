@@ -504,7 +504,11 @@ $( function() {
             pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).html('');
             return;
         }
-        const opgg_link = "http://" + reg_str + ".op.gg/summoner/userName=" + name;
+        var reg_str_url = reg_str;
+        if (reg_str == 'kr') {
+            reg_str_url = 'www';
+        }
+        const opgg_link = "http://" + reg_str_url + ".op.gg/summoner/userName=" + name;
         pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).attr('href', opgg_link);
         pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).html('op.gg');
     }
