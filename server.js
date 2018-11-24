@@ -143,7 +143,6 @@ if(cluster.isMaster) {  // Cluster master
                                         resolve(msg.content);
                                     }
                                 }, {noAck: true});
-                                console.log('mp_rpc_queue_' + op_reg)
                                 ch.sendToQueue('mp_rpc_queue_' + op_reg, Buffer.from(JSON.stringify(req_d)),
                                     { correlationId: corr, replyTo: q.queue });
                             });
