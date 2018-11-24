@@ -505,6 +505,7 @@ $( function() {
             return;
         }
         var reg_str_url = reg_str;
+        console.log(reg_str);
         if (reg_str.toLowerCase() == 'kr') {
             reg_str_url = 'www';
         }
