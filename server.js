@@ -115,6 +115,8 @@ if(cluster.isMaster) {  // Cluster master
                 console.log(req.socket.remoteAddress)
                 console.log(req.get('host'))
                 console.log(req.get('origin'))
+                console.log(req.get('X-Remote-IP'))
+                console.log(req.get('X-Originating-IP'))
                 // req_d[7] = 
 
                 var res_prom = new Promise(function(resolve, reject) {
