@@ -144,7 +144,7 @@ if(cluster.isMaster) {  // Cluster master
                                     }
                                 }, {noAck: true});
 
-                                ch.sendToQueue('match_pred_rpc_queue_' + op_reg, Buffer.from(JSON.stringify(req_d)),
+                                ch.sendToQueue('mp_rpc_queue_' + op_reg, Buffer.from(JSON.stringify(req_d)),
                                     { correlationId: corr, replyTo: q.queue });
                             });
                         });
