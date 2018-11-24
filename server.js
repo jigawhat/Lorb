@@ -60,7 +60,7 @@ if(cluster.isMaster) {  // Cluster master
 
         var app = express();
         // Only accept requests under a certain size
-        app.use(bodyParser.text({limit: '0.01MB', type: "application/x-www-form-urlencoded"}));
+        app.use(bodyParser.text({limit: '0.002MB', type: "application/x-www-form-urlencoded"}));
         // app.use(bodyParser.text({limit: '0.0005MB', type: "gzip"}));
         app.post('/match/', function(req, res) {
 
@@ -111,13 +111,18 @@ if(cluster.isMaster) {  // Cluster master
                 const region_i = req_d[1];
                 const req_i = req_d[3];
 
+                var op_reg = 'rest'
+                if (opgg_regions[region_i] == 'kr') {
+                    op_reg = 'kr'
+                }
+
                 // console.log(req.connection.remoteAddress)
                 // console.log(req.socket.remoteAddress)
                 // console.log(req.get('host'))
                 // console.log(req.get('origin'))
                 // console.log(req.get('x-forwarded-for'))
                 // console.log(req.headers)
-                req_d[7] = req.get('x-forwarded-for')
+                req_d[7] = req.get('x-real-ip')
 
                 var res_prom = new Promise(function(resolve, reject) {
                     request_counter++;
@@ -139,7 +144,7 @@ if(cluster.isMaster) {  // Cluster master
                                     }
                                 }, {noAck: true});
 
-                                ch.sendToQueue('match_pred_rpc_queue_' + opgg_regions[region_i], Buffer.from(JSON.stringify(req_d)),
+                                ch.sendToQueue('match_pred_rpc_queue_' + op_reg, Buffer.from(JSON.stringify(req_d)),
                                     { correlationId: corr, replyTo: q.queue });
                             });
                         });
