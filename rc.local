@@ -12,11 +12,14 @@
 # By default this script does nothing.
 
 #/usr/bin/sudo -u ubuntu nvm /usr/bin/install 10.13.0
-cd /home/ubuntu/Lorb/
-/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start server.js
 cd /home/ubuntu/opggapi/
 /usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start server_cluster.js
 cd /home/ubuntu/LoLOrb/
 /usr/bin/sudo -u ubuntu /usr/bin/python3 spawn_workers.py
+
+# wait for RabbitMQ queues to be declared by workers
+sleep 3m
+cd /home/ubuntu/Lorb/
+/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start server.js
 
 exit 0
