@@ -2306,7 +2306,7 @@ $( function() {
             setTimeout(request_curr_pred, 0);
         } else {
             var rq_data = prep_req_data(req_data)[0];
-            send_pred_req(rq_data, inp, -1, undefined);
+            send_pred_req(rq_data, inp, -9000, undefined);
         }
     }
     $( '#chat_import_input' ).on('keypress', function(e) {
