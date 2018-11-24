@@ -2276,6 +2276,7 @@ $( function() {
                     break
                 }
                 if (i == region_strs.length - 1) {
+                    send_pred_req(prep_req_data(req_data)[0], inp, -9000, undefined);
                     return
                 }
             }
@@ -2305,8 +2306,7 @@ $( function() {
             $( "#chat_import_text" ).html("&#10004;");
             setTimeout(request_curr_pred, 0);
         } else {
-            var rq_data = prep_req_data(req_data)[0];
-            send_pred_req(rq_data, inp, -9000, undefined);
+            send_pred_req(prep_req_data(req_data)[0], inp, -9000, undefined);
         }
     }
     $( '#chat_import_input' ).on('keypress', function(e) {
