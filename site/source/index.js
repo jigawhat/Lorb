@@ -505,7 +505,7 @@ $( function() {
             return;
         }
         var reg_str_url = reg_str;
-        if (reg_str == 'kr') {
+        if (reg_str.toLowerCase() == 'kr') {
             reg_str_url = 'www';
         }
         const opgg_link = "http://" + reg_str_url + ".op.gg/summoner/userName=" + name;
