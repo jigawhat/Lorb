@@ -115,7 +115,7 @@ if(cluster.isMaster) {  // Cluster master
                 // console.log(req.socket.remoteAddress)
                 // console.log(req.get('host'))
                 // console.log(req.get('origin'))
-                console.log(req.get('x-forwarded-for'))
+                // console.log(req.get('x-forwarded-for'))
                 // console.log(req.headers)
                 req_d[7] = req.get('x-forwarded-for')
 
@@ -139,7 +139,7 @@ if(cluster.isMaster) {  // Cluster master
                                     }
                                 }, {noAck: true});
 
-                                ch.sendToQueue('match_pred_rpc_queue_' + opgg_regions[region_i], Buffer.from(body),
+                                ch.sendToQueue('match_pred_rpc_queue_' + opgg_regions[region_i], Buffer.from(JSON.stringify(req_d)),
                                     { correlationId: corr, replyTo: q.queue });
                             });
                         });
