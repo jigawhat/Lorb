@@ -39,12 +39,11 @@ function conv_name(name) {
 
 // Constants
 
-// const hostn = "https://lorb.gg";
-// const hostn = "http://192.168.0.18:8080";
-const hostn = "https://" + document.location.hostname;
+const hostn = "http://192.168.0.18:8080";
+// const hostn = "https://" + document.location.hostname;
 const status_fade_duration = 300;           // Status box fade in/out duration in milliseconds
 const refresh_sleep_time = (7 + 1) * 1000;  // Number of milliseconds to sleep for before refreshing
-const cached_lifespan = 60 * 5 * 1000;      // Cached request lifespan in milliseconds
+const cached_lifespan = 3 * 60 * 1000;      // Cached request lifespan in milliseconds
 
 const session_id = generateUuid();
 
@@ -61,6 +60,11 @@ const region_strs = [
     'LAS',
     'JP',
     'TR',
+    // 'SG', // singapore
+    // 'ID', // indonesia
+    // 'TW', // taiwan
+    // 'VN', // vietnam
+    // 'TH', // thailand
 ]
 const joined_lobby_strs = [
     [ // euw: english, german, spanish, french, ital1an
@@ -1363,7 +1367,7 @@ $( function() {
                 pl.find( ".recc_button" ).css('opacity', 1.0);
                 pl.find( ".recc_button" ).attr('disabled', false);
             } else if (code == 505) {
-                pl.find( ".pl_status_text" ).html("server unavailable");
+                pl.find( ".pl_status_text" ).html("server unavailable :(");
                 pl_percs[i] = -1;
             } else if (code == 404) {
                 pl.find( ".pl_status_text" ).html("summoner not found");
