@@ -104,7 +104,6 @@ if(cluster.isMaster) {  // Cluster master
 
                 // Validate request json
                 const val_res = validate_req(req_d)
-                console.log(val_res)
                 if (val_res !== 200) {
                     console.error(val_res)
                     res.end()
@@ -151,6 +150,7 @@ if(cluster.isMaster) {  // Cluster master
                             })
                         })
                     } catch (err) {
+                        console.error(err)
                         reject(String(err))
                     }
 
