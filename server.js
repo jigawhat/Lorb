@@ -141,7 +141,7 @@ if(cluster.isMaster) {  // Cluster master
                                 var corr = generateUuid()
                                 ch.consume(q.queue, function(msg) {
                                     if (msg.properties.correlationId == corr) {
-                                        console.log(msg.content)
+                                        // console.log(msg.content)
                                         resolve(msg.content)
                                     }
                                 }, {noAck: true})
@@ -150,7 +150,6 @@ if(cluster.isMaster) {  // Cluster master
                             })
                         })
                     } catch (err) {
-                        console.error(err)
                         reject(String(err))
                     }
 
