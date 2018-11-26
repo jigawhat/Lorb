@@ -42,7 +42,6 @@ function conv_name(name) {
 var hostn = "https://" + document.location.hostname;
 if (hostn.includes("https://192.168.0")) {
     hostn += ":8080";
-    console.log(hostn);
 }
 
 const status_fade_duration = 300;           // Status box fade in/out duration in milliseconds
@@ -127,6 +126,10 @@ const ch_cid_li = 0; // Indexes of each feature in champ_list
 const ch_id_li = 1;
 const ch_name_li = 2;
 
+const in_korea = false; // Korean site?
+const kr_site = 'https://www.lorb.gg';
+const normal_site = 'https://lorb.gg';
+
 
 // Globals
 
@@ -163,16 +166,18 @@ $( function() {
     // });
 
     // Set region from cookie
-    var region = 0;
+    var region = in_korea ? 3 : 0;
     var lang_i = 0;
-    var reg_ind_ck = Cookies.get('region_index');
-    if (typeof reg_ind_ck != 'undefined') {
-        try {
-            reg_ind_ck = parseInt(reg_ind_ck);
-            region = reg_ind_ck;
-            $( "#region_select" )[0].selectedIndex = region;
-        } catch (err) {
-            console.log(err);
+    if (!in_korea) {
+        var reg_ind_ck = Cookies.get('region_index');
+        if (typeof reg_ind_ck != 'undefined') {
+            try {
+                reg_ind_ck = parseInt(reg_ind_ck);
+                region = reg_ind_ck;
+                $( "#region_select" )[0].selectedIndex = region;
+            } catch (err) {
+                console.log(err);
+            }
         }
     }
     var reg_str = $( "#region_select :selected" ).val();
@@ -2241,7 +2246,17 @@ $( function() {
         for (var i = 0; i < 10; i++) {
             set_opgg_link($( '#pl_' + i ), conv_name(req_data[i][name_li]));
         }
-        Cookies.set("region_index", region);
+        if (!in_korea) {
+            if (reg_str == "KR") {
+                window.location.href = kr_site;
+            } else {
+                Cookies.set("region_index", region);
+            }
+        } else {
+            if (reg_str != "KR") {
+                window.location.href = normal_site;
+            }
+        }
     }
 
     function set_avg_elo(elo_i) {
