@@ -39,8 +39,12 @@ function conv_name(name) {
 
 // Constants
 
-const hostn = "http://192.168.0.18:8080";
-// const hostn = "https://" + document.location.hostname;
+var hostn = "https://" + document.location.hostname;
+if (hostn.includes("https://192.168.0")) {
+    hostn += ":8080";
+    console.log(hostn);
+}
+
 const status_fade_duration = 300;           // Status box fade in/out duration in milliseconds
 const refresh_sleep_time = (7 + 1) * 1000;  // Number of milliseconds to sleep for before refreshing
 const cached_lifespan = 3 * 60 * 1000;      // Cached request lifespan in milliseconds
