@@ -104,6 +104,7 @@ if(cluster.isMaster) {  // Cluster master
 
                 // Validate request json
                 const val_res = validate_req(req_d)
+                console.log(val_res)
                 if (val_res !== 200) {
                     console.error(val_res)
                     res.end()
@@ -166,7 +167,6 @@ if(cluster.isMaster) {  // Cluster master
 
         var server = app.listen(port, function () {
             console.log('Worker ' + process.pid + ' listening on ' + port)
-            console.error('sdasWorker ' + process.pid + ' listening on ' + port)
         })
     })
 

@@ -40,7 +40,7 @@ function conv_name(name) {
 // Constants
 
 var hostn = "https://" + document.location.hostname;
-if (hostn.includes("https://192.168.0")) {
+if (hostn.includes("https://192.168.")) {
     hostn += ":8080";
 }
 
