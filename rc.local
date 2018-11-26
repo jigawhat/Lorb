@@ -27,6 +27,7 @@ cd /home/ubuntu/Lorb/
 
 # wait for RabbitMQ queues to be declared by workers
 sleep 3m
-/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start server.js
+/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/node create_logs_dir.js
+/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start -o /home/ubuntu/Lorb/logs/server.log -e /home/ubuntu/Lorb/logs/errors.log server.js
 
 exit 0

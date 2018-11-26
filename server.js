@@ -95,7 +95,8 @@ if(cluster.isMaster) {  // Cluster master
                 try {
                     req_d = JSON.parse(body)
                 } catch (err) {
-                    console.log(err)
+                    console.error(err)
+                    console.error(req_d)
                     // res.write("request decode error") // Don't send anything in return (probably h4x0rz)
                     res.end()
                     return
@@ -104,7 +105,7 @@ if(cluster.isMaster) {  // Cluster master
                 // Validate request json
                 const val_res = validate_req(req_d)
                 if (val_res !== 200) {
-                    console.log(val_res)
+                    console.error(val_res)
                     res.end()
                     return
                 }
@@ -156,7 +157,7 @@ if(cluster.isMaster) {  // Cluster master
                 res_prom.then(function(result) {
                     send_result(res, result)
                 }, function(err) {
-                    console.log(err)
+                    console.error(err)
                     // send_result(res, err)
                 })
                 // })
@@ -165,6 +166,7 @@ if(cluster.isMaster) {  // Cluster master
 
         var server = app.listen(port, function () {
             console.log('Worker ' + process.pid + ' listening on ' + port)
+            console.error('sdasWorker ' + process.pid + ' listening on ' + port)
         })
     })
 
@@ -177,7 +179,8 @@ function generateUuid() {
 }
 
 const send_result = function(res, result) {
-    console.log('process ' + process.pid + ': ' + result + " (request counter: " + request_counter + ')')
+    // console.log('process ' + process.pid + ': ' + result + " (request counter: " + request_counter + ')')
+
     // console.log(result)
     // res.write(JSON.stringify(result))
     res.write(result)
@@ -192,8 +195,7 @@ const validate_req = function(req) {
     } else if ((!(req[0] instanceof Array)) && req[5] === -1) {
         return "request data not array"
     } else if (!Number.isInteger(req[1])) {
-        console.log(req[1])
-        return "request region index is not an integer"
+        return "request region index is not an integer: " + req[1]
     } else if (req[1] < 0 || req[1] > 10) {
         return "request region index is not between 0 and 10 (inclusive)"
     } else if (!Number.isInteger(req[2])) {
