@@ -180,7 +180,7 @@ $( function() {
             }
         }
     }
-    var reg_str = $( "#region_select :selected" ).val();
+    var reg_str = in_korea ? "KR" : $( "#region_select :selected" ).val();
 
     // Set average elo from cookie
     var avg_elo = 0;
@@ -2232,7 +2232,9 @@ $( function() {
     // Define procedure for changing region, update prediction
     $( "#region_select" ).change(function() {
         set_region(null);
-        setTimeout(request_curr_pred, 0);
+        if ((in_korea && reg_str == "KR") || ((!in_korea) && reg_str != "KR")) {
+            setTimeout(request_curr_pred, 0);
+        }
     });
 
     function set_region(reg_i) {
