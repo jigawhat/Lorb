@@ -504,9 +504,8 @@ $( function() {
             pl.find( '.pl_opgg_link' ).find( '.pl_opgg_link_a' ).html('');
             return;
         }
-        var reg_str_url = reg_str;
-        console.log(reg_str);
-        if (reg_str.toLowerCase() == 'kr') {
+        var reg_str_url = reg_str.toLowerCase();
+        if (reg_str_url == 'kr') {
             reg_str_url = 'www';
         }
         const opgg_link = "http://" + reg_str_url + ".op.gg/summoner/userName=" + name;
@@ -1363,8 +1362,12 @@ $( function() {
                 pl.find( ".pl_status_text" ).html("");
                 pl.find( ".recc_button" ).css('opacity', 1.0);
                 pl.find( ".recc_button" ).attr('disabled', false);
+            } else if (code == 505) {
+                pl.find( ".pl_status_text" ).html("server unavailable");
+                pl_percs[i] = -1;
             } else if (code == 404) {
                 pl.find( ".pl_status_text" ).html("summoner not found");
+                pl_percs[i] = -1;
             } else if(code == 200) {
                 pl.find( ".pl_status_text" ).html("&#10004; " + get_pl_perc_str(pl_percs[i]));
                 pl.find( ".recc_button" ).css('opacity', 1.0);
