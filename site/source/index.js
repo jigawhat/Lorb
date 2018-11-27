@@ -182,6 +182,12 @@ $( function() {
     }
     var reg_str = in_korea ? "KR" : $( "#region_select :selected" ).val();
 
+    // Set region from URL if present
+    const reg_comp_str = window.location.href.split('?region=');
+    if (reg_comp_str.length > 1) {
+        set_region(region_strs.indexOf(reg_comp_str[1]));
+    }
+
     // Set average elo from cookie
     var avg_elo = 0;
     var elo_ind_ck = Cookies.get('elo_index');
@@ -2256,7 +2262,7 @@ $( function() {
             }
         } else {
             if (reg_str != "KR") {
-                window.location.href = normal_site;
+                window.location.href = normal_site + "/?region=" + reg_str;
             }
         }
     }
