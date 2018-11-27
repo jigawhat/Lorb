@@ -182,12 +182,6 @@ $( function() {
     }
     var reg_str = in_korea ? "KR" : $( "#region_select :selected" ).val();
 
-    // Set region from URL if present
-    const reg_comp_str = window.location.href.split('?region=');
-    if (reg_comp_str.length > 1) {
-        set_region(region_strs.indexOf(reg_comp_str[1]));
-    }
-
     // Set average elo from cookie
     var avg_elo = 0;
     var elo_ind_ck = Cookies.get('elo_index');
@@ -517,6 +511,13 @@ $( function() {
         }
         setTimeout(request_curr_pred, 0);
     });
+
+    // Set region from URL if present
+    const reg_comp_str = window.location.href.split('?region=');
+    if (reg_comp_str.length > 1) {
+        set_region(region_strs.indexOf(reg_comp_str[1]));
+        history.replaceState(null, null, '/');
+    }
 
     function set_opgg_link(pl, name) {
         if (name === '') {
