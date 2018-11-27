@@ -978,7 +978,7 @@ $( function() {
     }
 
     function cache_load(hash, callback) {
-        res = JSON.parse(request_cache[hash]);
+        var res = JSON.parse(request_cache[hash]);
         callback(res);
     }
 
