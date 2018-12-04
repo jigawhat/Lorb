@@ -13,6 +13,7 @@
 
 #/usr/bin/sudo -u ubuntu nvm /usr/bin/install 10.13.0
 cd /home/ubuntu/opggapi/
+/usr/bin/sudo -u ubuntu /usr/bin/git pull
 /usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start server_cluster.js
 cd /home/ubuntu/LoLOrb/
 /usr/bin/sudo -u ubuntu /usr/bin/git pull

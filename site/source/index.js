@@ -620,6 +620,7 @@ $( function() {
         }
         if (showing_share) {
             $( "#share_area" ).fadeOut();
+            showing_share = false;
         }
     }
 
@@ -777,6 +778,12 @@ $( function() {
         $( "#perc_text" ).css("color", "#999");
         $( ".j_perc" ).css("color", "#999");
         $( ".orb_load_ring" ).css("visibility", "visible");
+
+        // Hide share button
+        if (showing_share) {
+            $( "#share_area" ).fadeOut();
+            showing_share = false;
+        }
 
         const hash = get_request_hash(rq_data);
         last_preq_hash = hash;
@@ -1026,6 +1033,7 @@ $( function() {
         $( "#share_suff_text" ).html("");
         if (!showing_share) {
             $( "#share_area" ).fadeIn();
+            showing_share = true;
         }
 
         if (got_perc_ch) {
@@ -2358,9 +2366,10 @@ $( function() {
         }
         success = false;
         var j = 0;
-        const lines = inp.split('\n').slice(0, 5);
+        const lines = inp.split('\n');
         for (var i = 0; i < lines.length; i++) {
             const line = lines[i];
+            console.log(line.slice(line.length - j_post.length, line.length), j);
             if (line.slice(line.length - j_post.length, line.length) === j_post) {
                 const name = line.slice(j_pre.length, line.length - j_post.length).trim();
                 const pl_i = plph_occupancy["plph_l_" + j];
