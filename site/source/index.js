@@ -336,6 +336,7 @@ $( function() {
     var disp_champs_perc = false;
     var disp_summs_perc = false;
     var curr_req_disp = 999;
+    var curr_shortlink = '';
 
     var rq_data = [];
     var pl_ropts = [];
@@ -1028,7 +1029,8 @@ $( function() {
         handle_summoner_codes(res);
 
         // Set share link
-        var new_url = hostn + "/?c=" + res[8];
+        curr_shortlink = res[8];
+        var new_url = hostn + "/?c=" + curr_shortlink;
         $( "#share_input" ).val(new_url);
         $( "#share_suff_text" ).html("");
         if (!showing_share) {
@@ -1457,7 +1459,7 @@ $( function() {
         $( "#share_suff_text" ).html("&#10004;");
         if (!saved_shortlink) {
             saved_shortlink = true;
-
+            send_pred_req(-1, curr_shortlink, -1, undefined);
         }
     });
 
@@ -2411,6 +2413,12 @@ $( function() {
             setTimeout(import_chat_log, 0);
         }
     });
+    $( "#share_input" ).bind({ copy : function() {
+        if (!saved_shortlink) {
+            saved_shortlink = true;
+            send_pred_req(-1, curr_shortlink, -1, undefined);
+        }
+    }});
 
     // Player draggable definition
     $( ".pl" ).draggable({ snap: ".plph", snapMode: "inner", snapTolerance: 15,
@@ -2578,6 +2586,7 @@ $( function() {
             const shortlink = comp_str[1];
             send_pred_req(-1, shortlink, -1, receive_curr_pred);
             sl_succ = true;
+            curr_shortlink = shortlink;
         } catch (err) {
             console.log("Error importing from shortlink URL: ", err);
         }
