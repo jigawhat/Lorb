@@ -17,6 +17,9 @@ cd /home/ubuntu/opggapi/
 /usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start server_cluster.js
 cd /home/ubuntu/LoLOrb/
 /usr/bin/sudo -u ubuntu /usr/bin/git pull
+/usr/bin/sudo /usr/sbin/rabbitmqctl add_user alfy doctorStationTurbo || true
+/usr/bin/sudo /usr/sbin/rabbitmqctl set_permissions -p / alfy ".*" ".*" ".*" || true
+/usr/bin/sudo /usr/sbin/rabbitmqctl set_user_tags alfy administrator || true
 /usr/bin/sudo -u ubuntu /usr/bin/python3 spawn_workers.py
 
 cd /home/ubuntu/Lorb/
