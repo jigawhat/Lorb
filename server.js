@@ -23,7 +23,7 @@ const mp_qname = 'mp_rpc_queue'
 const n_workers = os.cpus().length
 // const n_workers = 1
 
-const opgg_regions = ['euw','eune','na','kr','oce','br','ru','lan','las','jp','tr']
+// const opgg_regions = ['euw','eune','na','kr','oce','br','ru','lan','las','jp','tr']
 
 
 var request_counter = 0

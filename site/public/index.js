@@ -336,6 +336,7 @@ $( function() {
     var disp_champs_perc = false;
     var disp_summs_perc = false;
     var curr_req_disp = 999;
+    var curr_shortlink = '';
 
     var rq_data = [];
     var pl_ropts = [];
@@ -620,6 +621,7 @@ $( function() {
         }
         if (showing_share) {
             $( "#share_area" ).fadeOut();
+            showing_share = false;
         }
     }
 
@@ -777,6 +779,12 @@ $( function() {
         $( "#perc_text" ).css("color", "#999");
         $( ".j_perc" ).css("color", "#999");
         $( ".orb_load_ring" ).css("visibility", "visible");
+
+        // Hide share button
+        if (showing_share) {
+            $( "#share_area" ).fadeOut();
+            showing_share = false;
+        }
 
         const hash = get_request_hash(rq_data);
         last_preq_hash = hash;
@@ -1021,11 +1029,13 @@ $( function() {
         handle_summoner_codes(res);
 
         // Set share link
-        var new_url = hostn + "/?c=" + res[8];
+        curr_shortlink = res[8];
+        var new_url = hostn + "/?c=" + curr_shortlink;
         $( "#share_input" ).val(new_url);
         $( "#share_suff_text" ).html("");
         if (!showing_share) {
             $( "#share_area" ).fadeIn();
+            showing_share = true;
         }
 
         if (got_perc_ch) {
@@ -1449,7 +1459,7 @@ $( function() {
         $( "#share_suff_text" ).html("&#10004;");
         if (!saved_shortlink) {
             saved_shortlink = true;
-
+            send_pred_req(-1, curr_shortlink, -1, undefined);
         }
     });
 
@@ -2358,9 +2368,10 @@ $( function() {
         }
         success = false;
         var j = 0;
-        const lines = inp.split('\n').slice(0, 5);
+        const lines = inp.split('\n');
         for (var i = 0; i < lines.length; i++) {
             const line = lines[i];
+            console.log(line.slice(line.length - j_post.length, line.length), j);
             if (line.slice(line.length - j_post.length, line.length) === j_post) {
                 const name = line.slice(j_pre.length, line.length - j_post.length).trim();
                 const pl_i = plph_occupancy["plph_l_" + j];
@@ -2402,6 +2413,12 @@ $( function() {
             setTimeout(import_chat_log, 0);
         }
     });
+    $( "#share_input" ).bind({ copy : function() {
+        if (!saved_shortlink) {
+            saved_shortlink = true;
+            send_pred_req(-1, curr_shortlink, -1, undefined);
+        }
+    }});
 
     // Player draggable definition
     $( ".pl" ).draggable({ snap: ".plph", snapMode: "inner", snapTolerance: 15,
@@ -2569,6 +2586,7 @@ $( function() {
             const shortlink = comp_str[1];
             send_pred_req(-1, shortlink, -1, receive_curr_pred);
             sl_succ = true;
+            curr_shortlink = shortlink;
         } catch (err) {
             console.log("Error importing from shortlink URL: ", err);
         }
