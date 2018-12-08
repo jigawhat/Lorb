@@ -885,7 +885,6 @@ $( function() {
 
                 if (has_pl_is) {
                     // Set new pl_indices
-                    console.log(pl_indices_inv);
                     if (old_pl_i in pl_indices_inv) {
                         new_pl_indices_inv[pl_i] = pl_indices_inv[old_pl_i];
                     }
@@ -936,7 +935,7 @@ $( function() {
             // Set new pl_indices
             for (var i = 0; i < 10; i++) {
                 if (i in new_pl_indices_inv) {
-                    new_pl_indices[new_pl_indices_inv] = i;
+                    new_pl_indices[new_pl_indices_inv[i]] = i;
                 }
             }
             pl_indices = new_pl_indices;
