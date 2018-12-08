@@ -1517,6 +1517,7 @@ $( function() {
         $( ".recc_champion_ch" ).css('visibility', 'hidden');
         $( ".recc_champion_pl" ).css('visibility', 'hidden');
         $( "#recc_loader" ).css('visibility', 'visible');
+        $( "#recc_note" ).css('visibility', 'visible');
 
         // Set left label text
         var role_i = rq[pl_i][role_li];
@@ -1696,6 +1697,7 @@ $( function() {
             $( "#recc_" + typ + '_' + cid + "_perc" ).html(perc.toFixed(1) + '%');
         }
         $( "#recc_loader" ).css('visibility', 'hidden');
+        $( "#recc_note" ).css('visibility', 'hidden');
         $( "#recc_outer_area" ).css('visibility', 'visible');
         $( ".recc_champion_ch" ).css('visibility', 'visible');
         $( ".recc_champion_pl" ).css('visibility', recc_pl_vis ? 'visible' : 'hidden');
