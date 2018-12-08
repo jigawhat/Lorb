@@ -840,15 +840,17 @@ $( function() {
             var team_i_act = inv_p ? 1 - team_i : team_i;
             for (var i = 0; i < 5; i++) {
                 if (rdata[ph_occ["plph_" + side + '_' + i]][team_li] !== team_i_act) {
-                    console.log("Invalid cookie team, not loading composition.");
+                    console.log("Invalid team, not loading composition.");
                     return false;
                 }
             }
         }
 
+        var has_pl_is = false;
         if ("pl_indices" in comp) {
-            pl_indices = comp["pl_indices"]
-            pl_indices_inv = comp["pl_indices_inv"]
+            pl_indices = comp["pl_indices"];
+            pl_indices_inv = comp["pl_indices_inv"];
+            has_pl_is = true;
         }
 
         if ("region_i" in comp) {
@@ -869,6 +871,9 @@ $( function() {
             rdict[1][i] = -1;
         }
 
+        var new_pl_indices = {}
+        var new_pl_indices_inv = {}
+
         for (var team_i = 0; team_i < 2; team_i++) {
             // var side = team_i === 0 ? (inv_p ? 'r' : 'l') : (inv_p ? 'l' : 'r');
             var side = team_i === 0 ? 'l' : 'r';
@@ -877,6 +882,14 @@ $( function() {
                 var old_pl_i = ph_occ[plph_id];
                 var pl_i = plph_occupancy[plph_id];
                 var rd = rdata[old_pl_i];
+
+                if (has_pl_is) {
+                    // Set new pl_indices
+                    console.log(pl_indices_inv);
+                    if (old_pl_i in pl_indices_inv) {
+                        new_pl_indices_inv[pl_i] = pl_indices_inv[old_pl_i];
+                    }
+                }
 
                 // var rd = rdata[old_pl_i].slice();
                 req_data[pl_i] = rd;
@@ -917,6 +930,17 @@ $( function() {
                         "background-image", 'url(' + none_champ_img + ')');
                 }
             }
+        }
+
+        if (has_pl_is) {
+            // Set new pl_indices
+            for (var i = 0; i < 10; i++) {
+                if (i in new_pl_indices_inv) {
+                    new_pl_indices[new_pl_indices_inv] = i;
+                }
+            }
+            pl_indices = new_pl_indices;
+            pl_indices_inv = new_pl_indices_inv;
         }
 
         $( "#perc_warning_symb" ).fadeOut();
@@ -1016,7 +1040,7 @@ $( function() {
         var pl_ps = res[7];
         if (pl_ps instanceof Array) {
             for (var i = 0; i < req_data.length; i++) {
-                var rq_i = pl_indices[i];
+                var rq_i = pl_indices_inv[i];
                 var pl_perc = pl_ps[rq_i];
                 if (req_data[i][team_li] === 1) {
                     pl_perc = 100 - pl_perc;
