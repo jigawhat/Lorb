@@ -239,7 +239,7 @@ $( function() {
         champ_ind_dict[champ_list[i][ch_cid_li]] = i;
     }
 
-    var ddrag_ver = "8.20.1";
+    var ddrag_ver = "8.24.1";
     var ddrag_url = "https://ddragon.leagueoflegends.com/cdn/" + ddrag_ver + "/img/champion/";
     var none_champ_img = "imgs/none_champ.png";
     var roles_opts_lower = ['auto assign', 'top', 'jungle', 'mid', 'support', 'bottom'];
