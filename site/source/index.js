@@ -277,7 +277,7 @@ $( function() {
         grid_content += '<button style="background-image: url(\'' + img_url +
             '\');" height="60" width="60" class="grid_img" id="grid_img_' + i + '">' + 
             '<span ' + extra_style + 'class="grid_img_text" id="grid_img_text_' + i + '">' +
-             c_name + '</span></button>';
+            c_name + '</span></button>';
 
         // Pick recommendation box content
         if (i > 0) {
@@ -2443,7 +2443,7 @@ $( function() {
     }});
 
     // Player draggable definition
-    $( ".pl" ).draggable({ snap: ".plph", snapMode: "inner", snapTolerance: 15,
+    $( ".pl" ).draggable({ snap: ".plph", snapMode: "inner", snapTolerance: 5,
         start: function( event, ui ) {
             // Set z-index to 1000 for the element we're dragging
             ui.helper.css("zIndex", 1000);
@@ -2452,35 +2452,36 @@ $( function() {
             // Get i of dragged player
             var pl_id = ui.helper.attr("id");
             var pl_i = parseInt(pl_id[pl_id.length - 1]);
-
-            // If we're on the y grid and x is close enough to
-            // the nearest placeholder, snap to that placeholder position
-            if (ui.position.top % pl_height == 0) {
-                if (Math.abs(ui.position.left) < (pl_width / 35)) {
-                    ui.position.left = 0;
-                    $( "#pl_" + pl_i ).css('left', 0);
-                } else if (Math.abs(ui.position.left - r_pl_x) < (pl_width / 35)) {
-                    ui.position.left = r_pl_x;
-                    $( "#pl_" + pl_i ).css('left', r_pl_x);
-                }
-            }
         },
         stop: function( event, ui ) {
             // Get i of dragged player
             var pl_id = ui.helper.attr("id");
             var pl_i = parseInt(pl_id[pl_id.length - 1]);
 
-            // If we're on the y grid and x is close enough to
+            // If x or y is close enough to
             // the nearest placeholder, snap to that placeholder position
-            if (ui.position.top % pl_height == 0) {
-                if (Math.abs(ui.position.left) < (pl_width / 3.0)) {
-                    ui.position.left = 0;
-                    $( "#pl_" + pl_i ).css('left', 0);
-                } else if (Math.abs(ui.position.left - r_pl_x) < (pl_width / 3.0)) {
-                    ui.position.left = r_pl_x;
-                    $( "#pl_" + pl_i ).css('left', r_pl_x);
-                }
+            // if (ui.position.top % pl_height == 0) {
+            if (Math.abs(ui.position.left) < (pl_width / 3)) {
+                var new_plph_i = Math.round(ui.position.top / pl_height);
+                new_plph_i = Math.max(new_plph_i, 0)
+                new_plph_i = Math.min(new_plph_i, 4)
+                const new_y = new_plph_i * pl_height;
+                ui.position.top = new_y;
+                ui.position.left = 0;
+                $( "#pl_" + pl_i ).css('top', new_y);
+                $( "#pl_" + pl_i ).css('left', 0);
+            } else if (Math.abs(ui.position.left - r_pl_x) < (pl_width / 3)) {
+                var new_plph_i = Math.round(ui.position.top / pl_height);
+                new_plph_i = Math.max(new_plph_i, 0)
+                new_plph_i = Math.min(new_plph_i, 4)
+                const new_y = new_plph_i * pl_height;
+                ui.position.top = new_y;
+                ui.position.left = r_pl_x;
+                $( "#pl_" + pl_i ).css('top', new_y);
+                $( "#pl_" + pl_i ).css('left', r_pl_x);
             }
+            // }
+
             // Figure out which side & placeholder we've snapped to, if any
             var new_side_char = -1;
             var new_side = -1;

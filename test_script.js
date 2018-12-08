@@ -82,5 +82,6 @@ req_data[0][0] = 7;
 
 console.log(req_data_init[0]);
 console.log(req_data[0]);
+console.log(Math.floor(10/3))
 
 
