@@ -1016,7 +1016,7 @@ $( function() {
         var pl_ps = res[7];
         if (pl_ps instanceof Array) {
             for (var i = 0; i < req_data.length; i++) {
-                var rq_i = pl_indices_inv[i];
+                var rq_i = pl_indices[i];
                 var pl_perc = pl_ps[rq_i];
                 if (req_data[i][team_li] === 1) {
                     pl_perc = 100 - pl_perc;
