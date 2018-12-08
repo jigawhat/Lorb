@@ -2371,7 +2371,6 @@ $( function() {
         const lines = inp.split('\n');
         for (var i = 0; i < lines.length; i++) {
             const line = lines[i];
-            console.log(line.slice(line.length - j_post.length, line.length), j);
             if (line.slice(line.length - j_post.length, line.length) === j_post) {
                 const name = line.slice(j_pre.length, line.length - j_post.length).trim();
                 const pl_i = plph_occupancy["plph_l_" + j];

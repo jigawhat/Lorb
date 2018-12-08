@@ -225,6 +225,12 @@ label {
     left: 35px;
     width: 35px;
 }
+#in_bcont {
+    /*position: relative;*/
+    /*left: 335px;*/
+    left: 70px;
+    width: 35px;
+}
 #fb_button {
     position: relative;
     /*left: 290px;*/
@@ -243,17 +249,31 @@ label {
     background-size: 13px;
     background-position: center;
 }
+#in_button {
+    position: relative;
+    /*left: 335px;*/
+    /*left: 35px;*/
+    width: 35px;
+    background: url("imgs/insta_icon.png") 0 0 no-repeat;
+    background-size: 13px;
+    background-position: center;
+}
 #fb_button:hover {
     background-color: rgba(255, 255, 255, 0.07);
 }
 #fb_button:active {
     background-color: rgba(255, 255, 255, 0.02);
 }
-
 #tw_button:hover {
     background-color: rgba(255, 255, 255, 0.07);
 }
 #tw_button:active {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+#in_button:hover {
+    background-color: rgba(255, 255, 255, 0.07);
+}
+#in_button:active {
     background-color: rgba(255, 255, 255, 0.02);
 }
 
@@ -1215,9 +1235,11 @@ label {
 .recc_button:hover {
     background-color: #444;
     box-shadow: 0px 0px 3px rgba(255, 255, 255, 1.0);
+    box-shadow: 0px 0px 3px rgba(255, 255, 255, 1.0);
 }
 .recc_button:active {
     background-color: #222;
+    box-shadow: 0px 0px 3px rgba(255, 255, 255, 1.0);
     box-shadow: 0px 0px 3px rgba(255, 255, 255, 1.0);
 }
 #recc_cont {
