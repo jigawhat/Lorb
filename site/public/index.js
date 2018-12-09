@@ -915,7 +915,7 @@ $( function() {
                     pl.find( ".name_cont" ).find( ".name_input" ).val('');
                     set_opgg_link(pl, '');
                 }
-                pl.find( ".pl_status_text_" ).html("");
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("");
 
                 // Set champion vars
                 var cid = rd[cid_li];
@@ -954,7 +954,7 @@ $( function() {
 
     function reset_pl_statuses() {
         for (var i = 0; i < req_data.length; i++) {
-            var txt = $( "#pl_" + i ).find( ".pl_status_text_" );
+            var txt = $( "#pl_" + i ).find( ".pl_status_text" ).find( ".pl_status_text_" );
             if (req_data[i][name_li] == -1) {
                 txt.html("");
                 continue;
@@ -1405,33 +1405,33 @@ $( function() {
         for (var i = 0; i < req_data.length; i++) {
             var pl = $( "#pl_" + i );
             if (!(i in pl_indices_inv)) {
-                pl.find( ".pl_status_text_" ).html("");
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("");
                 pl.find( ".recc_button" ).css('opacity', 1.0);
                 pl.find( ".recc_button" ).attr('disabled', false);
                 continue;
             }
             code = res[4][pl_indices_inv[i]];
             if (code == -1) {
-                pl.find( ".pl_status_text_" ).html("");
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("");
                 pl.find( ".recc_button" ).css('opacity', 1.0);
                 pl.find( ".recc_button" ).attr('disabled', false);
             } else if (code == 505) {
-                pl.find( ".pl_status_text_" ).html("server unavailable :(");
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("server unavailable :(");
                 pl_percs[i] = -1;
             } else if (code == 404) {
-                pl.find( ".pl_status_text_" ).html("summoner not found");
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("summoner not found");
                 pl_percs[i] = -1;
             } else if(code == 200) {
-                pl.find( ".pl_status_text_" ).html("&#10004; " + get_pl_perc_str(pl_percs[i]));
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("&#10004; " + get_pl_perc_str(pl_percs[i]));
                 pl.find( ".recc_button" ).css('opacity', 1.0);
                 pl.find( ".recc_button" ).attr('disabled', false);
             } else if(code == 201) {
-                pl.find( ".pl_status_text_" ).html("&#8635; " + get_pl_perc_str(pl_percs[i]) +
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("&#8635; " + get_pl_perc_str(pl_percs[i]) +
                     '<span style="color:#ccc">' + " refreshing..." + '</span>');
                 pl.find( ".recc_button" ).css('opacity', 1.0);
                 pl.find( ".recc_button" ).attr('disabled', false);
             } else {
-                pl.find( ".pl_status_text_" ).html("unknown error");
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("unknown error");
             }
         }
     }
@@ -1916,7 +1916,7 @@ $( function() {
             r_sel.css('color', '#888');
             // Reset name
             pl.find( ".name_cont" ).find( ".name_input" ).val('')
-            pl.find( ".pl_status_text_" ).html("");
+            pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("");
             set_opgg_link(pl, '');
             // Reset champion
             pl.find( '.champion_box' ).css(
@@ -1971,7 +1971,7 @@ $( function() {
                 r_sel.css('color', '#888');
                 // Reset name
                 pl.find( ".name_cont" ).find( ".name_input" ).val('')
-                pl.find( ".pl_status_text_" ).html("");
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("");
                 set_opgg_link(pl, '');
                 // Reset champion
                 pl.find( '.champion_box' ).css(
@@ -2058,7 +2058,7 @@ $( function() {
 
                 // Reset name
                 pl.find( ".name_cont" ).find( ".name_input" ).val('')
-                pl.find( ".pl_status_text_" ).html("");
+                pl.find( ".pl_status_text" ).find( ".pl_status_text_" ).html("");
                 set_opgg_link(pl, '');
             }
         }
