@@ -1547,6 +1547,7 @@ label {
     text-shadow: 0px 0px 3px #fff, 0px 0px 3px #fff;
     /*text-shadow: 0px 0px 2px #fff, 0px 0px 2px #fff;*/
     /*text-shadow: 0px 0px 2px #fff, 0px 0px 5px #fff, 0px 0px 15px #fff;*/
+    z-index: 15;
 }
 
 #refresh_button {
