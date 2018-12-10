@@ -781,10 +781,10 @@ $( function() {
         $( ".orb_load_ring" ).css("visibility", "visible");
 
         // Hide share button
-        // if (showing_share) {
-        //     $( "#share_area" ).fadeOut();
-        //     showing_share = false;
-        // }
+        if (showing_share) {
+            $( "#share_area" ).fadeOut();
+            showing_share = false;
+        }
 
         const hash = get_request_hash(rq_data);
         last_preq_hash = hash;
@@ -1053,12 +1053,14 @@ $( function() {
 
         // Set share link
         curr_shortlink = res[8];
-        var new_url = hostn + "/?c=" + curr_shortlink;
-        $( "#share_input" ).val(new_url);
-        $( "#share_suff_text" ).html("");
-        if (!showing_share) {
-            $( "#share_area" ).fadeIn();
-            showing_share = true;
+        if (curr_shortlink != -1) {
+            var new_url = hostn + "/?c=" + curr_shortlink;
+            $( "#share_input" ).val(new_url);
+            $( "#share_suff_text" ).html("");
+            if (!showing_share) {
+                $( "#share_area" ).fadeIn();
+                showing_share = true;
+            }
         }
 
         if (got_perc_ch) {
