@@ -134,6 +134,7 @@ label {
     /*padding-top: 5px;*/
     /*padding-top: 7px;*/
     top: -3px;
+    /*left: 1px;*/
     /*baseline-shift: 20px;*/
 }
 #clog_button {
@@ -1515,16 +1516,16 @@ label {
     font-size: 10px;
     font-variant: normal;
     visibility: hidden;
-    width: 150px;
+    width: 235px;
     background-color: rgba(0, 0, 0, 0.85);
     color: #fff;
     text-align: center;
     border-radius: 4px;
-    padding: 6px 9px;
+    padding: 4px 4px;
     position: absolute;
-    left: -80px;
-    top: 14px;
-    z-index: 1;
+    left: -100px;
+    top: -37px;
+    z-index: 25;
 }
 .pl_status_text:hover .pl_status_tooltip {
     visibility: visible;
