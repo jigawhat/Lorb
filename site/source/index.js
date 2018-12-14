@@ -2389,7 +2389,6 @@ $( function() {
                     break;
                 }
                 if (i == region_strs.length - 1) {
-                    console.log(inp);
                     send_pred_req(prep_req_data(req_data)[0], inp, -9000, undefined);
                     return;
                 }
