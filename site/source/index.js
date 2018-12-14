@@ -395,7 +395,8 @@ $( function() {
         // '<div class="name_clear">&#128465;</div>' +
         '<div class="name_clear"><div class="cross"></div></div>' +
         // '<button class="name_submit"></button></div>' +
-        '<div class="pl_status_text"><div class="pl_status_text_"></div><span class="pl_status_tooltip">Combined player score (win % based on<br />recent performance + champion proficiency)</span></div>' + 
+        '<div class="pl_status_text"><div class="pl_status_text_"></div>' + 
+        '<span class="pl_status_tooltip">Combined player score (win % based on<br />recent performance + champion proficiency)</span></div>' + 
         '<div class="pl_opgg_link"><a class="pl_opgg_link_a" href="" target="_blank"></a></div>' +
         '';
 
@@ -2388,6 +2389,7 @@ $( function() {
                     break;
                 }
                 if (i == region_strs.length - 1) {
+                    console.log(inp);
                     send_pred_req(prep_req_data(req_data)[0], inp, -9000, undefined);
                     return;
                 }
