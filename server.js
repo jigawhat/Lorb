@@ -207,7 +207,7 @@ const validate_req = function(req) {
         return "request session is longer than 32 characters"
     } else if (!((typeof req[5] == "string") || (Number.isInteger(req[5]) && req[5] == -1))) {
         return "request shortlink is not a string or -1: " + req[5]
-    } else if ((typeof req[5] == "string") && req[5].length > 8) {
+    } else if (req[6] !== -9000 && (typeof req[5] == "string") && req[5].length > 8) {
         return "request shortlink is longer than 8 characters " + req[5]
     } else if (!(Number.isInteger(req[6]) || req[6].constructor == Object)) {
         return "request composition is not an integer or dictionary: " + req[6]
