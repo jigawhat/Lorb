@@ -1,7 +1,10 @@
+//
 // Lorb index javascript
+//
 
 
-// Utility functions
+
+// Utility functions //
 
 function parseBool(value, defaultValue) {
     return (value == 'true' || value == 'false' || value === true || value === false) && JSON.parse(value) || defaultValue;
@@ -37,10 +40,16 @@ function conv_name(name) {
 }
 
 
-// Constants
+
+// Constants //
+
+const ddrag_ver = "9.3.1";
+const ddrag_url = "https://ddragon.leagueoflegends.com/cdn/" + ddrag_ver + "/img/champion/";
+const none_champ_img = "imgs/none_champ.png";
 
 var hostn = "https://" + document.location.hostname;
 if (hostn.includes("https://192.168.")) {
+    hostn = "http" + hostn.slice(5, hostn.length);
     hostn += ":8080";
 }
 
@@ -239,9 +248,6 @@ $( function() {
         champ_ind_dict[champ_list[i][ch_cid_li]] = i;
     }
 
-    var ddrag_ver = "8.24.1";
-    var ddrag_url = "https://ddragon.leagueoflegends.com/cdn/" + ddrag_ver + "/img/champion/";
-    var none_champ_img = "imgs/none_champ.png";
     var roles_opts_lower = ['auto assign', 'top', 'jungle', 'mid', 'support', 'bottom'];
     var roles_opts = [roles_opts_lower[0]];
     for (i = 1; i < 6; i++) {

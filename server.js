@@ -14,6 +14,7 @@ const amqp = require('amqplib/callback_api')
 
 // Script options
 const port = 32777 // Port to listen on for match prediction POST requests
+// const port = 8080
 const rabbit_host = 'localhost' // RabbitMQ host IP
 // const rabbit_host = '18.130.123.231' // RabbitMQ host IP
 const rmq_user = "alfy"
@@ -123,7 +124,6 @@ if(cluster.isMaster) {  // Cluster master
                 // console.log(req.get('host'))
                 // console.log(req.get('origin'))
                 // console.log(req.get('x-forwarded-for'))
-                // console.log(req.headers)
                 req_d[7] = req.get('x-real-ip')
 
                 var res_prom = new Promise(function(resolve, reject) {
