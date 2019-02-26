@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jigawhat/Lorb.git"
+    "url": "git+https://gitlab.com/blitzbrain/lorb.git"
   },
   "author": "Alfonso White",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jigawhat/Lorb/issues"
+    "url": "https://gitlab.com/blitzbrain/lorb/issues"
   },
-  "homepage": "https://github.com/jigawhat/Lorb#readme",
+  "homepage": "https://gitlab.com/blitzbrain/lorb#readme",
   "dependencies": {
     "amqplib": "^0.5.2",
     "cluster": "^0.7.7",

@@ -11,33 +11,35 @@
 #
 # By default this script does nothing.
 
-#/usr/bin/sudo -u ubuntu nvm /usr/bin/install 10.13.0
+. /home/ubuntu/lolorb/Constants.sh
+
+#/usr/bin/sudo -u ubuntu nvm /usr/bin/install $NPM_VER
 cd /home/ubuntu/opggapi/
 /usr/bin/sudo -u ubuntu /usr/bin/git pull
-/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start server_cluster.js
-cd /home/ubuntu/LoLOrb/
+/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v$NPM_VER/bin/forever start server_cluster.js
+cd /home/ubuntu/lolorb/
 /usr/bin/sudo -u ubuntu /usr/bin/git pull
-/usr/bin/sudo /usr/sbin/rabbitmqctl add_user alfy doctorStationTurbo || true
-/usr/bin/sudo /usr/sbin/rabbitmqctl set_permissions -p / alfy ".*" ".*" ".*" || true
-/usr/bin/sudo /usr/sbin/rabbitmqctl set_user_tags alfy administrator || true
+/usr/bin/sudo /usr/sbin/rabbitmqctl add_user $RMQ_USER $RMQ_PASS || true
+/usr/bin/sudo /usr/sbin/rabbitmqctl set_permissions -p / $RMQ_USER ".*" ".*" ".*" || true
+/usr/bin/sudo /usr/sbin/rabbitmqctl set_user_tags $RMQ_USER administrator || true
 /usr/bin/sudo -u ubuntu /usr/bin/python3 spawn_workers.py
 
-cd /home/ubuntu/Lorb/
+cd /home/ubuntu/lorb/
 /usr/bin/sudo -u ubuntu /usr/bin/git pull
 /usr/bin/sudo rm -rdf /home/ubuntu/staging
-/usr/bin/sudo -u ubuntu cp -rd /home/ubuntu/Lorb/site/public /home/ubuntu/staging
-cd /home/ubuntu/LoLOrb/
+/usr/bin/sudo -u ubuntu cp -rd /home/ubuntu/lorb/site/public /home/ubuntu/staging
+cd /home/ubuntu/lolorb/
 /usr/bin/sudo -u ubuntu /usr/bin/python3 kr_modify.py
 /usr/bin/sudo rm -rdf /www/public
 /usr/bin/sudo cp -rd /home/ubuntu/staging /www/public
 
-# /usr/bin/sudo cp /home/ubuntu/Lorb/server.conf /etc/nginx/conf.d/server.conf # disabled because kr server has it's own config
+# /usr/bin/sudo cp /home/ubuntu/lorb/server.conf /etc/nginx/conf.d/server.conf # disabled because kr server has it's own config
 # /usr/bin/sudo nginx -s reload
 
 # wait for RabbitMQ queues to be declared by workers
 sleep 3m
-cd /home/ubuntu/Lorb/
-/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/node create_logs_dir.js
-/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v10.13.0/bin/forever start -o /home/ubuntu/Lorb/logs/server.log -e /home/ubuntu/Lorb/logs/errors.log server.js
+cd /home/ubuntu/lorb/
+/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v$NPM_VER/bin/node create_logs_dir.js
+/usr/bin/sudo -u ubuntu /home/ubuntu/.nvm/versions/node/v$NPM_VER/bin/forever start -o /home/ubuntu/lorb/logs/server.log -e /home/ubuntu/lorb/logs/errors.log server.js
 
 exit 0
