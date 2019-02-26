@@ -13,12 +13,12 @@ const amqp = require('amqplib/callback_api')
 
 
 // Script options
-// const port = 32777 // Port to listen on for match prediction POST requests
-const port = 8080
+const port = 32777 // Port to listen on for match prediction POST requests
+// const port = 8080
 const rabbit_host = 'localhost' // RabbitMQ host IP
-// const rabbit_host = '18.130.123.231' // RabbitMQ host IP
-const rmq_user = "alfy"
-const rmq_pass = "doctorStationTurbo"
+// const rabbit_host = '18.130.123.231'
+const rmq_user = "lorb"
+const rmq_pass = "googargoyle"
 const mp_qname = 'mp_rpc_queue'
 
 const n_workers = os.cpus().length
